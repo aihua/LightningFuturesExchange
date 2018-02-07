@@ -1,0 +1,35 @@
+# Bootstrap without jQuery
+
+> A lightweight script (< 4k) to replace both
+[Twitter Bootstrap](http://getbootstrap.com/) JS script and its jQuery
+dependency.
+
+[![NPM](https://img.shields.io/npm/v/bootstrap-without-jquery.svg?maxAge=2592000&style=flat-square)]()
+[![NPM](https://img.shields.io/npm/dm/bootstrap-without-jquery.svg?maxAge=2592000&style=flat-square)]()
+[![Travis](https://img.shields.io/travis/ivangabriele/bootstrap-without-jquery.svg?maxAge=2592000&style=flat-square)]()
+
+## Demo
+
+https://bootstrap-without-jquery.herokuapp.com/
+
+## Installation
+
+### npm
+
+    npm install bootstrap-without-jquery --save
+
+### Bower
+
+    bower install bootstrap-without-jquery-2 --save
+
+## Coverage
+
+- Dismissable alerts
+- Dropdown menus
+- Collapsable elements
+  - Hamburger menu
+  - Accordions
+
+## Dependencies
+
+- **None**

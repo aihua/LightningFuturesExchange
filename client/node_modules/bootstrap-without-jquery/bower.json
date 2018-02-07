@@ -1,0 +1,21 @@
+{
+  "name": "bootstrap-without-jquery-2",
+  "main": "dist/bootstrap-without-jquery.js",
+  "version": "1.0.4",
+  "homepage": "https://github.com/ivangabriele/bootstrap-without-jquery",
+  "authors": [
+    "Ivan Gabriele"
+  ],
+  "description": "Lightweight script to replace jQuery for simple interactions when using Twitter Bootstrap.",
+  "keywords": [
+    "bootstrap",
+    "jquery"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "tmp"
+  ]
+}

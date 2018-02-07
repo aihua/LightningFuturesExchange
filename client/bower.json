@@ -1,0 +1,21 @@
+{
+  "name": "lightning-futures-exchange",
+  "description": "Lightning Futures Exchange",
+  "main": "server.js",
+  "authors": [
+    "Ryan Fishman <ryansfishman@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/ryanfishman/LightningFuturesExchange",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^4.0.0"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "lightning-futures-exchange",
+  "main": "server.js",
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-react-html-attrs": "^2.1.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-preset-es2017": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "bootstrap": "^4.0.0",
+    "bootstrap-without-jquery": "^1.0.5",
+    "bootstrap.native": "^2.0.21",
+    "bower": "^1.8.2",
+    "connect": "^3.6.0",
+    "express": "~4.5.1",
+    "history": "^4.7.2",
+    "jquery": "^3.3.1",
+    "l": "^0.5.1",
+    "method-override": "~2.0.2",
+    "mongoose": "~3.8.0",
+    "popper.js": "^1.12.9",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "underscore": "^1.8.3",
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.11.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "dev": "webpack-dev-server --content-base public --inline --hot"
+  }
+}
