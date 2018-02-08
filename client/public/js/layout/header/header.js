@@ -22,7 +22,7 @@ export default class Header extends React.Component {
 
 	render() {
 		return (
-			<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+			<nav id="header" class="navbar navbar-expand-lg navbar-dark bg-dark">
 			  <a class="navbar-brand" href="#">Lightning Futures Exchange</a>
 			  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 			    <span class="navbar-toggler-icon"></span>

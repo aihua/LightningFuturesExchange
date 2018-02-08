@@ -1,0 +1,15 @@
+#header {
+  margin-bottom: 20px;
+}
+.small-vert-padding {
+  padding: 10px 0px;
+}
+.large-vert-padding {
+  padding: 20px 0px;
+}
+#order-form .form-group {
+  margin-bottom: 0.25rem;
+}
+#order-form .order-button-container button {
+  width: 100%;
+}
