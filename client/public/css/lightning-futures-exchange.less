@@ -3,19 +3,58 @@
 }
 
 .small-vert-padding {
-	padding: 10px 0px;
+	padding: 10px 0px 10px 0px;
 }
 
 .large-vert-padding {
-	padding: 20px 0px;		
+	padding: 20px 0px 20px 0px;		
 }
+
 
 #order-form {
 	.form-group {
-		margin-bottom: 0.25rem;
+		margin-bottom: 0rem;
+	}
+
+	.order-button-group {
+		width: 100%;
+
+		label {
+			width: 100%;
+			white-space: normal;
+		}
+	}
+
+	.form-control-sm, .col-form-label-sm, .input-group-sm .input-group-text, button, .invalid-feedback {
+		font-size: 10px;
+	}
+
+	select, input {
+		height: 20px;
+		margin-top: 2px;
+	}
+
+	.input-group-sm .input-group-text {
+		height:20px;
+		font-size: 10px;
+		margin-top: 2px;
+	}
+
+	label.btn {
+		font-size: 10px;
 	}
 
 	.order-button-container {
+		@media (min-width: 576px) {
+			.col-sm-6:first-child {
+				padding-right: 0px;
+			}
+
+			.col-sm-6:last-child {
+				padding-left: 0px;
+			}
+		}
+
 		button { 
 			width: 100%;
 		}

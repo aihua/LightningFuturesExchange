@@ -1,5 +1,10 @@
 var express = require('express');
 var app = express();
+
+require('./routes/i18n.js')(app);
+
+var helpers = require('./helpers/helpers.js')
+
 var _ = require('underscore');
 var fs = require('fs');
 

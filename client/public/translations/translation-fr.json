@@ -1,0 +1,48 @@
+{
+   "Generic": {
+      "Select": "Sélectionner",
+      "Exchange": "Échange",
+      "Wallet": "Portefeuille",
+      "Total": "Total",
+      "Tradable": "Tradable",
+      "MargReq": "Marg. Req.",
+      "MarginRequirements": "Exigences de marge",
+      "Broker": "Courtier",
+      "Asset": "Atout",
+      "MarketOrder": "Ordre du marché",
+      "LimitOrder": "Limite de commande",
+      "LiquidityOrder": "Ordonnance de liquidité",
+      "Amount": "Montant",
+      "Price": "Prix",
+      "Offset": "Décalage",
+      "StopLoss": "Stop Loss",
+      "None": "Aucun",
+      "Market": "Marché",
+      "Limit": "Limite",
+      "ActivateAt": "Activer à",
+      "LimitPrice": "Limite Prix",
+      "LightningFuturesExchange": "Lightning Futures Exchange",
+      "Manage": "Gérer",
+      "Buy": "Acheter",
+      "Sell": "Vendre",
+      "Wallets": "Portefeuilles",
+      "Exchanges": "Échanges"
+   },
+   "Languages": {
+      "en": "English",
+      "fr": "français",
+      "es": "español"
+   },
+   "LanguagesFlags": {
+      "en": "gb",
+      "fr": "fr",
+      "es": "es"
+   },
+   "Validation": {
+      "PleaseSelectAnExchange": "Veuillez sélectionner un échange",
+      "PleaseSelectAWallet": "Veuillez sélectionner un portefeuille.",
+      "PleaseSelectABroker": "Veuillez sélectionner un courtier",
+      "PleaseSelectAnAsset": "Veuillez sélectionner un atout",
+      "PleaseEnterAPositiveAmount": "S'il vous plaît entrer un montant positif."
+   }
+}

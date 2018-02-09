@@ -1,0 +1,39 @@
+Control,Item,en,fr
+Generic,Select,Select,Sélectionner
+,Exchange,Exchange,Échange
+,Wallet,Wallet,Portefeuille
+,Total,Total,Total
+,Tradable,Tradable,Tradable
+,MargReq,Marg. Req.,Marg. Req.
+,MarginRequirements,Margin Requirements,Exigences de marge
+,Broker,Broker,Courtier
+,Asset,Asset,Atout
+,MarketOrder,Market Order,Ordre du marché
+,LimitOrder,Limit Order,Limite de commande
+,LiquidityOrder,Liquidity Order,Ordonnance de liquidité
+,Amount,Amount,Montant
+,Price,Price,Prix
+,Offset,Offset,Décalage
+,StopLoss,Stop Loss,Stop Loss
+,None,None,Aucun
+,Market,Market,Marché
+,Limit,Limit,Limite
+,ActivateAt,Activate At,Activer à
+,LimitPrice,Limit Price,Limite Prix
+,LightningFuturesExchange,Lightning Futures Exchange,Lightning Futures Exchange
+,Manage,Manage,Gérer
+,Buy,Buy,Acheter
+,Sell,Sell,Vendre
+,Wallets,Wallets,Portefeuilles
+,Exchanges,Exchanges,Échanges
+Languages,en,English,English
+,fr,français,français
+,es,español,español
+LanguagesFlags,en,gb,gb
+,fr,fr,fr
+,es,es,es
+Validation,PleaseSelectAnExchange,Please select an exchange.,Veuillez sélectionner un échange
+,PleaseSelectAWallet,Please select a wallet.,Veuillez sélectionner un portefeuille.
+,PleaseSelectABroker,Please select a broker.,Veuillez sélectionner un courtier
+,PleaseSelectAnAsset,Please select an asset.,Veuillez sélectionner un atout
+,PleaseEnterAPositiveAmount,Please enter a positive amount.,S'il vous plaît entrer un montant positif.

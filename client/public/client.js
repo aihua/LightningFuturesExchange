@@ -5,9 +5,7 @@ import { HashRouter } from "react-router-dom";
 import $ from "jquery"
 import bootstrap from "bootstrap"
 
-import Layout from "./js/layout/layout.js"
-import Main from "./js/main/main.js"
-
+import Layout from "./js/components/layout/layout.js"
 
 const app = document.getElementById('app');
 ReactDom.render(<HashRouter>

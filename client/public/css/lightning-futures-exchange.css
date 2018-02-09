@@ -2,13 +2,48 @@
   margin-bottom: 20px;
 }
 .small-vert-padding {
-  padding: 10px 0px;
+  padding: 10px 0px 10px 0px;
 }
 .large-vert-padding {
-  padding: 20px 0px;
+  padding: 20px 0px 20px 0px;
 }
 #order-form .form-group {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0rem;
+}
+#order-form .order-button-group {
+  width: 100%;
+}
+#order-form .order-button-group label {
+  width: 100%;
+  white-space: normal;
+}
+#order-form .form-control-sm,
+#order-form .col-form-label-sm,
+#order-form .input-group-sm .input-group-text,
+#order-form button,
+#order-form .invalid-feedback {
+  font-size: 10px;
+}
+#order-form select,
+#order-form input {
+  height: 20px;
+  margin-top: 2px;
+}
+#order-form .input-group-sm .input-group-text {
+  height: 20px;
+  font-size: 10px;
+  margin-top: 2px;
+}
+#order-form label.btn {
+  font-size: 10px;
+}
+@media (min-width: 576px) {
+  #order-form .order-button-container .col-sm-6:first-child {
+    padding-right: 0px;
+  }
+  #order-form .order-button-container .col-sm-6:last-child {
+    padding-left: 0px;
+  }
 }
 #order-form .order-button-container button {
   width: 100%;

@@ -1,0 +1,48 @@
+{
+   "Generic": {
+      "Select": "Select",
+      "Exchange": "Exchange",
+      "Wallet": "Wallet",
+      "Total": "Total",
+      "Tradable": "Tradable",
+      "MargReq": "Marg. Req.",
+      "MarginRequirements": "Margin Requirements",
+      "Broker": "Broker",
+      "Asset": "Asset",
+      "MarketOrder": "Market Order",
+      "LimitOrder": "Limit Order",
+      "LiquidityOrder": "Liquidity Order",
+      "Amount": "Amount",
+      "Price": "Price",
+      "Offset": "Offset",
+      "StopLoss": "Stop Loss",
+      "None": "None",
+      "Market": "Market",
+      "Limit": "Limit",
+      "ActivateAt": "Activate At",
+      "LimitPrice": "Limit Price",
+      "LightningFuturesExchange": "Lightning Futures Exchange",
+      "Manage": "Manage",
+      "Buy": "Buy",
+      "Sell": "Sell",
+      "Wallets": "Wallets",
+      "Exchanges": "Exchanges"
+   },
+   "Languages": {
+      "en": "English",
+      "fr": "français",
+      "es": "español"
+   },
+   "LanguagesFlags": {
+      "en": "gb",
+      "fr": "fr",
+      "es": "es"
+   },
+   "Validation": {
+      "PleaseSelectAnExchange": "Please select an exchange.",
+      "PleaseSelectAWallet": "Please select a wallet.",
+      "PleaseSelectABroker": "Please select a broker.",
+      "PleaseSelectAnAsset": "Please select an asset.",
+      "PleaseEnterAPositiveAmount": "Please enter a positive amount."
+   }
+}
