@@ -7,6 +7,10 @@
 .large-vert-padding {
   padding: 20px 0px 20px 0px;
 }
+table.table-xs td,
+table.table-xs th {
+  font-size: 10px;
+}
 #order-form .form-group {
   margin-bottom: 0rem;
 }
