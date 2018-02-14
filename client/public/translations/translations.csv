@@ -1,9 +1,14 @@
 Control,Item,en,fr
+Error,IncorrectPassword,The password entered is incorrect.,Le mot de passe entré est incorrect.
 Generic,ActivateAt,Activate At,Activer à
 ,Amount,Amount,Montant
 ,Asset,Asset,Atout
 ,Broker,Broker,Courtier
 ,Buy,Buy,Acheter
+,Cancel,Cancel,Annuler
+,Close,Close,Fermer
+,ConfirmPassword,Confirm Password,Confirmez le mot de passe
+,CreateConfig,Create Config,Créer une config
 ,Exchange,Exchange,Échange
 ,Exchanges,Exchanges,Échanges
 ,LightningFuturesExchange,Lightning Futures Exchange,Lightning Futures Exchange
@@ -11,7 +16,10 @@ Generic,ActivateAt,Activate At,Activer à
 ,LimitOrder,Limit Order,Limite de commande
 ,LimitPrice,Limit Price,Limite Prix
 ,LiquidityOrder,Liquidity Order,Ordonnance de liquidité
+,Login,Login,Connecter
 ,Manage,Manage,Gérer
+,ManageExchanges,Manage Exchanges,Gérer les échanges
+,ManageWallets,Manage Wallets,Gérer les porte-monnaie
 ,MarginRequirements,Margin Requirements,Exigences de marge
 ,MargReq,Marg. Req.,Marg. Req.
 ,Market,Market,Marché
@@ -19,8 +27,10 @@ Generic,ActivateAt,Activate At,Activer à
 ,None,None,Aucun
 ,Offset,Offset,Décalage
 ,OrderBook,Order Book,Carnet de commande
+,Password,Password,Mot de passe
 ,Price,Price,Prix
 ,RecentTrades,Recent Trades,Métiers récents
+,Save,Save,Sauver
 ,Select,Select,Sélectionner
 ,Sell,Sell,Vendre
 ,Size,Size,Étendue
@@ -35,7 +45,9 @@ Languages,en,English,English
 LanguagesFlags,en,gb,gb
 ,fr,fr,fr
 ,es,es,es
-Validation,PleaseSelectAnExchange,Please select an exchange.,Veuillez sélectionner un échange
+Validation,PasswordsMustMatch,Passwords must match.,Les mots de passe doivent correspondre.
+,PasswordOfLengthEight,Password required of length 8.,Mot de passe requis de longueur 8.
+,PleaseSelectAnExchange,Please select an exchange.,Veuillez sélectionner un échange
 ,PleaseSelectAWallet,Please select a wallet.,Veuillez sélectionner un portefeuille.
 ,PleaseSelectABroker,Please select a broker.,Veuillez sélectionner un courtier
 ,PleaseSelectAnAsset,Please select an asset.,Veuillez sélectionner un atout

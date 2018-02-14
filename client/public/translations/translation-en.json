@@ -1,10 +1,17 @@
 {
+   "Error": {
+      "IncorrectPassword": "The password entered is incorrect."
+   },
    "Generic": {
       "ActivateAt": "Activate At",
       "Amount": "Amount",
       "Asset": "Asset",
       "Broker": "Broker",
       "Buy": "Buy",
+      "Cancel": "Cancel",
+      "Close": "Close",
+      "ConfirmPassword": "Confirm Password",
+      "CreateConfig": "Create Config",
       "Exchange": "Exchange",
       "Exchanges": "Exchanges",
       "LightningFuturesExchange": "Lightning Futures Exchange",
@@ -12,7 +19,10 @@
       "LimitOrder": "Limit Order",
       "LimitPrice": "Limit Price",
       "LiquidityOrder": "Liquidity Order",
+      "Login": "Login",
       "Manage": "Manage",
+      "ManageExchanges": "Manage Exchanges",
+      "ManageWallets": "Manage Wallets",
       "MarginRequirements": "Margin Requirements",
       "MargReq": "Marg. Req.",
       "Market": "Market",
@@ -20,8 +30,10 @@
       "None": "None",
       "Offset": "Offset",
       "OrderBook": "Order Book",
+      "Password": "Password",
       "Price": "Price",
       "RecentTrades": "Recent Trades",
+      "Save": "Save",
       "Select": "Select",
       "Sell": "Sell",
       "Size": "Size",
@@ -42,6 +54,8 @@
       "es": "es"
    },
    "Validation": {
+      "PasswordsMustMatch": "Passwords must match.",
+      "PasswordOfLengthEight": "Password required of length 8.",
       "PleaseSelectAnExchange": "Please select an exchange.",
       "PleaseSelectAWallet": "Please select a wallet.",
       "PleaseSelectABroker": "Please select a broker.",

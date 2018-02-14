@@ -1,10 +1,17 @@
 {
+   "Error": {
+      "IncorrectPassword": "Le mot de passe entré est incorrect."
+   },
    "Generic": {
       "ActivateAt": "Activer à",
       "Amount": "Montant",
       "Asset": "Atout",
       "Broker": "Courtier",
       "Buy": "Acheter",
+      "Cancel": "Annuler",
+      "Close": "Fermer",
+      "ConfirmPassword": "Confirmez le mot de passe",
+      "CreateConfig": "Créer une config",
       "Exchange": "Échange",
       "Exchanges": "Échanges",
       "LightningFuturesExchange": "Lightning Futures Exchange",
@@ -12,7 +19,10 @@
       "LimitOrder": "Limite de commande",
       "LimitPrice": "Limite Prix",
       "LiquidityOrder": "Ordonnance de liquidité",
+      "Login": "Connecter",
       "Manage": "Gérer",
+      "ManageExchanges": "Gérer les échanges",
+      "ManageWallets": "Gérer les porte-monnaie",
       "MarginRequirements": "Exigences de marge",
       "MargReq": "Marg. Req.",
       "Market": "Marché",
@@ -20,8 +30,10 @@
       "None": "Aucun",
       "Offset": "Décalage",
       "OrderBook": "Carnet de commande",
+      "Password": "Mot de passe",
       "Price": "Prix",
       "RecentTrades": "Métiers récents",
+      "Save": "Sauver",
       "Select": "Sélectionner",
       "Sell": "Vendre",
       "Size": "Étendue",
@@ -42,6 +54,8 @@
       "es": "es"
    },
    "Validation": {
+      "PasswordsMustMatch": "Les mots de passe doivent correspondre.",
+      "PasswordOfLengthEight": "Mot de passe requis de longueur 8.",
       "PleaseSelectAnExchange": "Veuillez sélectionner un échange",
       "PleaseSelectAWallet": "Veuillez sélectionner un portefeuille.",
       "PleaseSelectABroker": "Veuillez sélectionner un courtier",

@@ -1,0 +1,38 @@
+import React from "react";
+import ReactDom from "react-dom";
+
+import I18nStore from '../../../../stores/i18nstore.js'
+
+export default class ManageWalletsDialog extends React.Component {
+	constructor() {
+		super()
+	}
+
+	render() {
+		const t = I18nStore.getCurrentLanguageJSON();
+
+		return (
+			<div id="managewalletsmodal" class="modal fade" tabIndex="-1" role="dialog" ref="modal" aria-hidden="true">
+				<form id="managewallets" class="needs-validation" noValidate={true} ref="form">
+			 		<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title">{t.Generic.ManageWallets}</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								{t.Generic.ManageWallets}
+							</div>
+							<div class="modal-footer">
+								<button type="submit" class="btn btn-primary">{t.Generic.Save}</button>
+								<button type="submit" class="btn btn-default" data-dismiss="modal" aria-label="Close">{t.Generic.Cancel}</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		);
+	}
+}

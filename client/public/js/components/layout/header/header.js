@@ -24,8 +24,8 @@ export default class Header extends React.Component {
 			          {t.Generic.Manage}
 			        </a>
 			        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-			          <a class="dropdown-item" href="#">{t.Generic.Exchanges}</a>
-			          <a class="dropdown-item" href="#">{t.Generic.Wallets}</a>
+			          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#manageexchangesmodal">{t.Generic.Exchanges}</a>
+			          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#managewalletsmodal">{t.Generic.Wallets}</a>
 			        </div>
 			      </li>
 			    </ul>

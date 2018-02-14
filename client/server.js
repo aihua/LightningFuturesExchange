@@ -1,7 +1,17 @@
 var express = require('express');
 var app = express();
 
+var bodyParser = require('body-parser')
+var cookieParser = require('cookie-parser')
+var app = express()
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(cookieParser());
+
 require('./routes/i18n.js')(app);
+require('./routes/password.js')(app);
+require('./routes/config.js')(app);
 
 var helpers = require('./helpers/helpers.js')
 
@@ -13,7 +23,6 @@ app.use('/css',  express.static(__dirname + '/public/css'));
 app.use('/images',  express.static(__dirname + '/public/images'));
 app.use('/bower_components',  express.static(__dirname + '/bower_components'));
 app.use('/', express.static(__dirname + '/public'));
-
 
 var router = express.Router(); 
 

@@ -1,0 +1,14 @@
+{
+  "name": "lighting-futures-exchange-server",
+  "version": "1.0.0",
+  "description": "The backend server for the lightning futures exchange.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "underscore": "^1.8.3"
+  }
+}
