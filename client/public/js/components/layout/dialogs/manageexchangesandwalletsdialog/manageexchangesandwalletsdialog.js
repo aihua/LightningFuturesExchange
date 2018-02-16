@@ -79,7 +79,7 @@ export default class ManageExchangesAndWalletsDialog extends React.Component {
 		}
 	}
 
-	resetConfig = () => {
+	createTempConfig = () => {
 		let t_config = {
 			exchanges: _.map((ConfigStore.config || {}).exchanges || [], function (e) {
 				return {
@@ -97,12 +97,20 @@ export default class ManageExchangesAndWalletsDialog extends React.Component {
 		};
 
 		t_config.exchanges.sort(Helpers.ci_comparer)
-		_.each(t_config.exchanges, function (e) { e.wallets.sort(Helpers.ci_comparer); })
+		_.each(t_config.exchanges, function (e) { e.wallets.sort(Helpers.ci_comparer); });
+
+		return t_config;
+	}
+
+	resetConfig = () => {
+		let t_config = this.createTempConfig();
+		let t_config2 = this.createTempConfig();
 
 		const selectedExchangeIndex = t_config.exchanges.length ? 0 : -1;
 		const selectedWalletIndex = selectedExchangeIndex === -1 ? -1 : (t_config.exchanges[selectedExchangeIndex].wallets.length ? 0 : -1);
 
 		this.setState({
+			i_config: t_config2,
 			config: t_config,
 			selectedExchangeIndex: selectedExchangeIndex,
 			selectedWalletIndex: selectedWalletIndex
@@ -370,9 +378,9 @@ export default class ManageExchangesAndWalletsDialog extends React.Component {
 	}
 
 	hasChanges = () => {
-		if (ConfigStore.config.exchanges.length !== this.state.config.exchanges.length) return true;
+		if (this.state.i_config.exchanges.length !== this.state.config.exchanges.length) return true;
 
-		let t_exchanges_1 = _.map(ConfigStore.config.exchanges, function (e) { return e; });
+		let t_exchanges_1 = _.map(this.state.i_config.exchanges, function (e) { return e; });
 		let t_exchanges_2 = _.map(this.state.config.exchanges, function (e) { return e; });
 
 		for (let i = 0; i < t_exchanges_1.length; i++) {
@@ -386,7 +394,7 @@ export default class ManageExchangesAndWalletsDialog extends React.Component {
 
 			for (let n = 0; n < e1.wallets.length; n++) {
 				if (e1.wallets[n].name !== e2.wallets[n].name) return true;
-				if (e1.wallets[n].publicKey !== e2.wallets[n].publicKey) return true;				
+				if (e1.wallets[n].publicKey !== e2.wallets[n].publicKey) return true;
 			}
 		}
 
