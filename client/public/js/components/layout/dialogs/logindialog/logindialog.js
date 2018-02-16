@@ -52,7 +52,7 @@ export default class LoginDialog extends React.Component {
 
 	componentWillUnmount() {
 		ConfigStore.unbindListener('changedConfigPocession', this.toggleModel);
-		ConfigStore.on('changedLoginStatus', this._forceUpdate)
+		ConfigStore.unbindListener('changedLoginStatus', this._forceUpdate)
 	}
 
 	_forceUpdate = () => {

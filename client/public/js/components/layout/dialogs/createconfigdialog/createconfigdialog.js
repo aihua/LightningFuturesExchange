@@ -7,6 +7,7 @@ import I18nStore from '../../../../stores/i18nstore.js';
 
 import * as ConfigActions from  '../../../../actions/configactions.js'
 
+
 export default class CreateConfigDialog extends React.Component {
 	constructor() {
 		super()
@@ -67,7 +68,7 @@ export default class CreateConfigDialog extends React.Component {
 
 	componentWillUnmount() {
 		ConfigStore.unbindListener('changedConfigPocession', this.toggleModel);
-		ConfigStore.on('changedCreateConfigStatus', this._forceUpdate)
+		ConfigStore.unbindListener('changedCreateConfigStatus', this._forceUpdate)
 	}
 
 	handleTextChangeCreate = (e) => {

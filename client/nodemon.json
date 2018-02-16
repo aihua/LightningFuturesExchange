@@ -1,4 +1,4 @@
 {
   "verbose": true,
-  "ignore": ["config.json"]
+  "ignore": ["config.json", "public/*"]
 }

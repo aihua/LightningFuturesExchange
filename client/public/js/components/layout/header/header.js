@@ -4,8 +4,13 @@ import ReactDom from "react-dom";
 import LanguageSelect from "./languageselector/languageselector.js"
 
 import I18nStore from '../../../stores/i18nstore.js';
+import * as ConfigActions from '../../../actions/configactions.js';
 
 export default class Header extends React.Component {
+	manageExchangeAndWalletsClick = () => {
+		ConfigActions.manageExchangeAndWalletsClicked();
+	}
+
 	render() {
 		const t = I18nStore.getCurrentLanguageJSON();
 
@@ -24,8 +29,7 @@ export default class Header extends React.Component {
 			          {t.Generic.Manage}
 			        </a>
 			        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-			          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#manageexchangesmodal">{t.Generic.Exchanges}</a>
-			          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#managewalletsmodal">{t.Generic.Wallets}</a>
+			          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#manageexchangesandwalletsmodal" onClick={this.manageExchangeAndWalletsClick}>{t.Generic.ExchangesAndWallets}</a>
 			        </div>
 			      </li>
 			    </ul>

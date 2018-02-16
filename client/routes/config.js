@@ -18,9 +18,11 @@ module.exports = function (app) {
 				config: null
 			});
 		} else {
-			console.log('sessiontoken: ' + req.cookies.sessiontoken);
 			if (req.cookies.sessiontoken) {
 				var password = Config.getPassword(req.cookies.sessiontoken);
+
+				console.log(Config.loadConfig(password));
+
 				res.send({
 					hasConfig: true,
 					config: Config.toSafeConfig(Config.loadConfig(password))
@@ -47,46 +49,12 @@ module.exports = function (app) {
 		});
 	}));
 
-	//add an exchange
-	router.post('/exchange', Helpers.default_router_handler(function (req, res) {
+	//create a new blank config with password.
+	router.put('/', Helpers.default_router_handler(function (req, res) {
 		var password = Config.getPassword(req.cookies.sessiontoken);
-		var config = Config.addExchange(password, req.body);
-		res.send(Config.toSafeConfig(config));
-	}));
 
-	//delete an exchange
-	router.delete('/exchange/:exchange_name', Helpers.default_router_handler(function (req, res) {
-		var password = Config.getPassword(req.cookies.sessiontoken);
-		var config = Config.removeExchange(password, req.params.exchange_name);
-		res.send(Config.toSafeConfig(config));
-	}));
-
-	//rename an exchange
-	router.put('/exchange/:exchange_name', Helpers.default_router_handler(function (req, res) {
-		var password = Config.getPassword(req.cookies.sessiontoken);
-		var config = Config.renameExchange(password, req.params.exchange_name, req.body);
-		res.send(Config.toSafeConfig(config));
-	}));
-
-	//add an wallet
-	router.post('/exchange/:exchange_name/wallet', Helpers.default_router_handler(function (req, res) {
-		var password = Config.getPassword(req.cookies.sessiontoken);
-		var config = Config.addWallet(password, req.params.exchange_name, req.body);
-		res.send(Config.toSafeConfig(config));
-	}));
-
-	//delete an wallet
-	router.delete('/exchange/:exchange_name/wallet/:wallet_name', Helpers.default_router_handler(function (req, res) {
-		var password = Config.getPassword(req.cookies.sessiontoken);
-		var config = Config.removeWallet(password, req.params.exchange_name, req.params.wallet_name);
-		res.send(Config.toSafeConfig(config));
-	}));
-
-	//rename an wallet
-	router.put('/exchange/:exchange_name/wallet/:wallet_name', Helpers.default_router_handler(function (req, res) {
-		var password = Config.getPassword(req.cookies.sessiontoken);
-		var config = Config.renameWallet(password, req.params.exchange_name, req.params.wallet_name, req.body);
-		res.send(Config.toSafeConfig(config));
+		var config = Config.toSafeConfig(req.body);
+		res.send(Config.saveConfig(password, config));
 	}));
 
 	app.use('/api/config', router);

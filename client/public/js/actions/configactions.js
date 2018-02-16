@@ -1,6 +1,10 @@
 import dispatcher from '../dispatchers/dispatcher.js';
 import axios from 'axios';
 
+export function manageExchangeAndWalletsClicked() {
+	dispatcher.dispatch({type: 'MANAGE_EXCHANGE_AND_WALLETS_CLICKED'});
+}
+
 export function setNoConfig() {
 	dispatcher.dispatch({type: 'NO_CONFIG'});
 }
@@ -61,74 +65,14 @@ export function createConfig(password) {
 		});
 }
 
-export function addExchange(newExchange) {
-	dispatcher.dispatch({type: 'ADDING_EXCHANGE'});
+export function saveConfig(config) {
+	dispatcher.dispatch({type: 'SAVING_CONFIG'})
 
-	axios.post('/api/config/exchange', newExchange)
+	axios.put('/api/config', config)
 		.then(res => {
-			dispatcher.dispatch({type: 'ADDED_EXCHANGE', data: res.data})
+			dispatcher.dispatch({type: 'SAVED_CONFIG', data: res.data})
 		})
 		.catch(function (error) {
-			dispatcher.dispatch({type: 'ERROR_ADDING_EXCHANGE', data: error.response.data})
-		});
-}
-
-export function removeExchange(oldExchange) {
-	dispatcher.dispatch({type: 'REMOVING_EXCHANGE'});
-
-	axios.delete('/api/config/exchange/' + escape(oldExchange.name))
-		.then(res => {
-			dispatcher.dispatch({type: 'REMOVED_EXCHANGE', data: res.data})
-		})
-		.catch(function (error) {
-			dispatcher.dispatch({type: 'ERROR_REMOVING_EXCHANGE', data: error.response.data})
-		});
-}
-
-export function renameExchange(oldExchange, newExchange) {
-	dispatcher.dispatch({type: 'RENAMING_EXCHANGE'});
-
-	axios.put('/api/config/exchange/' + escape(oldExchange.name), newExchange)
-		.then(res => {
-			dispatcher.dispatch({type: 'RENAMED_EXCHANGE', data: res.data})
-		})
-		.catch(function (error) {
-			dispatcher.dispatch({type: 'ERROR_RENAMING_EXCHANGE', data: error.response.data})
-		});
-}
-
-export function addWallet(exchange, newWallet) {
-	dispatcher.dispatch({type: 'ADDING_WALLET'});
-
-	axios.post('/api/config/exchange/' + escape(exchange.name) + '/wallet', newWallet)
-		.then(res => {
-			dispatcher.dispatch({type: 'ADDED_WALLET', data: res.data})
-		})
-		.catch(function (error) {
-			dispatcher.dispatch({type: 'ERROR_ADDING_WALLET', data: error.response.data})
-		});
-}
-
-export function removeWallet(exchange, oldWallet) {
-	dispatcher.dispatch({type: 'REMOVING_WALLET'});
-
-	axios.delete('/api/config/exchange/' + escape(exchange.name) + '/wallet/' + escape(oldWallet.name))
-		.then(res => {
-			dispatcher.dispatch({type: 'REMOVED_WALLET', data: res.data})
-		})
-		.catch(function (error) {
-			dispatcher.dispatch({type: 'ERROR_REMOVING_WALLET', data: error.response.data})
-		});
-}
-
-export function renameWallet(exchange, oldWallet, newWallet) {
-	dispatcher.dispatch({type: 'RENAMING_WALLET'});
-
-	axios.put('/api/config/exchange/' + escape(exchange.name) + '/wallet/' + escape(oldWallet.name), newWallet)
-		.then(res => {
-			dispatcher.dispatch({type: 'RENAMED_WALLET', data: res.data})
-		})
-		.catch(function (error) {
-			dispatcher.dispatch({type: 'ERROR_RENAMING_WALLET', data: error.response.data})
+			dispatcher.dispatch({type: 'ERROR_SAVING_CONFIG', data: error.response.data})
 		});
 }

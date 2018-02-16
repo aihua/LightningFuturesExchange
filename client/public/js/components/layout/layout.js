@@ -11,8 +11,9 @@ import ConfigStore from '../../stores/configstore.js'
 
 import CreateConfigDialog from './dialogs/createconfigdialog/createconfigdialog.js';
 import LoginDialog from './dialogs/logindialog/logindialog.js';
-import ManageWalletsDialog from './dialogs/managewalletsdialog/managewalletsdialog.js';
-import ManageExchangesDialog from './dialogs/manageexchangesdialog/manageexchangesdialog.js';
+import ManageExchangesAndWalletsDialog from './dialogs/manageexchangesandwalletsdialog/manageexchangesandwalletsdialog.js';
+import ConfirmDialog from '../dialogs/confirmdialog.js';
+
 
 export default class Layout extends React.Component {
 	componentWillMount() {
@@ -43,8 +44,8 @@ export default class Layout extends React.Component {
 					<Footer/>
 					<CreateConfigDialog />
 					<LoginDialog />
-					<ManageWalletsDialog />
-					<ManageExchangesDialog />
+					<ManageExchangesAndWalletsDialog />
+					<ConfirmDialog />
 				</div>
 			);
 		} else {

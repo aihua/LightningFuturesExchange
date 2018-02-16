@@ -24,11 +24,8 @@ module.exports = {
 
 	getPassword: function (guid) {
 		if (!this.hasConfig()) throw 'noConfig';
-		console.log(passwords);
 		var password = passwords[guid];
-		console.log("password: " + password);
 		if (password === undefined || password === null) {
-			console.log('why am I here?');
 			throw 'incorrectPassword';
 		}
 		return password;
@@ -57,8 +54,6 @@ module.exports = {
 		
 		passwords = {}		
 		passwords[guid] = password;
-
-		console.log(passwords);
 
 		return {
 			sessionToken: guid,
@@ -90,180 +85,65 @@ module.exports = {
 		} catch (e) {
 			throw 'incorrectPassword';
 		}
-		return config;
-	},
-	addExchange: function (password, newExchange) {
-		if (!newExchange) throw 'newExchangeRequired';
-		if (!newExchange.name || newExchange.name.length === 0) throw 'newExchangeNameRequired';
-		if (!newExchange.publicKey || newExchange.name.length < 12) throw 'newExchangePublicKeyRequired';
-
-		var config = this.loadConfig(password);
-
-		if (_.find(config.exchanges, function (e) {
-			return e.name === newExchange.name
-		})) throw 'exchangeAlreadyExists';
-
-		config.exchanges.push({
-			name: newExchange.name,
-			publicKey: newExchange.publicKey,
-			wallets: []
-		});
-
-		this.writeConfig(config, password);
-
-		return config;
-	},
-	removeExchange: function (password, exchange_name) {
-		if (!oldExchange) throw 'oldExchangeRequired';
-		if (!oldExchange.name || oldExchange.name.length === 0) throw 'oldExchangeNameRequired';
-
-		var config = this.loadConfig(password);
-
-		if (!_.find(config.exchanges, function (e) {
-			return e.name === exchange_name
-		})) throw 'exchangeDoesNotExist';
-
-		config.exchanges = _.filter(config.exchanges, function (e) {
-			return e.name !== exchange_name
-		})
-
-		this.writeConfig(config, password);
-
-		return config;
-	},
-	renameExchange: function (password, exchange_name, newExchange) {
-		if (!newExchange) throw 'newExchangeRequired';
-		if (!oldExchange) throw 'oldExchangeRequired';
-		if (!oldExchange.name || oldExchange.name.length === 0) throw 'oldExchangeNameRequired';
-		if (!newExchange.name || newExchange.name.length === 0) throw 'newExchangeNameRequired';
-
-		var config = this.loadConfig(password);
-
-		if (_.find(config.exchanges, function (e) {
-			return e.name === newExchange.name
-		})) throw 'exchangeAlreadyExists';
-
-		exchange = _.find(config.exchanges, function (e) {
-			return e.name === exchange_name
-		})
-
-		if (!exchange) throw 'exchangeDoesNotExist'; 
-
-		exchange.name = newExchange.name;
-
-		this.writeConfig(config, password);
-
-		return config;
-	},
-	addWallet: function (password, exchange_name, newWallet) {
-		if (!exchange) throw 'exchangeRequired';
-		if (!exchange.name) throw 'exchangeNameRequired';
-		if (!newWallet) throw 'newWalletRequired';
-		if (!newWallet.name || newWallet.name.length === 0) throw 'newWalletNameRequired';
-
-		var config = this.loadConfig(password);
-
-		exchange = _.find(config.exchanges, function (e) {
-			return e.name === exchange_name
-		})
-
-		if (!exchange) throw 'exchangeDoesNotExist';
-
-		if (_.find(exchange.wallets, function (w) {
-			return w.name === newWallet.name
-		})) throw 'walletAlreadyExists';
-
-		var prime_length = 60;
-		var diffHell = crypto.createDiffieHellman(prime_length);
-
-		diffHell.generateKeys('base64');
-
-		exchange.wallets.push({
-			name: newWallet.name,
-			publicKey: diffHell.getPublicKey('base64'),
-			privateKey: diffHell.getPrivateKey('base64')
-		});
-
-		this.writeConfig(config, password);
-
-		return config;
-	},
-	removeWallet: function (password, exchange_name, wallet_name) {
-		if (!exchange) throw 'exchangeRequired';
-		if (!exchange.name) throw 'exchangeNameRequired';
-		if (!oldWallet) throw 'oldWalletRequired';
-		if (!oldWallet.name || oldWallet.name.length === 0) throw 'oldWalletNameRequired';
-
-		var config = this.loadConfig(password);
-
-		exchange = _.find(config.exchanges, function (e) {
-			return exchange_name === e.name
-		})
-
-		if (!exchange) throw 'exchangeDoesNotExist';
-
-		if (!_.find(exchange.wallets, function (w) {
-			return w.name === wallet_name;
-		})) throw 'walletDoesNotExist';
-
-		exchange.wallets = _.filter(exchange.wallets, function (w) {
-			return w.name !== wallet_name;
-		})
-
-		this.writeConfig(config, password);
-
-		return config;
-	},
-	renameWallet: function (password, exchange_name, wallet_name, newWallet) {
-		if (!exchange) throw 'exchangeRequired';
-		if (!exchange.name) throw 'exchangeNameRequired';
-		if (!newWallet) throw 'newWalletRequired';
-		if (!newWallet.name || newWallet.name.length === 0) throw 'newWalletNameRequired';
-		if (!oldWallet) throw 'oldWalletRequired';
-		if (!oldWallet.name || oldWallet.name.length === 0) throw 'oldWalletNameRequired';
-
-		var config = this.loadConfig(password);
-
-		exchange = _.find(config.exchanges, function (e) {
-			return exchange_name === e.name
-		})
-
-		if (!exchange) throw 'exchangeDoesNotExist';
-
-		if (_.find(exchange.wallets, function (w) {
-			return w.name === newWallet.name;
-		})) throw 'walletAlreadyExists';
-
-		oldWallet = _.find(exchange.wallets, function (w) {
-			return w.name === wallet_name;
-		});
-
-		if (!oldWallet) throw 'walletDoesNotExist';
-
-		oldWallet.name = newWallet.name;
-
-		this.writeConfig(config, password);
-
-		return config;
+		return result;
 	},
 	toSafeConfig: function (config) {
 		conifg = _.extend()
-		
 
 		var result = {}
 		result.exchanges = _.map(config.exchanges || [], function (e) {
 			return {
-				name: e.name,
-				publicKey: e.publicKey,
-				wallets: _.map(e.wallets, function (w) {
+				name: e.name || '',
+				publicKey: e.publicKey || '',
+				address: e.address || '',
+				wallets: _.map(e.wallets || [], function (w) {
 					return  {
-						name: w.name,
-						publicKey: w.publicKey
+						name: w.name || '',
+						publicKey: w.publicKey || ''
 					}
 				})
 			}
 		});
 
 		return result;
+	},
+	saveConfig: function (password, newConfig, oldConfig) {
+		if (!oldConfig) oldConfig = this.loadConfig(password);
+
+		_.map(newConfig.exchanges, function (e) {
+			if (e.name.trim() === '') throw 'ExchangeNameRequired';
+			if (e.publicKey.trim() === '') throw 'ExchangePublicKeyRequired';
+			if (e.address.trim() === '') throw 'ExchangeAddressRequired';
+			_.map(e.wallets, function (w) {
+				if (w.name.trim() === '') throw 'WalletNameRequired';
+				if (w.publicKey.trim() !== '') {
+					var oldWallet = null;
+					_.map(oldConfig.exchanges, function (oe) {
+						_.map(oe.wallets, function (ow) {
+							if (ow.publicKey === w.publicKey) oldWallet = ow;
+						});
+					});
+
+					if (!oldWallet) {
+						throw 'InvalidWalletPublicKeyEntered,' + w.publicKey;
+					} else {
+						w.publicKey = oldWallet.publicKey;
+						w.privateKey = oldWallet.privateKey;
+					}
+				} else {
+					var prime_length = 60;
+					var diffHell = crypto.createDiffieHellman(prime_length);
+
+					diffHell.generateKeys('base64');
+
+					w.publicKey = diffHell.getPublicKey('base64');
+					w.privateKey = diffHell.getPrivateKey('base64')
+				}
+			});
+		})
+
+		newConfig.salt = salt;
+
+		return this.writeConfig(newConfig, password);
 	}
 }
