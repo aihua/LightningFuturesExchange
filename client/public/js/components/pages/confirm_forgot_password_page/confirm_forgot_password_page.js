@@ -55,7 +55,6 @@ export default class ConfirmForgotPasswordPage extends React.Component {
 				event.preventDefault();
 				event.stopPropagation();
 			} else {
-				debugger;
 				ForgotPasswordActions.confirmForgotPassword(this.query.userid, this.query.token, this.refs.password.value);
 			}
 

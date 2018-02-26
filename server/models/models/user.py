@@ -34,6 +34,7 @@ class User(db.Model):
             "userId": self.user_id,
             "username": self.username,
             "email": self.email,
+            "twoFactorEnabled": self.two_f_a_enabled,
             "isAdmin": self.is_admin,
             "registrationDate": self.registration_date
         }

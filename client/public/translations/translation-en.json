@@ -1,8 +1,9 @@
 {
    "ConfirmChangeEmail": {
       "ConfirmChangeEmailSuccessTitle": "Successfully changed email",
-      "ConfirmChangeEmailSuccessBody": "You have successfully changed the email for the user <b></em>{0}</em></b> to the email <b><em>{1}></em></b>.  All emails will be directed at this new email address.",
+      "ConfirmChangeEmailSuccessBody": "You have successfully changed the email for the user <b></em>{0}</em></b> to the email <b><em>{1}</em></b>.  All emails will be directed at this new email address.",
       "ErrorConfirmChangeEmail": "Error confirming change of email",
+      "Explanation": "Please provide your password and your two factor token (if you have 2FA enabled) to complete the changing of your email to <b><em>{0}</em></b>.",
       "FetchingConfirmChangeEmailTitle": "Confirming change of email.....",
       "FetchingConfirmChangeEmailBody": "A request is currently being made to change your email.  This shouldn’t take too long.  Please wait."
    },
@@ -60,6 +61,7 @@
       "Copyright": "Copyright © Lightning Futures Exchange 2017",
       "CreateConfig": "Create Config",
       "Email": "Email",
+      "Empty": "Empty",
       "Exchange": "Exchange",
       "Exchanges": "Exchanges",
       "ExchangesAndWallets": "Exchanges And Wallets",

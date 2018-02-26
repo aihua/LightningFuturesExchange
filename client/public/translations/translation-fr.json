@@ -1,8 +1,9 @@
 {
    "ConfirmChangeEmail": {
       "ConfirmChangeEmailSuccessTitle": "Courriel modifié avec succès",
-      "ConfirmChangeEmailSuccessBody": "Courriel modifié avec succès Vous avez correctement modifié l'adresse e-mail de l'utilisateur <b></em>{0}</em></b> à l'adresse e-mail <b><em>{1}></em></b>.   Tous les emails seront dirigés vers cette nouvelle adresse email.",
+      "ConfirmChangeEmailSuccessBody": "Courriel modifié avec succès Vous avez correctement modifié l'adresse e-mail de l'utilisateur <b></em>{0}</em></b> à l'adresse e-mail <b><em>{1}</em></b>.   Tous les emails seront dirigés vers cette nouvelle adresse email.",
       "ErrorConfirmChangeEmail": "Erreur confirmant le changement d'e-mail",
+      "Explanation": "Veuillez fournir votre mot de passe et votre jeton à deux facteurs (si 2FA est activé) pour compléter la modification de votre courriel à <b><em>{0}</em></b>.",
       "FetchingConfirmChangeEmailTitle": "Confirmation du changement d'email .....",
       "FetchingConfirmChangeEmailBody": "Une demande est en cours pour changer votre email. Cela ne devrait pas prendre trop de temps. S'il vous plaît, attendez."
    },
@@ -60,6 +61,7 @@
       "Copyright": "Droit d'auteur © Lightning Futures Exchange 2017",
       "CreateConfig": "Créer une config",
       "Email": "Couriel",
+      "Empty": "Vide",
       "Exchange": "Échange",
       "Exchanges": "Échanges",
       "ExchangesAndWallets": "Échanges et portefeuilles",

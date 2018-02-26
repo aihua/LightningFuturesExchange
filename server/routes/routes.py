@@ -276,8 +276,8 @@ def change_email(user):
     return jsonify({'success': True})
 
 
-@app.route('/api/confirm_change_email', methods=['POST'])
-def confirm_change_email():
+@app.route('/api/check_change_email', methods=['POST'])
+def check_change_email():
     simple_change_email = request.get_json()
 
     if "userId" not in simple_change_email \
@@ -299,6 +299,37 @@ def confirm_change_email():
 
     if user is None:
         return jsonify({'message': 'UserDoesNotExist'}), 404
+
+    return jsonify({'user': user.to_dic(), 'email': change_email.new_email})
+
+
+@app.route('/api/confirm_change_email', methods=['POST'])
+def confirm_change_email():
+    simple_change_email = request.get_json()
+
+    if "userId" not in simple_change_email \
+            or "changeEmailToken" not in simple_change_email \
+            or "password" not in simple_change_email:
+        return jsonify({'message': 'InvalidRequest'}), 500
+
+    try:
+        change_email = ChangeEmail.query.filter_by(
+            user_id=simple_change_email['userId'],
+            change_email_token=simple_change_email['changeEmailToken']
+        ).first()
+    except:
+        return jsonify({'message': 'InvalidRequest'}), 500
+
+    if change_email is None:
+        return jsonify({'message': 'ChangeEmailTokenNotFound'}), 404
+
+    user = User.query.filter_by(user_id=change_email.user_id).first()
+
+    if user is None:
+        return jsonify({'message': 'UserDoesNotExist'}), 404
+
+    if not user.check_password(simple_change_email['password']):
+        return jsonify({'message': 'IncorrectPassword'}), 403
 
     user.email = change_email.new_email
     db.session.delete(change_email)

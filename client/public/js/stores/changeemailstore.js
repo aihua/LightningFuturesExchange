@@ -10,6 +10,11 @@ class ChangeEmailStore extends EventEmitter {
 		this.changeEmailStatus = 'idle';
 		this.changeEmailError = '';
 
+		this.checkUser = null;
+		this.checkEmail = '';
+		this.checkChangeEmailStatus = 'idle';
+		this.checkChangeEmailError = '';
+
 		this.confirmUser = null;
 		this.confirmChangeEmailStatus = 'idle';
 		this.confirmChangeEmailError = '';
@@ -36,6 +41,32 @@ class ChangeEmailStore extends EventEmitter {
 				this.emit('changedChangeEmailStatus');
 				this.changeEmailStatus = 'idle'
 				this.emit('changedChangeEmailStatus');
+				break;
+			}
+
+			//Check change email
+			case "CHECKING_CHANGE_EMAIL": {
+				this.checkUser = null;
+				this.checkEmail = '';
+				this.checkChangeEmailStatus = 'fetching'
+				this.emit('changedCheckChangeEmailStatus');
+				break;
+			}
+			case "CHECKED_CHANGE_EMAIL": {
+				this.checkUser = action.data.user;
+				this.checkEmail = action.data.email;
+				this.checkChangeEmailStatus = 'fetched'
+				this.emit('changedCheckChangeEmailStatus');
+				this.checkChangeEmailStatus = 'idle'
+				this.emit('changedCheckChangeEmailStatus');
+				break;
+			}
+			case "ERROR_CHECKING_CHANGE_EMAIL": {
+				this.checkChangeEmailError = action.data;
+				this.checkChangeEmailStatus = 'error'
+				this.emit('changedCheckChangeEmailStatus');
+				this.checkChangeEmailStatus = 'idle'
+				this.emit('changedCheckChangeEmailStatus');
 				break;
 			}
 

@@ -1,7 +1,8 @@
 Control,Item,en,fr
 ConfirmChangeEmail,ConfirmChangeEmailSuccessTitle,Successfully changed email,Courriel modifié avec succès
-,ConfirmChangeEmailSuccessBody,You have successfully changed the email for the user <b></em>{0}</em></b> to the email <b><em>{1}></em></b>.  All emails will be directed at this new email address.,Courriel modifié avec succès Vous avez correctement modifié l'adresse e-mail de l'utilisateur <b></em>{0}</em></b> à l'adresse e-mail <b><em>{1}></em></b>.   Tous les emails seront dirigés vers cette nouvelle adresse email.
+,ConfirmChangeEmailSuccessBody,You have successfully changed the email for the user <b></em>{0}</em></b> to the email <b><em>{1}</em></b>.  All emails will be directed at this new email address.,Courriel modifié avec succès Vous avez correctement modifié l'adresse e-mail de l'utilisateur <b></em>{0}</em></b> à l'adresse e-mail <b><em>{1}</em></b>.   Tous les emails seront dirigés vers cette nouvelle adresse email.
 ,ErrorConfirmChangeEmail,Error confirming change of email,Erreur confirmant le changement d'e-mail
+,Explanation,Please provide your password and your two factor token (if you have 2FA enabled) to complete the changing of your email to <b><em>{0}</em></b>.,Veuillez fournir votre mot de passe et votre jeton à deux facteurs (si 2FA est activé) pour compléter la modification de votre courriel à <b><em>{0}</em></b>.
 ,FetchingConfirmChangeEmailTitle,Confirming change of email.....,Confirmation du changement d'email .....
 ,FetchingConfirmChangeEmailBody,A request is currently being made to change your email.  This shouldn’t take too long.  Please wait.,"Une demande est en cours pour changer votre email. Cela ne devrait pas prendre trop de temps. S'il vous plaît, attendez."
 ConfirmRegister,ConfirmRegisterSuccessTitle,Successfully confirmed user,Utilisateur confirmé avec succès
@@ -51,6 +52,7 @@ Generic,Account,Accout,Compte
 ,Copyright,Copyright © Lightning Futures Exchange 2017,Droit d'auteur © Lightning Futures Exchange 2017
 ,CreateConfig,Create Config,Créer une config
 ,Email,Email,Couriel
+,Empty,Empty,Vide
 ,Exchange,Exchange,Échange
 ,Exchanges,Exchanges,Échanges
 ,ExchangesAndWallets,Exchanges And Wallets,Échanges et portefeuilles
