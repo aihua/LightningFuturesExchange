@@ -49,6 +49,9 @@ export default class Header extends React.Component {
 						<Link class="dropdown-item" to={'/change_email'} role="button">
 							{t.Generic.ChangeEmail}
 						</Link>
+						<Link class="dropdown-item" to={'/change_password'} role="button">
+							{t.Generic.ChangePassword}
+						</Link>
 						<a class="dropdown-item" href="#">{t.Generic.TransactionHistory}</a>
 						<div class="dropdown-divider"></div>
 						<Link class="dropdown-item" to={'/'} role="button" onClick={this.logoutClicked}>

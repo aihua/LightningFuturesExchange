@@ -40,11 +40,13 @@ Generic,Account,Accout,Compte
 ,ChangeEmail,Change Email,Changer l'e-mail
 ,ChangeEmailSuccess,You have successfully submitted a request to change the email for the user <b><em>{0}</em></b> to <b><em>{1}</em></b>.  Please check your email address to confirm this email belongs to you.,Vous avez envoyé une demande de modification du courrier électronique de l'utilisateur <b><em>{0}</em></b> à <b><em>{1}</em></b>. Veuillez vérifier votre adresse e-mail pour confirmer que cet e-mail vous appartient.
 ,ChangePassword,Change Password,Changer le mot de passe
+,ChangePasswordSuccess,"You have successfully changed the password for the user <b><em>{0}</em></b>.  From now on, please use the new password for authentication.","Vous avez changé le mot de passe pour l'utilisateur <b><em>{0}</em></b>. À partir de maintenant, veuillez utiliser le nouveau mot de passe pour l'authentification."
 ,ChangeUsername,Change Username,Changer le nom d'utilisateur
 ,ChangeUsernameSuccess,You have successfully changed the username for your account from <b><em>{0}</em></b> to <b><em>{1}</em></b>.  Your old username is no longer valid and can be taken by other users.,Vous avez changé le nom d'utilisateur de votre compte de <b><em>{0}</em></b> à <b><em>{1}</em></b>. Votre ancien nom d'utilisateur n'est plus valide et peut être pris par d'autres utilisateurs.
 ,Close,Close,Fermer
 ,CloseWithoutSaving,Close Without Saving?,Fermer sans enregistrer?
 ,CloseWithoutSavingConfigBody,There are some unsaved changes to the config.  Do you wish to close without saving? Hit “No” to continue editing.,"Il y a quelques modifications non enregistrées dans la configuration. Voulez-vous fermer sans enregistrer? Appuyez sur ""Non"" pour continuer l'édition."
+,ConfirmNewPassword,Confirm New Password,Confirmer le nouveau mot de passe
 ,ConfirmPassword,Confirm Password,Confirmez le mot de passe
 ,Copyright,Copyright © Lightning Futures Exchange 2017,Droit d'auteur © Lightning Futures Exchange 2017
 ,CreateConfig,Create Config,Créer une config
@@ -72,6 +74,7 @@ Generic,Account,Accout,Compte
 ,MarketOrder,Market Order,Ordre du marché
 ,Name,Name,Nom
 ,NewEmail,New Email,Nouveau courriel
+,NewPassword,New Password,Nouveau mot de passe
 ,NewUsername,New Username,Nouveau nom d'utilisateur
 ,No,No,Non
 ,None,None,Aucun
@@ -118,8 +121,10 @@ Validation,AddressRequired,Address is required.,L'adresse est requise
 ,PasswordOfLengthEight,Password required of length 8.,Mot de passe requis de longueur 8.
 ,PleaseEnter2FA,Please enger a 6 digit 2FA or leave blank if your account does not have 2FA.,Veuillez entrer un 2FA à 6 chiffres ou laisser vide si votre compte n'a pas 2FA.
 ,PleaseEnterEmail,Please enter your email.,S'il vous plaît entrez votre email.
+,PleaseReEnterNewPassword,Please re-enter your new password.,Merci de ré-entrer votre nouveau mot de passe.
 ,PleaseReEnterPassword,Please re-enter your password.,Veuillez re-taper votre mot de passe.
 ,PleaseEnterNewEmail,Please a valid new email.,S'il vous plaît un nouveau courriel valide.
+,PleaseEnterNewPassword,Please enter your new password of minimum length 8.,Veuillez entrer votre nouveau mot de passe de longueur minimum 8.
 ,PleaseEnterNewUsername,Please enter a valid new alphanumeric username of length 6.,Veuillez entrer un nouveau nom d'utilisateur alphanumérique valide de longueur 6.
 ,PleaseEnterPassword,Please enter your password of minimum length 8.,Veuillez entrer votre mot de passe de longueur minimale 8.
 ,PleaseEnterUsername,Please enter your alphanumeric username of minimum length 6.,S'il vous plaît entrez votre nom d'utilisateur alphanumérique de longueur minimale 6.

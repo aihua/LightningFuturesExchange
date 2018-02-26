@@ -11,6 +11,7 @@ import ConfirmForgotPasswordPage from "../pages/confirm_forgot_password_page/con
 import ChangeUsernamePage from "../pages/change_username_page/change_username_page.js"
 import ChangeEmailPage from "../pages/change_email_page/change_email_page.js"
 import ConfirmChangeEmailPage from "../pages/confirm_change_email_page/confirm_change_email_page.js"
+import ChangePasswordPage from "../pages/change_password_page/change_password_page.js"
 
 export default class Main extends React.Component {
 	render() {
@@ -26,6 +27,7 @@ export default class Main extends React.Component {
 				<Route exact path='/change_username' component={ChangeUsernamePage}/>
 				<Route exact path='/change_email' component={ChangeEmailPage}/>
 				<Route exact path='/confirm_change_email' component={ConfirmChangeEmailPage}/>
+				<Route exact path='/change_password' component={ChangePasswordPage}/>
 		    </Switch>
 		  </main>
 		);

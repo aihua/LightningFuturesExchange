@@ -25,6 +25,7 @@ export function login(username, password, twofaToken) {
 export function logout() {
 	dispatcher.dispatch({type: 'LOGGING_OUT'})
 
+	debugger;
 	axios.post('/api/logout', {})
 		.then(res => {
 			dispatcher.dispatch({type: 'LOGGED_OUT', data: res.data})
