@@ -1,29 +1,67 @@
 Control,Item,en,fr
-Error,IncorrectPassword,The password entered is incorrect.,Le mot de passe entré est incorrect.
-,InvalidWalletPublicKeyEntered,Invalid wallet public key entered.,Clé publique de portefeuille invalide entrée.
-Generic,ActivateAt,Activate At,Activer à
+ConfirmChangeEmail,ConfirmChangeEmailSuccessTitle,Successfully changed email,Courriel modifié avec succès
+,ConfirmChangeEmailSuccessBody,You have successfully changed the email for the user <b></em>{0}</em></b> to the email <b><em>{1}></em></b>.  All emails will be directed at this new email address.,Courriel modifié avec succès Vous avez correctement modifié l'adresse e-mail de l'utilisateur <b></em>{0}</em></b> à l'adresse e-mail <b><em>{1}></em></b>.   Tous les emails seront dirigés vers cette nouvelle adresse email.
+,ErrorConfirmChangeEmail,Error confirming change of email,Erreur confirmant le changement d'e-mail
+,FetchingConfirmChangeEmailTitle,Confirming change of email.....,Confirmation du changement d'email .....
+,FetchingConfirmChangeEmailBody,A request is currently being made to change your email.  This shouldn’t take too long.  Please wait.,"Une demande est en cours pour changer votre email. Cela ne devrait pas prendre trop de temps. S'il vous plaît, attendez."
+ConfirmRegister,ConfirmRegisterSuccessTitle,Successfully confirmed user,Utilisateur confirmé avec succès
+,ConfirmRegisterSuccessBody,You have successfully confirmed the username <b><em>{0}</em></b> and the email <b><em>{1}</em></b>.  You may now proceed to login.,Vous avez confirmé le nom d'utilisateur <b><em>{0}</em></b> et l'adresse e-mail <b><em>{1}</em></b>. Vous pouvez maintenant procéder à la connexion.
+,ErrorConfirmRegister,Error confirming user,Erreur confirmant l'utilisateur
+,FetchingConfirmUserTitle,Confirming user.....,Confirmant l'utilisateu .....
+,FetchingConfirmUserBody,A request is currently being made to confirm your registration.  This shouldn’t take too long.  Please wait.,"Une demande est en cours pour confirmer votre inscription. Cela ne devrait pas prendre trop de temps. S'il vous plaît, attendez."
+Error,ChangeEmailTokenNotFound,Change email token is not found.  This is probably because you already accepted this link or you copied the link incorrectly.,Changer le jeton d'e-mail est introuvable. C'est probablement parce que vous avez déjà accepté ce lien ou que vous avez incorrectement copié le lien.
+,EmailsAreTheSame,The email <b><em>{0}</em></b> is the current email for the account.  Please choose a different email.,L'adresse e-mail <b><em>{0}</em></b> est l'adresse e-mail actuelle du compte. S'il vous plaît choisir un autre email.
+,EmailTaken,The email <b><em>{0}</em></b> has been taken.  Please create an account with a different email address.,L'email <b><em>{0}</em></b> a été pris. Veuillez créer un compte avec une adresse e-mail différente.
+,IncorrectPassword,The password entered is incorrect.,Le mot de passe entré est incorrect.
+,InvalidWalletPublicKeyEntered,Invalid wallet public key entered. {0},"Clé publique de portefeuille invalide entrée., {0}"
+,InvalidConfirmUserToken,The token for create the user account does not exist.  This can be because you have already confirmed the registratoin of the user.  If so please simply attempt to login to confirm.,"Le jeton de création du compte d'utilisateur n'existe pas. Cela peut être dû au fait que vous avez déjà confirmé l'enregistrement de l'utilisateur. Si oui, essayez simplement de vous connecter pour confirmer."
+,InvalidUrl,The website url is malformed.  This could be because you miscopied the url link improperly.  People double check.,L'URL du site est mal formée. Cela peut être dû au fait que vous avez incorrectement modifié le lien d'URL. Les gens revérifient.
+,InvalidUser,The user submitted is invalid.  Please refresh the page and try again.,L'utilisateur soumis est invalide. Veuillez actualiser la page et réessayer.
+,PasswordsMustMatch,Passwords must match.,Les mots de passe doivent correspondre.
+,UnknownError,An unknown error has occured.,Une erreur inconnue s'est produite.
+,UsernamesAreTheSame,The username <b><em>{0}</em></b> is the current username for the account.  Please choose a different username.,Le nom d'utilisateur <b><em>{0}</em></b> est le nom d'utilisateur actuel du compte. Merci de choisir un autre nom d'utilisateur.
+,UsernameTaken,The username <b><em>{0}</em></b> has been taken.  Please create an account with a different username.,Le nom d'utilisateur <b><em>{0}</em></b> a été pris. Veuillez créer un compte avec un nom d'utilisateur différent.
+,UserNotFoundLogin,The username/email does not exist.,Le nom d'utilisateur / email n'existe pas.
+,UserNotFoundChangeEmail,The user for this request has since been deleted.,L'utilisateur pour cette demande a depuis été supprimé.
+,UserNotFoundForgotPassword,The username/email <b><em>{0}</em></b> does not exist within our system.  Please create an account with this username/email if you wish by clicking on register.,Le nom d'utilisateur/email <b><em>{0}</em></b> n'existe pas dans notre système. S'il vous plaît créer un compte avec ce nom d'utilisateur/email si vous souhaitez en cliquant sur le registre.
+ForgotPassword,ConfirmForgotPasswordSuccess,You have successfully changed the password for the user <b><em>{0}</em></b>.  You may now proceed to login with the new password.,Vous avez changé le mot de passe pour l'utilisateur <b><em>{0}</em></b>. Vous pouvez maintenant vous connecter avec le nouveau mot de passe.
+Generic,Account,Accout,Compte
+,ActivateAt,Activate At,Activer à
 ,Add,Add,Ajouter
 ,Address,Address,Adresse
 ,Amount,Amount,Montant
 ,AreYouSure,Are You Sure?,Êtes-vous sûr?
 ,Asset,Asset,Atout
 ,Broker,Broker,Courtier
+,BusinesQuote,"Lightning Futures Exchange enables to you to anonymously long or short futures for a vast number of equities with low trading fees all at high leverage with the power of bitcoin.  Register today, make a deposit and gain access to trade the world’s markets anonymously.","Lightning Futures Exchange vous permet de réaliser des contrats à terme de manière anonyme ou à court terme pour un grand nombre d'actions avec des frais de négociation bas, le tout avec un fort effet de levier grâce à la puissance de Bitcoin. Inscrivez-vous aujourd'hui, effectuez un dépôt et accédez au commerce des marchés mondiaux de manière anonyme."
 ,Buy,Buy,Acheter
+,CallToActionCard,Register today and trade futures of global equities anonymously with bitcoin and with high leverage.,Inscrivez-vous aujourd'hui et négociez anonymement des futures sur des actions mondiales avec bitcoin et avec un effet de levier élevé.
 ,Cancel,Cancel,Annuler
+,ChangeEmail,Change Email,Changer l'e-mail
+,ChangeEmailSuccess,You have successfully submitted a request to change the email for the user <b><em>{0}</em></b> to <b><em>{1}</em></b>.  Please check your email address to confirm this email belongs to you.,Vous avez envoyé une demande de modification du courrier électronique de l'utilisateur <b><em>{0}</em></b> à <b><em>{1}</em></b>. Veuillez vérifier votre adresse e-mail pour confirmer que cet e-mail vous appartient.
+,ChangePassword,Change Password,Changer le mot de passe
+,ChangeUsername,Change Username,Changer le nom d'utilisateur
+,ChangeUsernameSuccess,You have successfully changed the username for your account from <b><em>{0}</em></b> to <b><em>{1}</em></b>.  Your old username is no longer valid and can be taken by other users.,Vous avez changé le nom d'utilisateur de votre compte de <b><em>{0}</em></b> à <b><em>{1}</em></b>. Votre ancien nom d'utilisateur n'est plus valide et peut être pris par d'autres utilisateurs.
 ,Close,Close,Fermer
 ,CloseWithoutSaving,Close Without Saving?,Fermer sans enregistrer?
 ,CloseWithoutSavingConfigBody,There are some unsaved changes to the config.  Do you wish to close without saving? Hit “No” to continue editing.,"Il y a quelques modifications non enregistrées dans la configuration. Voulez-vous fermer sans enregistrer? Appuyez sur ""Non"" pour continuer l'édition."
 ,ConfirmPassword,Confirm Password,Confirmez le mot de passe
+,Copyright,Copyright © Lightning Futures Exchange 2017,Droit d'auteur © Lightning Futures Exchange 2017
 ,CreateConfig,Create Config,Créer une config
+,Email,Email,Couriel
 ,Exchange,Exchange,Échange
 ,Exchanges,Exchanges,Échanges
 ,ExchangesAndWallets,Exchanges And Wallets,Échanges et portefeuilles
+,ForgotPassword,Forgot password,mot de passe oublié
+,ForgotPassword?,Forgot password?,mot de passe oublié?
+,ForgotPasswordSuccess,Successfully submitted request to change your password.  Please check your email for link to change your password.,Demande soumise avec succès pour changer votre mot de passe. S'il vous plaît vérifier votre email pour le lien pour changer votre mot de passe.
 ,LightningFuturesExchange,Lightning Futures Exchange,Lightning Futures Exchange
 ,Limit,Limit,Limite
 ,LimitOrder,Limit Order,Limite de commande
 ,LimitPrice,Limit Price,Limite Prix
 ,LiquidityOrder,Liquidity Order,Ordonnance de liquidité
 ,Login,Login,Connecter
+,Logout,Logout,Déconnexion
 ,Manage,Manage,Gérer
 ,ManageExchanges,Manage Exchanges,Gérer les échanges
 ,ManageExchangesAndWallets,Manage Exchanges And Wallets,Gérer les échanges et les portefeuilles
@@ -33,6 +71,8 @@ Generic,ActivateAt,Activate At,Activer à
 ,Market,Market,Marché
 ,MarketOrder,Market Order,Ordre du marché
 ,Name,Name,Nom
+,NewEmail,New Email,Nouveau courriel
+,NewUsername,New Username,Nouveau nom d'utilisateur
 ,No,No,Non
 ,None,None,Aucun
 ,Offset,Offset,Décalage
@@ -41,14 +81,22 @@ Generic,ActivateAt,Activate At,Activer à
 ,PublicKey,Public Key,Clé publique
 ,Price,Price,Prix
 ,RecentTrades,Recent Trades,Métiers récents
+,Register,Register,Inscriver
+,RegisterSuccess,You have successfully registered the username <b><em>{0}</em></b>.  Please check your email <b><em>{1}</em></b> to confirm.  It may take several minutes for you to receive this email.,Vous avez enregistré le nom d'utilisateur <b><em>{0}</em></b>. Veuillez vérifier votre email <b><em>{1}</em></b> pour confirmer. Cela peut prendre plusieurs minutes pour que vous receviez cet e-mail.
+,RegisterToday,Register Today!,Inscriver aujourd'hui!
 ,Remove,Remove,Retirer
 ,Save,Save,Sauver
 ,Select,Select,Sélectionner
 ,Sell,Sell,Vendre
 ,Size,Size,Étendue
 ,StopLoss,Stop Loss,Stop Loss
+,Submit,Submit,Soumettre
 ,Total,Total,Total
+,Username,Username,Nom d'utilisateur
 ,Tradable,Tradable,Tradable
+,TransactionHistory,Transaction History,Historique des transactions
+,TwoFactorAuthentication,Two-Factor Authentication,Authentification à deux facteurs
+,TwoFactorToken,Two-Factor Token,Jeton à deux facteurs
 ,Wallet,Wallet,Portefeuille
 ,Wallets,Wallets,Portefeuilles
 ,Yes,Yes,Oui
@@ -68,6 +116,14 @@ Validation,AddressRequired,Address is required.,L'adresse est requise
 ,NameRequired,Name is required.,Le nom est requis.
 ,PasswordsMustMatch,Passwords must match.,Les mots de passe doivent correspondre.
 ,PasswordOfLengthEight,Password required of length 8.,Mot de passe requis de longueur 8.
+,PleaseEnter2FA,Please enger a 6 digit 2FA or leave blank if your account does not have 2FA.,Veuillez entrer un 2FA à 6 chiffres ou laisser vide si votre compte n'a pas 2FA.
+,PleaseEnterEmail,Please enter your email.,S'il vous plaît entrez votre email.
+,PleaseReEnterPassword,Please re-enter your password.,Veuillez re-taper votre mot de passe.
+,PleaseEnterNewEmail,Please a valid new email.,S'il vous plaît un nouveau courriel valide.
+,PleaseEnterNewUsername,Please enter a valid new alphanumeric username of length 6.,Veuillez entrer un nouveau nom d'utilisateur alphanumérique valide de longueur 6.
+,PleaseEnterPassword,Please enter your password of minimum length 8.,Veuillez entrer votre mot de passe de longueur minimale 8.
+,PleaseEnterUsername,Please enter your alphanumeric username of minimum length 6.,S'il vous plaît entrez votre nom d'utilisateur alphanumérique de longueur minimale 6.
+,PleaseEnterUsernameOrEmail,Please enter your alphanumeric username of minimum length 6 or your email address.,S'il vous plaît entrez votre nom d'utilisateur alphanumérique de longueur minimale 6 ou votre email.
 ,PleaseSelectAnExchange,Please select an exchange.,Veuillez sélectionner un échange
 ,PleaseSelectAWallet,Please select a wallet.,Veuillez sélectionner un portefeuille.
 ,PleaseSelectABroker,Please select a broker.,Veuillez sélectionner un courtier

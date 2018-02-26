@@ -1,0 +1,30 @@
+{
+  "en": {
+    "RegisterUser": {
+      "Subject": "Welcome to Lightning Futures Exchange!",
+      "Body": "Hello {0},<br/><br/>Welcome to Lightning Futures Exchange!  Please click <a href=\"{1}\">here</a> to confirm your email address."
+    },
+    "ForgotPassword": {
+      "Subject": "Forgot password request for Lightning Futures Exchange",
+      "Body": "Hello {0},<br/><br/>A request to reset your password has been made. To proceed to reset your password, please click <a href=\"{1}\">here</a> to proceed."
+    },
+    "ChangeEmail": {
+      "Subject": "Change email request for Lightning Futures Exchange",
+      "Body": "Hello {0},<br/><br/>A request to change your email has been sent to this email.  To proceed to change your email, please click <a href=\"{1}\">here</a> to proceed."
+    }
+  },
+  "fr": {
+    "RegisterUser": {
+      "Subject": "Bienvenue à Lightning Futures Exchange!",
+      "Body": "Salut {0},<br/><br/>Bienvenue à Lightning Futures Exchange! Veuillez cliquer <a href=\"{1}\">ici</a> pour confirmer votre adresse e-mail."
+    },
+    "ForgotPassword": {
+      "Subject": "Demande de mot de passe oublié pour Lightning Futures Exchange",
+      "Body": "Salut {0},<br/><br/>Une demande de réinitialisation de votre mot de passe a été faite. Pour réinitialiser votre mot de passe, cliquez sur <a href=\"{1}\">ici</a> pour continuer."
+    },
+    "ChangeEmail": {
+      "Subject": "Modifier la demande d'e-mail pour Lightning Futures Exchange",
+      "Body": "Salut {0},<br/><br/>Une demande de modification de votre adresse e-mail a été envoyée à cet e-mail. Pour modifier votre adresse e-mail, cliquez sur <a href=\"{1}\">ici</a> pour continuer."
+    }
+  }
+}

@@ -11,5 +11,5 @@ module.exports = function (app) {
 		helpers.buildTranslationFiles();
 	})
 
-	app.use('/api/i18n', router);
+	app.use('/api2/i18n', router);
 }

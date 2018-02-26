@@ -7,22 +7,20 @@ import Footer from "./footer/footer.js"
 import Main from "../main/main.js"
 
 import I18nStore from '../../stores/i18nstore.js'
-import ConfigStore from '../../stores/configstore.js'
+import LoginStore from '../../stores/i18nstore.js'
 
-import CreateConfigDialog from './dialogs/createconfigdialog/createconfigdialog.js';
-import LoginDialog from './dialogs/logindialog/logindialog.js';
-import ManageExchangesAndWalletsDialog from './dialogs/manageexchangesandwalletsdialog/manageexchangesandwalletsdialog.js';
 import ConfirmDialog from '../dialogs/confirmdialog.js';
 
 
 export default class Layout extends React.Component {
 	componentWillMount() {
 		I18nStore.on('changeLanguage', this._forceUpdate);
-		ConfigStore.on('changedFetchConfigExistsStatus', this.changedFetchConfigExistsStatus)
+		LoginStore.on('changedLoggedInState', this._forceUpdate);
 	}
 
 	componentWillUnmount() {
 		I18nStore.unbindListener('changeLanguage', this._forceUpdate)
+		LoginStore.unbindListener('changedLoggedInState', this._forceUpdate)
 	}
 
 	changedFetchConfigExistsStatus = () => {
@@ -36,16 +34,15 @@ export default class Layout extends React.Component {
 	}
 
 	render() {
-		if (I18nStore.getCurrentLanguageJSON()) {
+		if (I18nStore.getCurrentLanguageJSON() && LoginStore.loggedInState !== 'unknown') {
 			return (
-					<div>
-					<Header/>
-					<Main />
+				<div id="wrap">
+					<div id="wrap-main">
+						<Header />
+						<Main />
+						<ConfirmDialog />
+					</div>
 					<Footer/>
-					<CreateConfigDialog />
-					<LoginDialog />
-					<ManageExchangesAndWalletsDialog />
-					<ConfirmDialog />
 				</div>
 			);
 		} else {

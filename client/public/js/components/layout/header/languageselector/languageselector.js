@@ -16,16 +16,23 @@ export default class LanguageSelector extends React.Component {
 	}
 
 	componentWillMount() {
-		I18nStore.on('changeLanguage', () => {
-			this.setState({
-				selectedLanguage: I18nStore.getCurrentLanguage()
-			})
+		I18nStore.on('changeLanguage', this.onChangeLanguage)
+	}
+
+	componentWillUnmount() {
+		I18nStore.removeListener('changeLanguage', this.onChangeLanguage)
+	}
+
+	onChangeLanguage = () => {
+		this.setState({
+			selectedLanguage: I18nStore.getCurrentLanguage()
 		})
 	}
 
 	setLanguage = (language) => {
-		return () => {
+		return (e) => {
 			I18nActions.setLanguage(language);
+			e.preventDefault();
 		}
 	}
 

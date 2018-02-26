@@ -9,9 +9,6 @@ import bootstrap from "bootstrap"
 
 import Layout from "./js/components/layout/layout.js"
 
-import axios from 'axios'
-import * as ConfigActions from './js/actions/configactions.js'
-
 const app = document.getElementById('app');
 ReactDom.render(<HashRouter>
 					<Layout />

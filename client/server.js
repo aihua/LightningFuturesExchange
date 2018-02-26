@@ -10,8 +10,6 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 require('./routes/i18n.js')(app);
-require('./routes/password.js')(app);
-require('./routes/config.js')(app);
 
 var helpers = require('./helpers/helpers.js')
 
@@ -30,7 +28,7 @@ app.get('/', function (req, res){
     res.send(fs.readFileSync('./public/index.html', 'utf8'));
 });
 
-app.use('/api', router);
+app.use('/api2', router);
 
-app.listen(3000, "localhost");
-console.log('Listening on port 3000');
+app.listen(3001, "localhost");
+console.log('Listening on port 3001');

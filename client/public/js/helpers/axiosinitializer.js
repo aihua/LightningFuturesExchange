@@ -1,4 +1,5 @@
-import * as ConfigActions from  '../actions/configactions.js'
+import * as LoginActions from  '../actions/loginactions.js'
+
 import axios from 'axios'
 
 class AxiosInitializer {
@@ -8,12 +9,8 @@ class AxiosInitializer {
 				return response;
 			}, 
 			function (error) {
-				if (error.response.data === 'noConfig') {
-					ConfigActions.setNoConfig();
-				} else if (error.response.data === 'incorrectPassword') {
-					ConfigActions.setIncorrectPassword();
-				} else if (error.response.data === 'configAlreadyExists') {
-					ConfigActions.configExists();
+				if (error && error.response && error.response.status === 401) {
+					LoginActions.changeLoggedInState('loggedout');
 				}
 				return Promise.reject(error);
 			});

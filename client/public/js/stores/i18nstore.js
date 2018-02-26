@@ -69,7 +69,7 @@ class I18nStore extends EventEmitter {
 }
 
 window.reloadLanguages = function () {
-	axios.post('/api/i18n', {})
+	axios.post('/api2/i18n', {})
 }
 
 const i18nStore = new I18nStore;

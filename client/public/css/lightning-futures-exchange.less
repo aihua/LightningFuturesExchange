@@ -1,3 +1,39 @@
+html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  padding-bottom: 6rem;
+  min-height: 100%;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+#wrap {
+  margin: 0 auto;
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+#footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 1rem;
+  background-color: #efefef;
+  text-align: center;
+  height: 120px;
+}
+
 #header {
 	margin-bottom: 20px;
 }
@@ -22,6 +58,69 @@ table.table-xs	{
 
 .no-margin-bottom {
 	margin-bottom: 0px;
+}
+
+.fluid-width-video-wrapper {
+	padding-top: 75%;
+	padding-left: 2.5%;
+
+	iframe {
+		position: absolute;
+		top: 0;
+		left: 14px;		
+		width: 95%;
+		height: 100%;
+	}
+}
+
+.card {
+	margin-top: 10px;
+	margin-bottom: 10px;
+
+	.card-body {
+		p {
+			margin-bottom: 0px;
+		}
+
+		padding-left: 15px;
+		padding-right: 15px;
+	}
+}
+
+.card-form{	
+	max-width: 400px;
+	margin: 0 auto;
+	margin-top: 10px;
+	margin-bottom: 20px;
+
+	h2{
+		margin-bottom: 0px;
+	}
+
+	.card-body {
+		padding-bottom: 0px;
+	}
+
+	.alert {
+		margin-bottom: 0px;
+		width: 100%;
+		text-align: center;
+	}
+
+	.pull-right{
+		width: 100%;
+	}
+
+	a{
+		width: 100%;
+		position: relative;		
+	}
+
+	.row {
+		margin-left: 0px;
+		margin-right: 0px;
+		width: 100%;
+	}
 }
 
 #order-form {
