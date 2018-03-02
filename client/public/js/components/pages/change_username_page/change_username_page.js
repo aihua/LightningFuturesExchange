@@ -19,6 +19,7 @@ export default class ChangeUsernamePage extends React.Component {
 			validationError: '',
 			validation0: '',
 			changeUsernameSuccess: false,
+			oldUsername: (LoginStore.user || {}).username,
 			newUsername: ''
 		}
 	}
@@ -74,7 +75,9 @@ export default class ChangeUsernamePage extends React.Component {
 	}
 
 	_forceUpdate = () => {
-		this.forceUpdate();
+		this.setState({
+			oldUsername: (LoginStore.user || {}).username
+		})
 	}
 
 	render() {
@@ -83,7 +86,7 @@ export default class ChangeUsernamePage extends React.Component {
 		const allDisabled = ChangeUsernameStore.changeUsernameStatus === 'fetching';
 
 		if (this.state.changeUsernameSuccess) {
-			const change_username_success = t.Generic.ChangeUsernameSuccess.replace('{0}', htmlEncode(LoginStore.user.username)).replace('{1}', htmlEncode(this.state.newUsername));
+			const change_username_success = t.Generic.ChangeUsernameSuccess.replace('{0}', htmlEncode(this.state.oldUsername)).replace('{1}', htmlEncode(this.state.newUsername));
 
 			return (
 				<div class="container-fluid">
@@ -138,7 +141,7 @@ export default class ChangeUsernamePage extends React.Component {
 										</div>
 										<div class="form-group row">
 											<label for="change_username_2fa"><b>{t.Generic.TwoFactorToken + ':'}</b></label>
-											<input ref="twofaToken" type="text" class="form-control" id="change_username_2fa" pattern="[0-9]{6,6}" disabled={allDisabled} />
+											<input ref="twofaToken" type="text" class="form-control" id="change_username_2fa" pattern="[0-9]{6,6}" disabled={allDisabled} autoComplete="off"/>
 											<div class="invalid-feedback">
 												{t.Validation.PleaseEnter2FA}
 											</div>

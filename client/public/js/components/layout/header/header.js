@@ -43,6 +43,9 @@ export default class Header extends React.Component {
 						{t.Generic.Account}
 					</a>
 					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+						<Link class="dropdown-item" to={'/two_factor_authentication'} role="button">
+							{t.Generic.TwoFactorAuthentication}
+						</Link>
 						<Link class="dropdown-item" to={'/change_username'} role="button">
 							{t.Generic.ChangeUsername}
 						</Link>

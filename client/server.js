@@ -1,12 +1,11 @@
 var express = require('express');
+var proxy = require('http-proxy-middleware');
 var app = express();
 
 var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser')
 var app = express()
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
 app.use(cookieParser());
 
 require('./routes/i18n.js')(app);
@@ -28,7 +27,9 @@ app.get('/', function (req, res){
     res.send(fs.readFileSync('./public/index.html', 'utf8'));
 });
 
-app.use('/api2', router);
+app.use('/api', proxy({target: 'http://localhost:5000/', ws: false }));
 
-app.listen(3001, "localhost");
+app.use('/api2', router);//
+
+app.listen(3001, "0.0.0.0");
 console.log('Listening on port 3001');

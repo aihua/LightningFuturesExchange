@@ -20,6 +20,16 @@ class LoginStore extends EventEmitter {
 
 		this.checkSessionStatus = 'idle';
 		this.checkSessionError = '';
+
+		this.otpauth = null;
+		this.getTwoFactorTokenStatus = 'idle';
+		this.getTwoFactorTokenError = '';
+
+		this.enableTwoFactorAuthenticationStatus = 'idle';
+		this.enableTwoFactorAuthenticationError = '';
+
+		this.disableTwoFactorAuthenticationStatus = 'idle';
+		this.disableTwoFactorAuthenticationError = '';
 	}
 	
 	handleActions(action) {
@@ -44,8 +54,13 @@ class LoginStore extends EventEmitter {
 					this.user = action.data;
 					this.emit('updatedUser');
 				}
+				break;
 			}
 
+			case "OPEN_2FA_DIALOG": {
+				this.emit('open2FADialog');
+				break;
+			}
 
 			//Logging In
 			case "LOGGING_IN": {
@@ -80,7 +95,6 @@ class LoginStore extends EventEmitter {
 				this.emit('changedLoggedInStatus');
 				break;
 			}
-
 
 			//Logging Out
 			case "LOGGING_OUT": {
@@ -154,6 +168,78 @@ class LoginStore extends EventEmitter {
 				this.emit('changedCheckSessionStatus');
 				this.checkSessionStatus = 'idle'
 				this.emit('changedCheckSessionStatus');
+				break;
+			}
+
+			//Get Two Factor Token
+			case "GETTING_TWO_FACTOR_TOKEN": {
+				this.otpauth = null;
+				this.getTwoFactorTokenStatus = 'fetching';
+				this.emit('changedGetTwoFactorTokenStatus');
+				break;
+			}
+			case "GOT_TWO_FACTOR_TOKEN": {
+				this.otpauth = action.data.otpauth;
+				this.getTwoFactorTokenStatus = 'fetched';
+				this.emit('changedGetTwoFactorTokenStatus');
+				this.getTwoFactorTokenStatus = 'idle';
+				this.emit('changedGetTwoFactorTokenStatus');
+				break;
+			}
+			case "ERROR_GETTING_TWO_FACTOR_TOKEN": {
+				this.getTwoFactorTokenError = action.data;
+				this.getTwoFactorTokenStatus = 'error';
+				this.emit('changedGetTwoFactorTokenStatus');
+				this.getTwoFactorTokenStatus = 'idle';
+				this.emit('changedGetTwoFactorTokenStatus');				
+				break;
+			}
+
+			//Enable Two Factor Authentication
+			case "ENABLING_TWO_FACTOR_AUTHENTICATION": {
+				this.enableTwoFactorAuthenticationStatus = 'fetching';
+				this.emit('changedEnableTwoFactorAuthenticationStatus');
+				break;
+			}
+			case "ENABLED_TWO_FACTOR_AUTHENTICATION": {
+				this.user = action.data.user
+				setTimeout(() => { this.emit('updatedUser'); }, 0);
+				this.enableTwoFactorAuthenticationStatus = 'fetched';
+				this.emit('changedEnableTwoFactorAuthenticationStatus');
+				this.enableTwoFactorAuthenticationStatus = 'idle';
+				this.emit('changedEnableTwoFactorAuthenticationStatus');
+				break;
+			}
+			case "ERROR_ENABLING_TWO_FACTOR_AUTHENTICATION": {
+				this.enableTwoFactorAuthenticationError = action.data;				
+				this.enableTwoFactorAuthenticationStatus = 'error';
+				this.emit('changedEnableTwoFactorAuthenticationStatus');
+				this.enableTwoFactorAuthenticationStatus = 'idle';
+				this.emit('changedEnableTwoFactorAuthenticationStatus');
+				break;
+			}
+
+			//Disable Two Factor Authentication
+			case "DISABLING_TWO_FACTOR_AUTHENTICATION": {
+				this.disableTwoFactorAuthenticationStatus = 'fetching';
+				this.emit('changedDisableTwoFactorAuthenticationStatus');
+				break;
+			}
+			case "DISABLED_TWO_FACTOR_AUTHENTICATION": {
+				this.user = action.data.user
+				setTimeout(() => { this.emit('updatedUser'); }, 0);
+				this.disableTwoFactorAuthenticationStatus = 'fetched';
+				this.emit('changedDisableTwoFactorAuthenticationStatus');
+				this.disableTwoFactorAuthenticationStatus = 'idle';
+				this.emit('changedDisableTwoFactorAuthenticationStatus');
+				break;
+			}
+			case "ERROR_DISABLING_TWO_FACTOR_AUTHENTICATION": {
+				this.disableTwoFactorAuthenticationError = action.data;
+				this.disableTwoFactorAuthenticationStatus = 'error';
+				this.emit('changedDisableTwoFactorAuthenticationStatus');
+				this.disableTwoFactorAuthenticationStatus = 'idle';
+				this.emit('changedDisableTwoFactorAuthenticationStatus');
 				break;
 			}
 		}

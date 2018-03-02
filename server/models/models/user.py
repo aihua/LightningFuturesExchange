@@ -1,6 +1,7 @@
 from shared.shared import db, app
 import datetime
 import hashlib
+import pyotp
 
 class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -41,6 +42,14 @@ class User(db.Model):
 
     def check_password(self, password):
         return hashlib.sha512(password + app.config['SALT']).hexdigest() == self.password
+
+    def check_token(self, token):
+        if not self.two_f_a_enabled:
+            return True
+
+        totp = pyotp.TOTP(self.two_f_a_token)
+        return totp.verify(token)
+
 
     def set_password(self, password):
         self.password = hashlib.sha512(password + app.config['SALT']).hexdigest()

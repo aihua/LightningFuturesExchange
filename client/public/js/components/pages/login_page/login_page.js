@@ -96,7 +96,7 @@ export default class LoginPage extends React.Component {
 									</div>
 									<div class="form-group row">
 										<label for="login_2fa"><b>{t.Generic.TwoFactorToken + ':'}</b></label>
-										<input ref="twofaToken" type="text" class="form-control" id="login_2fa" pattern="[0-9]{6,6}" disabled={allDisabled}/>
+										<input ref="twofaToken" type="text" class="form-control" id="login_2fa" pattern="[0-9]{6,6}" disabled={allDisabled} autoComplete="off"/>
 										<div class="invalid-feedback">
 											{t.Validation.PleaseEnter2FA}
 										</div>

@@ -10,14 +10,18 @@ ConfirmRegister,ConfirmRegisterSuccessTitle,Successfully confirmed user,Utilisat
 ,ErrorConfirmRegister,Error confirming user,Erreur confirmant l'utilisateur
 ,FetchingConfirmUserTitle,Confirming user.....,Confirmant l'utilisateu .....
 ,FetchingConfirmUserBody,A request is currently being made to confirm your registration.  This shouldn’t take too long.  Please wait.,"Une demande est en cours pour confirmer votre inscription. Cela ne devrait pas prendre trop de temps. S'il vous plaît, attendez."
-Error,ChangeEmailTokenNotFound,Change email token is not found.  This is probably because you already accepted this link or you copied the link incorrectly.,Changer le jeton d'e-mail est introuvable. C'est probablement parce que vous avez déjà accepté ce lien ou que vous avez incorrectement copié le lien.
+Error,2FAAlreadyDisabled,Two-factor authentication is already disabled.,L'authentification à deux facteurs est déjà désactivée.
+,2FAAlreadyEnabled,Two-factor authentication is already enabled.,L'authentification à deux facteurs est déjà activée.
+,ChangeEmailTokenNotFound,Change email token is not found.  This is probably because you already accepted this link or you copied the link incorrectly.,Changer le jeton d'e-mail est introuvable. C'est probablement parce que vous avez déjà accepté ce lien ou que vous avez incorrectement copié le lien.
 ,EmailsAreTheSame,The email <b><em>{0}</em></b> is the current email for the account.  Please choose a different email.,L'adresse e-mail <b><em>{0}</em></b> est l'adresse e-mail actuelle du compte. S'il vous plaît choisir un autre email.
 ,EmailTaken,The email <b><em>{0}</em></b> has been taken.  Please create an account with a different email address.,L'email <b><em>{0}</em></b> a été pris. Veuillez créer un compte avec une adresse e-mail différente.
 ,IncorrectPassword,The password entered is incorrect.,Le mot de passe entré est incorrect.
+,IncorrectToken,The token entered is incorrect.,Le jeton entré est incorrect.
 ,InvalidWalletPublicKeyEntered,Invalid wallet public key entered. {0},"Clé publique de portefeuille invalide entrée., {0}"
 ,InvalidConfirmUserToken,The token for create the user account does not exist.  This can be because you have already confirmed the registratoin of the user.  If so please simply attempt to login to confirm.,"Le jeton de création du compte d'utilisateur n'existe pas. Cela peut être dû au fait que vous avez déjà confirmé l'enregistrement de l'utilisateur. Si oui, essayez simplement de vous connecter pour confirmer."
 ,InvalidUrl,The website url is malformed.  This could be because you miscopied the url link improperly.  People double check.,L'URL du site est mal formée. Cela peut être dû au fait que vous avez incorrectement modifié le lien d'URL. Les gens revérifient.
 ,InvalidUser,The user submitted is invalid.  Please refresh the page and try again.,L'utilisateur soumis est invalide. Veuillez actualiser la page et réessayer.
+,NoGetTwoFactorTokenRequestMade,No request has been made to generate a two factor authentication token.,Aucune demande n'a été faite pour générer un jeton d'authentification à deux facteurs.
 ,PasswordsMustMatch,Passwords must match.,Les mots de passe doivent correspondre.
 ,UnknownError,An unknown error has occured.,Une erreur inconnue s'est produite.
 ,UsernamesAreTheSame,The username <b><em>{0}</em></b> is the current username for the account.  Please choose a different username.,Le nom d'utilisateur <b><em>{0}</em></b> est le nom d'utilisateur actuel du compte. Merci de choisir un autre nom d'utilisateur.
@@ -26,7 +30,9 @@ Error,ChangeEmailTokenNotFound,Change email token is not found.  This is probabl
 ,UserNotFoundChangeEmail,The user for this request has since been deleted.,L'utilisateur pour cette demande a depuis été supprimé.
 ,UserNotFoundForgotPassword,The username/email <b><em>{0}</em></b> does not exist within our system.  Please create an account with this username/email if you wish by clicking on register.,Le nom d'utilisateur/email <b><em>{0}</em></b> n'existe pas dans notre système. S'il vous plaît créer un compte avec ce nom d'utilisateur/email si vous souhaitez en cliquant sur le registre.
 ForgotPassword,ConfirmForgotPasswordSuccess,You have successfully changed the password for the user <b><em>{0}</em></b>.  You may now proceed to login with the new password.,Vous avez changé le mot de passe pour l'utilisateur <b><em>{0}</em></b>. Vous pouvez maintenant vous connecter avec le nouveau mot de passe.
-Generic,Account,Accout,Compte
+Generic,2FAEnabled,2FA Enabled,A2F activé
+,2FAToken,2FA Token,A2F jeton
+,Account,Accout,Compte
 ,ActivateAt,Activate At,Activer à
 ,Add,Add,Ajouter
 ,Address,Address,Adresse
@@ -47,12 +53,19 @@ Generic,Account,Accout,Compte
 ,Close,Close,Fermer
 ,CloseWithoutSaving,Close Without Saving?,Fermer sans enregistrer?
 ,CloseWithoutSavingConfigBody,There are some unsaved changes to the config.  Do you wish to close without saving? Hit “No” to continue editing.,"Il y a quelques modifications non enregistrées dans la configuration. Voulez-vous fermer sans enregistrer? Appuyez sur ""Non"" pour continuer l'édition."
+,Confirm,Confirm,Confirmer
 ,ConfirmNewPassword,Confirm New Password,Confirmer le nouveau mot de passe
 ,ConfirmPassword,Confirm Password,Confirmez le mot de passe
 ,Copyright,Copyright © Lightning Futures Exchange 2017,Droit d'auteur © Lightning Futures Exchange 2017
 ,CreateConfig,Create Config,Créer une config
+,Disable,Disable,Désactiver
+,Disable2FA,Disable 2FA,Désactiver 2FA
+,DisableTwoFactorAuthentication,Disable Two-Factor Authentication,Désactiver l'authentification à deux facteurs
 ,Email,Email,Couriel
 ,Empty,Empty,Vide
+,Enable,Enable,Activer
+,Enable2FA,Enable 2FA,Activer A2F
+,EnableTwoFactorAuthentication,Enable Two-Factor Authentication,Activer l'authentification à deux facteurs
 ,Exchange,Exchange,Échange
 ,Exchanges,Exchanges,Échanges
 ,ExchangesAndWallets,Exchanges And Wallets,Échanges et portefeuilles
@@ -85,6 +98,7 @@ Generic,Account,Accout,Compte
 ,Password,Password,Mot de passe
 ,PublicKey,Public Key,Clé publique
 ,Price,Price,Prix
+,QRCode,QR Code,Code QR
 ,RecentTrades,Recent Trades,Métiers récents
 ,Register,Register,Inscriver
 ,RegisterSuccess,You have successfully registered the username <b><em>{0}</em></b>.  Please check your email <b><em>{1}</em></b> to confirm.  It may take several minutes for you to receive this email.,Vous avez enregistré le nom d'utilisateur <b><em>{0}</em></b>. Veuillez vérifier votre email <b><em>{1}</em></b> pour confirmer. Cela peut prendre plusieurs minutes pour que vous receviez cet e-mail.

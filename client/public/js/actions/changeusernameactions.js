@@ -5,7 +5,7 @@ import axios from 'axios'
 export function changeUsername(newUsername, password, twoFactorToken) {
 	dispatcher.dispatch({type: 'CHANGING_USERNAME'})
 
-	axios.post('/api/change_username', { newUsername: newUsername, password: password, 'twoFactorToken': twoFactorToken })
+	axios.post('/api/change_username', { newUsername: newUsername, password: password, 'token': twoFactorToken })
 		.then(res => {
 			dispatcher.dispatch({type: 'CHANGED_USERNAME', data: res.data})
 		})

@@ -10,7 +10,9 @@ class AxiosInitializer {
 			}, 
 			function (error) {
 				if (error && error.response && error.response.status === 401) {
-					LoginActions.changeLoggedInState('loggedout');
+					setTimeout(function () {
+						LoginActions.changeLoggedInState('loggedout');						
+					}, 0);
 				}
 				return Promise.reject(error);
 			});

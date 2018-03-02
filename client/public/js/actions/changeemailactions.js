@@ -2,10 +2,10 @@ import dispatcher from '../dispatchers/dispatcher.js'
 import axios from 'axios'
 
 
-export function changeEmail(newEmail, password, twofa) {
+export function changeEmail(newEmail, password, twoFactorToken) {
 	dispatcher.dispatch({type: 'CHANGING_EMAIL'})
 
-	axios.post('/api/change_email', { newEmail: newEmail, password: password, twofa: twofa })
+	axios.post('/api/change_email', { newEmail: newEmail, password: password, token: twoFactorToken })
 		.then(res => {
 			dispatcher.dispatch({type: 'CHANGED_EMAIL', data: res.data})
 		})
@@ -29,7 +29,7 @@ export function checkChangeEmail(userId, changeEmailToken) {
 export function confirmChangeEmail(userId, changeEmailToken, password, twoFactorToken) {
 	dispatcher.dispatch({type: 'CONFIRMING_CHANGE_EMAIL'})
 
-	axios.post('/api/confirm_change_email', { userId: userId, changeEmailToken: changeEmailToken, password: password, twoFactorToken: twoFactorToken })
+	axios.post('/api/confirm_change_email', { userId: userId, changeEmailToken: changeEmailToken, password: password, token: twoFactorToken })
 		.then(res => {
 			dispatcher.dispatch({type: 'CONFIRMED_CHANGE_EMAIL', data: res.data})
 		})

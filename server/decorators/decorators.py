@@ -21,11 +21,11 @@ def user_required(f):
         if session_token_item is None:
             return jsonify({'message': 'TokenNotFound'}), 401
 
-        if session_token_item.expiry_date < datetime.datetime.now():
+        if session_token_item.expiry_date < datetime.datetime.utcnow():
             return jsonify({'message': 'SessionExpired'}), 401
 
-        if session_token_item.expiry_date - datetime.datetime.now() < datetime.timedelta(hours=1):
-            session_token_item.expiry_date = session_token_item.expiry_date + datetime.timedelta(hours=4)
+        if session_token_item.expiry_date - datetime.datetime.utcnow() < datetime.timedelta(hours=3):
+            session_token_item.expiry_date = datetime.datetime.utcnow() + datetime.timedelta(hours=4)
             db.session.commit()
 
         user = User.query.filter_by(user_id=user_id).first()

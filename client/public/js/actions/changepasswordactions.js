@@ -5,7 +5,7 @@ import axios from 'axios'
 export function changePassword(newPassword, password, twoFactorToken) {
 	dispatcher.dispatch({type: 'CHANGING_PASSWORD'})
 
-	axios.post('/api/change_password', { newPassword: newPassword, password: password, twoFactorToken: twoFactorToken })
+	axios.post('/api/change_password', { newPassword: newPassword, password: password, token: twoFactorToken })
 		.then(res => {
 			dispatcher.dispatch({type: 'CHANGED_PASSWORD', data: res.data})
 		})

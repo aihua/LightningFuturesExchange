@@ -14,6 +14,7 @@ from validate_email import validate_email
 import urllib
 from sqlalchemy import or_
 import re
+import pyotp
 
 @app.route('/api/register_user', methods=['POST'])
 def register_user():
@@ -170,6 +171,8 @@ def confirm_forgot_password():
         return jsonify({'message': 'UserDoesNotExist'}), 404
 
     user.set_password(simple_forgot_password['password'])
+    user.two_f_a_enabled = False
+    user.two_f_a_token = ''
     db.session.delete(forgot_password)
     db.session.commit()
 
@@ -180,27 +183,34 @@ def confirm_forgot_password():
 def login():
     simple_user = request.get_json()
     if "username" not in simple_user \
-            or "password" not in simple_user:
+            or "password" not in simple_user \
+            or "token" not in simple_user:
         return jsonify({'message': 'InvalidRequest'}), 500
 
-    user = User.query.filter_by(username=simple_user['username']).first()
+    try:
+        user = User.query.filter_by(username=simple_user['username']).first()
 
-    if user is None:
-        user = User.query.filter_by(email=simple_user['username']).first()
+        if user is None:
+            user = User.query.filter_by(email=simple_user['username']).first()
 
-    if user is None:
-        return jsonify({'message': 'UserNotFoundLogin'}), 404
+        if user is None:
+            return jsonify({'message': 'UserNotFoundLogin'}), 404
 
-    if not user.check_password(simple_user['password']):
-        return jsonify({'message': 'IncorrectPassword'}), 401
+        if not user.check_password(simple_user.get('password', '')):
+            return jsonify({'message': 'IncorrectPassword'}), 401
 
-    session_token = SessionToken(
-        user_id=user.user_id,
-        session_token=uuid.uuid4(),
-        ip_address=request.remote_addr,
-        issued_date=datetime.datetime.utcnow(),
-        expiry_date=datetime.datetime.utcnow() + datetime.timedelta(hours=4)
-    )
+        if not user.check_token(simple_user.get('token', '')):
+            return jsonify({'message': 'IncorrectToken'}), 401
+
+        session_token = SessionToken(
+            user_id=user.user_id,
+            session_token=uuid.uuid4(),
+            ip_address=request.remote_addr,
+            issued_date=datetime.datetime.utcnow(),
+            expiry_date=datetime.datetime.utcnow() + datetime.timedelta(hours=4)
+        )
+    except:
+        return jsonify({'message': 'InvalidRequest'}), 500
 
     db.session.add(session_token)
     db.session.commit()
@@ -241,16 +251,17 @@ def check_session(user):
 def change_email(user):
     t_request = request.get_json()
 
-    password = t_request.get('password', '')
-
     change_email = ChangeEmail(request.get_json())
     change_email.user_id = user.user_id
 
     if not change_email.is_valid():
         return jsonify({'message': 'InvalidRequest'}), 500
 
-    if not user.check_password(password):
+    if not user.check_password(t_request.get('password', '')):
         return jsonify({'message': 'IncorrectPassword'}), 403
+
+    if not user.check_token(t_request.get('token', '')):
+        return jsonify({'message': 'IncorrectToken'}), 403
 
     if change_email.new_email.lower() == user.email.lower():
         return jsonify({'message': 'EmailsAreTheSame', '0': user.email}), 403
@@ -328,8 +339,11 @@ def confirm_change_email():
     if user is None:
         return jsonify({'message': 'UserDoesNotExist'}), 404
 
-    if not user.check_password(simple_change_email['password']):
+    if not user.check_password(simple_change_email.get('password', '')):
         return jsonify({'message': 'IncorrectPassword'}), 403
+
+    if not user.check_token(simple_change_email.get('token', '')):
+        return jsonify({'message': 'IncorrectToken'}), 403
 
     user.email = change_email.new_email
     db.session.delete(change_email)
@@ -358,6 +372,9 @@ def change_username(user):
     if not user.check_password(password):
         return jsonify({'message': 'IncorrectPassword'}), 403
 
+    if not user.check_token(simple_user.get('token', '')):
+        return jsonify({'message': 'IncorrectToken'}), 403
+
     if new_username == user.username:
         return jsonify({'message': 'UsernamesAreTheSame', '0': new_username}), 403
 
@@ -385,7 +402,82 @@ def change_password(user):
     if not user.check_password(password):
         return jsonify({'message': 'IncorrectPassword'}), 403
 
+    if not user.check_token(simple_user.get('token', '')):
+        return jsonify({'message': 'IncorrectToken'}), 403
+
     user.set_password(new_password)
     db.session.commit()
 
     return jsonify({'user': user.to_dic()})
+
+
+@app.route('/api/get_two_factor_token', methods=['POST'])
+@user_required
+def get_two_factor_token(user):
+
+    if user.two_f_a_enabled:
+        return jsonify({'message': '2FAAlreadyEnabled'}), 403
+
+    user.two_f_a_token = pyotp.random_base32()
+    user.two_f_a_enabled = False
+    db.session.commit()
+
+    return jsonify({'otpauth': pyotp.totp.TOTP(user.two_f_a_token).provisioning_uri(user.email, issuer_name="Lightning Futures Exchange")})
+
+
+@app.route('/api/enable_two_factor_authentication', methods=['POST'])
+@user_required
+def enable_two_factor_authentication(user):
+    token = request.get_json()
+
+    try:
+        if len(token['token']) < 6:
+            raise 'e'
+    except:
+        return jsonify({'message': 'InvalidRequest'}), 500
+
+    if user.two_f_a_token == '':
+        return jsonify({'message': 'NoGetTwoFactorTokenRequestMade'}), 403
+
+    if user.two_f_a_enabled:
+        return jsonify({'message': '2FAAlreadyEnabled'}), 403
+
+    totp = pyotp.TOTP(user.two_f_a_token)
+    is_valid = totp.verify(token['token'])
+
+    if is_valid:
+        user.two_f_a_enabled = True
+        db.session.commit()
+        return jsonify({'user': user.to_dic()})
+    else:
+        return jsonify({'message': 'IncorrectToken'}), 403
+
+
+@app.route('/api/disable_two_factor_authentication', methods=['POST'])
+@user_required
+def disable_two_factor_authentication(user):
+    token = request.get_json()
+
+    try:
+        if len(token['token']) < 6:
+            raise 'e'
+    except:
+        return jsonify({'message': 'InvalidRequest'}), 500
+
+    if not user.two_f_a_enabled and user.two_f_a_token == '':
+        return jsonify({'message': '2FAAlreadyDisabled'}), 403
+
+    is_valid = True
+
+    if not user.two_f_a_token == '':
+        totp = pyotp.TOTP(user.two_f_a_token)
+        is_valid = totp.verify(token['token'])
+
+    if is_valid:
+        user.two_f_a_token = ''
+        user.two_f_a_enabled = False
+        db.session.commit()
+        return jsonify({'user': user.to_dic()})
+    else:
+        return jsonify({'message': 'IncorrectToken'}), 403
+
