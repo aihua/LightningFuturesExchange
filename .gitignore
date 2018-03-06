@@ -1,4 +1,4 @@
 node_modules/
 bower_components/
 config/config.json
-json/config.json
+server/json/config.json
