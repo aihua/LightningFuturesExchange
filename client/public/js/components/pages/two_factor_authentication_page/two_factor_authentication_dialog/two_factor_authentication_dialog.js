@@ -9,6 +9,7 @@ import * as LoginActions from '../../../../actions/loginactions.js'
 import $ from 'jquery';
 
 import { htmlEncode } from 'js-htmlencode'
+import queryString from 'query-string';
 
 export default class TwoFactorAuthenticationDialog extends React.Component {
 	constructor() {
@@ -31,6 +32,11 @@ export default class TwoFactorAuthenticationDialog extends React.Component {
 		LoginStore.on('changedDisableTwoFactorAuthenticationStatus', this.updateStatuses)
 	}
 
+	resize_canvas = () => {
+		let $canvas = $('#twofactordialogform canvas')
+		$canvas.height($canvas.width());
+	}
+
 	componentDidMount() {
 		this.refs.form.addEventListener('submit', (event) => {
 			if (this.refs.form.checkValidity() === false) {
@@ -47,13 +53,7 @@ export default class TwoFactorAuthenticationDialog extends React.Component {
 			this.refs.form.classList.add('was-validated');
 		})
 
-		let $canvas = $('#twofactordialogform canvas')
-
-		setInterval(() => {
-			$canvas.height($canvas.width());
-		}, 100)
-
-		this._showDialogHelper(false);
+		$(window).resize(this.resize_canvas);
 	}
 
 	componentWillUnmount() {
@@ -62,6 +62,8 @@ export default class TwoFactorAuthenticationDialog extends React.Component {
 		LoginStore.removeListener('changedGetTwoFactorTokenStatus', this.updateStatuses)		
 		LoginStore.removeListener('changedEnableTwoFactorAuthenticationStatus', this.updateStatuses)
 		LoginStore.removeListener('changedDisableTwoFactorAuthenticationStatus', this.updateStatuses)
+
+		$(window).unbind('resize', this.resize_canvas);
 	}
 
 	showDialog = () => {
@@ -96,7 +98,10 @@ export default class TwoFactorAuthenticationDialog extends React.Component {
 		if (LoginStore.getTwoFactorTokenStatus === 'fetched') {
 			this.setState({
 				otpauth: LoginStore.otpauth
-			})
+			});
+			setTimeout(() => {
+				this.resize_canvas();
+			}, 100);
 		} else if (LoginStore.enableTwoFactorAuthenticationStatus === 'fetched' || LoginStore.disableTwoFactorAuthenticationStatus === 'fetched') {
 			$(this.refs.modal).modal('hide');
 		} else if (LoginStore.getTwoFactorTokenStatus === 'error') {
@@ -138,6 +143,8 @@ export default class TwoFactorAuthenticationDialog extends React.Component {
 
 		const validationError = (t.Error[this.state.error] || '').replace('{0}', htmlEncode(this.state.error0 || '')) || t.Error.UnknownError;
 
+		const query = queryString.parse(LoginStore.otpauth || '');
+
 		return (
 			<div id="twofactordialog" class="modal fade" tabIndex="-1" role="dialog" ref="modal" aria-hidden="true" style={{zIndex: 1051}}>
 				<form id="twofactordialogform" class="needs-validation" noValidate={true} ref="form">
@@ -151,7 +158,7 @@ export default class TwoFactorAuthenticationDialog extends React.Component {
 							</div>
 							<div class="modal-body ml-2 mr-2">
 								<div class="form-group row" style={{display: (!this.state.isEnabling) ? 'none' : 'flex' }}>
-									<label><b>{t.Generic.QRCode + ':'}</b></label>
+									<label><b>{t.Generic['2FASecret'] + ':'}</b></label>
 									<div class="w-100 text-center">
 										<QRCode value={LoginStore.otpauth || ''} size={256}/>
 									</div>

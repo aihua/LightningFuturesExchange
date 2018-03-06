@@ -2,7 +2,7 @@ from shared.shared import db
 
 
 class EquityPrice(db.Model):
-    equityId = db.Column(db.Integer, primary_key=True, nullable=False)
-    equityPriceId = db.Column(db.Integer, primary_key=True, nullable=False)
-    price = db.Column(db.DECIMAL(18, 10), nullable=False)
-    priceDate = db.Column(db.DateTime(), nullable=False)
+    equity_Id = db.Column(db.Integer, primary_key=True, nullable=False)
+    equity_price_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    price = db.Column(db.BigInteger, nullable=False)
+    price_date = db.Column(db.DateTime(), nullable=False)

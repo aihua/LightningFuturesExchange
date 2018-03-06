@@ -11,6 +11,10 @@
     "ChangeEmail": {
       "Subject": "Change email request for Lightning Futures Exchange",
       "Body": "Hello {0},<br/><br/>A request to change your email has been sent to this email.  To proceed to change your email, please click <a href=\"{1}\">here</a> to proceed."
+    },
+    "WithdrawalRequest": {
+      "Subject": "A bitcoin withdrawal request was made on your account for Lightning Futures Exchange",
+      "Body": "Hello {0},<br/><br/>A request was made to withdraw <b><em>{1} bitcoins</em></b> from your account to the address <b><em>{2}</em></b>.  If you wish to confirm the withdrawal click <a href=\"{3}\">here</a>.  If you wish to cancel the withdrawal click <a href=\"{4}\">here</a>."
     }
   },
   "fr": {
@@ -25,6 +29,10 @@
     "ChangeEmail": {
       "Subject": "Modifier la demande d'e-mail pour Lightning Futures Exchange",
       "Body": "Salut {0},<br/><br/>Une demande de modification de votre adresse e-mail a été envoyée à cet e-mail. Pour modifier votre adresse e-mail, cliquez sur <a href=\"{1}\">ici</a> pour continuer."
+    },
+    "WithdrawalRequest": {
+      "Subject": "Une demande de retrait de Bitcoin a été effectuée sur votre compte pour Lightning Futures Exchange",
+      "Body": "Bonjour {0},<br/><br/>Une demande a été faite pour retirer <b><em>{1} bitcoins</em></b> de votre compte à l'adresse <b><em>{2}</em></b>. Si vous souhaitez confirmer le retrait, cliquez sur <a href=\"{3}\">ici</a>. Si vous souhaitez annuler le retrait, cliquez sur <a href=\"{4}\">ici</a>."
     }
   }
 }

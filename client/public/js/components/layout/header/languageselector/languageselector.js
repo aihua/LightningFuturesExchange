@@ -50,10 +50,10 @@ export default class LanguageSelector extends React.Component {
 
 		return (
 			<li class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<a class="nav-link dropdown-toggle" href="#" id="language-dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					<i class={"flag-icon flag-icon-" + t.LanguagesFlags[this.state.selectedLanguage]} />
 				</a>
-				<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+				<div class="dropdown-menu dropdown-menu-right" aria-labelledby="language-dropdown">
 					{languageLinks}
 				</div>
 			</li>

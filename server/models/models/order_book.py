@@ -2,19 +2,19 @@ from shared.shared import db
 
 
 class OrderBook(db.Model):
-    orderId = db.Column(db.BigInteger, primary_key=True, nullable=False)
-    userId = db.Column(db.Integer, index=True, nullable=False)
-    equityId = db.Column(db.Integer, index=True, nullable=False)
-    contractId = db.Column(db.BigInteger, nullable=False)
-    quantity = db.Column(db.DECIMAL(18, 10), nullable=False)
-    isTriggerOrder = db.Column(db.Boolean, nullable=False)
-    triggerAbove = db.Column(db.Boolean, nullable=False)
-    triggerPrice = db.Column(db.DECIMAL(18, 10), nullable=False)
-    price = db.Column(db.DECIMAL(18, 10), nullable=False)
-    filledQuantity = db.Column(db.DECIMAL(18, 10), nullable=False)
+    equity_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    user_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    order_id = db.Column(db.BigInteger, primary_key=True, index=True, nullable=False)
+    contract_id = db.Column(db.BigInteger, nullable=False)
+    quantity = db.Column(db.BigInteger, nullable=False)
+    is_trigger_order = db.Column(db.Boolean, nullable=False)
+    trigger_above = db.Column(db.Boolean, nullable=False)
+    trigger_price = db.Column(db.BigInteger, nullable=False)
+    price = db.Column(db.BigInteger, nullable=False)
+    filled_quantity = db.Column(db.BigInteger, nullable=False)
     status = db.Column(db.Integer, nullable=False)
-    createdDate = db.Column(db.DateTime(), nullable=False)
-    closedDate = db.Column(db.DateTime(), nullable=False)
+    created_date = db.Column(db.DateTime(), nullable=False)
+    closed_date = db.Column(db.DateTime(), nullable=False)
 
 
-db.Index('ix_orderBook_userId_equityId', OrderBook.userId, OrderBook.equityId)
+db.Index('ix_order_book_user_id_equity_id', OrderBook.user_id, OrderBook.equity_id, OrderBook.order_id)

@@ -33,16 +33,24 @@ export default class Header extends React.Component {
 		let menuItems = []
 		if (LoginStore.loggedInState === 'loggedin') {
 			menuItems = [
-				(<li key="username" class="nav-item">
-					<span class="navbar-text">
-						{LoginStore.user.username + ' 100BTC '}
-					</span>
+				(<li key="username" class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						{LoginStore.user.username + ' ' + (LoginStore.user.balance / 10000000000) + ' BTC '}
+					</a>
+					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="">
+						<Link class="dropdown-item" to={'/deposit'} role="button">
+							{t.Generic.Deposit}
+						</Link>
+						<Link class="dropdown-item" to={'/withdraw'} role="button">
+							{t.Generic.Withdraw}
+						</Link>
+					</div>
 				</li>),
 				(<li key="account" class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						{t.Generic.Account}
 					</a>
-					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="">
 						<Link class="dropdown-item" to={'/two_factor_authentication'} role="button">
 							{t.Generic.TwoFactorAuthentication}
 						</Link>

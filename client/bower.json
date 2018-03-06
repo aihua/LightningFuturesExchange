@@ -17,6 +17,7 @@
   ],
   "dependencies": {
     "bootstrap": "^4.0.0",
-    "flag-icon-css": "^2.9.0"
+    "flag-icon-css": "^2.9.0",
+    "font-awesome": "^5.0.8"
   }
 }

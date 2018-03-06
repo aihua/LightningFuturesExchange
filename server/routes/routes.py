@@ -6,21 +6,30 @@ from models.models.user import User
 from models.models.forgot_password import ForgotPassword
 from models.models.change_email import ChangeEmail
 from models.models.session_token import SessionToken
+from models.models.current_address_count import create_new_deposit_address
+from models.models.deposit_address import DepositAddress
+from models.models.deposit_id import DepositId
+from models.models.deposit import Deposit
+from models.models.withdrawal import Withdrawal
+from models.models.withdrawal_id import WithdrawalId
 from emailer.emailer import send_email
 from i18n.i18n import get_text
+from bitcoin.bitcoin import check_bc
 import uuid
 import datetime
-from validate_email import validate_email
 import urllib
-from sqlalchemy import or_
 import re
 import pyotp
+
 
 @app.route('/api/register_user', methods=['POST'])
 def register_user():
     user_register = UserRegister(request.get_json())
+
     if not user_register.is_valid():
         return jsonify({'message': 'InvalidUser'}), 500
+
+    user_register.set_password(user_register.password)
 
     if User.query.filter_by(username=user_register.username).first() is not None:
         return jsonify({'message': 'UsernameTaken', '0': user_register.username}), 403
@@ -33,7 +42,7 @@ def register_user():
 
     url = app.config['FRONT_END_ADDRESS'] + '?#/confirm_register?'
 
-    url_params = urllib.urlencode({
+    url_params = urllib.parse.urlencode({
         "username": user_register.username,
         "token": user_register.registration_token
     })
@@ -74,6 +83,10 @@ def confirm_user():
 
     db.session.delete(actual_user_register)
     db.session.add(user)
+    db.session.flush()
+
+    create_new_deposit_address(user)
+
     db.session.commit()
 
     return jsonify({'user': user.to_dic()})
@@ -102,7 +115,7 @@ def forgot_password():
 
     url = app.config['FRONT_END_ADDRESS'] + '?#/confirm_forgot_password?'
 
-    url_params = urllib.urlencode({
+    url_params = urllib.parse.urlencode({
         "userid": forgot_password.user_id,
         "token": forgot_password.forgot_password_token
     })
@@ -271,7 +284,7 @@ def change_email(user):
 
     url = app.config['FRONT_END_ADDRESS'] + '?#/confirm_change_email?'
 
-    url_params = urllib.urlencode({
+    url_params = urllib.parse.urlencode({
         "userid": change_email.user_id,
         "token": change_email.change_email_token
     })
@@ -481,3 +494,314 @@ def disable_two_factor_authentication(user):
     else:
         return jsonify({'message': 'IncorrectToken'}), 403
 
+
+def get_deposits_helper(user):
+    deposit_addresses = DepositAddress.query.filter_by(user_id=user.user_id).order_by(DepositAddress.address_id.desc()).all()
+    deposits = Deposit.query.filter_by(user_id=user.user_id).all()
+
+    deposit_addresses_json = []
+    for deposit_address in deposit_addresses:
+        deposit_addresses_json.append(deposit_address.to_dic())
+
+    deposits_json = []
+    for deposit in deposits:
+        deposits_json.append(deposit.to_dic())
+
+    return jsonify({'depositAddresses': deposit_addresses_json, 'deposits': deposits_json})
+
+
+@app.route('/api/get_deposits', methods=['GET'])
+@user_required
+def get_deposits(user):
+    return get_deposits_helper(user)
+
+
+@app.route('/api/create_deposit_address', methods=['POST'])
+@user_required
+def create_deposit_address(user):
+    create_new_deposit_address(user)
+    db.session.commit()
+    return get_deposits_helper(user)
+
+
+@app.route('/api/add_deposit', methods=['POST'])
+def add_deposit():
+    deposit_request = request.get_json()
+
+    if app.config['ADMIN_PASSWORD'] != deposit_request.get("password", ""):
+        return jsonify({'message': 'InvalidRequest'}), 500
+
+    try:
+        quantity = int(deposit_request.get("quantity", ""))
+    except:
+        return jsonify({'message': 'InvalidQuantity'}), 500
+
+    user = User.query.filter_by(user_id=deposit_request.get("userId", "")).first()
+    if user is None:
+        return jsonify({'message': 'UserNotFound'}), 404
+
+    deposit_id = DepositId.query.filter_by(
+        user_id=deposit_request.get("userId", ""),
+        address_id=deposit_request.get("addressId", "")
+    ).first()
+
+    if deposit_id is None:
+        deposit_id = DepositId(
+            user_id=deposit_request.get("userId", ""),
+            address_id=deposit_request.get("addressId", ""),
+            deposit_id=0
+        )
+        db.session.add(deposit_id)
+    else:
+        deposit_id.deposit_id += 1
+
+    deposit = Deposit(
+        user_id=deposit_request.get("userId", ""),
+        address_id=deposit_request.get("addressId", ""),
+        deposit_id=deposit_id.deposit_id,
+        transaction_id=deposit_request.get("transactionId", ""),
+        quantity=quantity,
+        created_date=datetime.datetime.utcnow()
+    )
+
+    user.balance += quantity
+
+    db.session.add(deposit)
+    db.session.commit()
+
+    return jsonify({'deposit': deposit.to_dic()})
+
+
+@app.route('/api/get_withdrawals', methods=['GET'])
+@user_required
+def get_withdrawals(user):
+    withdrawals = Withdrawal.query.filter_by(user_id=user.user_id).order_by(Withdrawal.withdrawal_id.desc()).all()
+
+    withdrawals_json = []
+    for withdrawal in withdrawals:
+        withdrawals_json.append(withdrawal.to_dic())
+
+    return jsonify({"withdrawals": withdrawals_json})
+
+
+@app.route('/api/request_withdrawal', methods=['POST'])
+@user_required
+def request_withdrawal(user):
+    withdrawal_request = request.get_json()
+
+    if not check_bc(withdrawal_request.get('address', '')):
+        return jsonify({'message': 'InvalidBitcoinAddress'}), 500
+
+    try:
+        amount = int(withdrawal_request.get('amount', ''))
+    except:
+        return jsonify({'message': 'InvalidAmountEntered'}), 500
+
+    if amount < 100:
+        return jsonify({'message': 'InvalidAmountEntered'}), 500
+
+    if amount > user.balance:
+        return jsonify({'message': 'WithdrawalAmountTooHigh'}), 500
+
+    withdrawal_id = WithdrawalId.query.filter_by(user_id=user.user_id).first()
+
+    if withdrawal_id is None:
+        withdrawal_id = WithdrawalId(
+            user_id=user.user_id,
+            withdrawal_id=0
+        )
+        db.session.add(withdrawal_id)
+    else:
+        withdrawal_id.withdrawal_id += 1
+
+    new_withdrawal = Withdrawal(
+        user_id=user.user_id,
+        withdrawal_id=withdrawal_id.withdrawal_id,
+        address=withdrawal_request.get('address', ''),
+        amount=amount,
+        withdrawal_token=uuid.uuid4(),
+        cancelled=False,
+        transaction_id='',
+        created_date=datetime.datetime.utcnow(),
+        confirmed_date=None,
+        sent_date=None
+    )
+
+    user.balance -= amount
+
+    db.session.add(new_withdrawal)
+    db.session.commit()
+
+    url_params = urllib.parse.urlencode({
+        "userid": user.user_id,
+        "withdrawalid": new_withdrawal.withdrawal_id,
+        "withdrawaltoken": new_withdrawal.withdrawal_token
+    })
+
+    url_confirm = app.config['FRONT_END_ADDRESS'] + '?#/confirm_withdrawal?'
+    url_cancel = app.config['FRONT_END_ADDRESS'] + '?#/cancel_withdrawal?'
+
+    url_confirm = url_confirm + url_params
+    url_cancel = url_cancel + url_params
+
+    send_email(
+        user.email,
+        get_text("WithdrawalRequest", "Subject"),
+        get_text("WithdrawalRequest", "Body")
+            .replace("{0}", user.username)
+            .replace("{1}", str(new_withdrawal.amount / 10000000000.0))
+            .replace("{2}", new_withdrawal.address)
+            .replace("{3}", url_confirm)
+            .replace("{4}", url_cancel)
+    )
+
+    withdrawals = Withdrawal.query.filter_by(user_id=user.user_id).order_by(Withdrawal.withdrawal_id.desc()).all()
+
+    withdrawals_json = []
+    for withdrawal in withdrawals:
+        withdrawals_json.append(withdrawal.to_dic())
+
+    return jsonify({"user": user.to_dic(), "withdrawals": withdrawals_json, "withdrawal": new_withdrawal.to_dic()})
+
+
+@app.route('/api/resend_withdrawal_request', methods=['POST'])
+@user_required
+def resend_withdrawal_request(user):
+    withdrawal_request = request.get_json()
+
+    withdrawal = Withdrawal.query.filter_by(
+        user_id=user.user_id,
+        withdrawal_id=withdrawal_request.get("withdrawalId", "")
+    ).first()
+
+    if withdrawal is None or withdrawal.confirmed_date is not None:
+        return jsonify({'message': 'WithdrawalRequestNotFound'}), 404
+
+    url_params = urllib.parse.urlencode({
+        "userid": user.user_id,
+        "withdrawalid": withdrawal.withdrawal_id,
+        "withdrawaltoken": withdrawal.withdrawal_token
+    })
+
+    url_confirm = app.config['FRONT_END_ADDRESS'] + '?#/confirm_withdrawal?'
+    url_cancel = app.config['FRONT_END_ADDRESS'] + '?#/cancel_withdrawal?'
+
+    url_confirm = url_confirm + url_params
+    url_cancel = url_cancel + url_params
+
+    send_email(
+        user.email,
+        get_text("WithdrawalRequest", "Subject"),
+        get_text("WithdrawalRequest", "Body")
+            .replace("{0}", user.username)
+            .replace("{1}", str(withdrawal.amount / 10000000000.0))
+            .replace("{2}", withdrawal.address)
+            .replace("{3}", url_confirm)
+            .replace("{4}", url_cancel)
+    )
+
+    return jsonify({"withdrawal": withdrawal.to_dic()})
+
+
+@app.route('/api/get_withdrawal_request', methods=['GET'])
+def get_withdrawal():
+    withdrawal = Withdrawal.query.filter_by(
+        user_id=request.args.get("userId", ""),
+        withdrawal_id=request.args.get("withdrawalId", ""),
+        withdrawal_token=request.args.get("withdrawalToken", "")
+    ).first()
+
+    if withdrawal is None or withdrawal.confirmed_date is not None:
+        return jsonify({'message': 'WithdrawalRequestNotFound'}), 404
+
+    user = User.query.filter_by(user_id=request.args.get("userId", "")).first()
+
+    if user is None:
+        return jsonify({'message': 'UserDoesNotExist'}), 404
+
+    return jsonify({"user": user.to_dic(), "withdrawal": withdrawal.to_dic()})
+
+
+@app.route('/api/confirm_withdrawal', methods=['POST'])
+def confirm_withdrawal():
+    confirm_request = request.get_json()
+
+    withdrawal = Withdrawal.query.filter_by(
+        user_id=confirm_request.get("userId", ""),
+        withdrawal_id=confirm_request.get("withdrawalId", ""),
+        withdrawal_token=confirm_request.get("withdrawalToken", "")
+    ).first()
+
+    if withdrawal is None or withdrawal.confirmed_date is not None:
+        return jsonify({'message': 'WithdrawalRequestNotFound'}), 404
+
+    user = User.query.filter_by(user_id=confirm_request.get("userId", "")).first()
+
+    if user is None:
+        return jsonify({'message': 'UserDoesNotExist'}), 404
+
+    if not user.check_password(confirm_request.get("password", "")):
+        return jsonify({'message': 'IncorrectPassword'}), 403
+
+    if not user.check_token(confirm_request.get("twoFactorToken", "")):
+        return jsonify({'message': 'IncorrectToken'}), 403
+
+    withdrawal.confirmed_date = datetime.datetime.utcnow()
+    db.session.commit()
+
+    return jsonify({"user": user.to_dic(), "withdrawal": withdrawal.to_dic()})
+
+
+@app.route('/api/cancel_withdrawal', methods=['POST'])
+def cancel_withdrawal():
+    confirm_request = request.get_json()
+
+    withdrawal = Withdrawal.query.filter_by(
+        user_id=confirm_request.get("userId", ""),
+        withdrawal_id=confirm_request.get("withdrawalId", ""),
+        withdrawal_token=confirm_request.get("withdrawalToken", "")
+    ).first()
+
+    if withdrawal is None or withdrawal.confirmed_date is not None:
+        return jsonify({'message': 'WithdrawalRequestNotFound'}), 404
+
+    user = User.query.filter_by(user_id=confirm_request.get("userId", "")).first()
+
+    if user is None:
+        return jsonify({'message': 'UserDoesNotExist'}), 404
+
+    if not user.check_password(confirm_request.get("password", "")):
+        return jsonify({'message': 'IncorrectPassword'}), 403
+
+    if not user.check_token(confirm_request.get("twoFactorToken", "")):
+        return jsonify({'message': 'IncorrectToken'}), 403
+
+    user.balance += withdrawal.amount
+
+    withdrawal.confirmed_date = datetime.datetime.utcnow()
+    withdrawal.cancelled = True
+    db.session.commit()
+
+    return jsonify({"user": user.to_dic(), "withdrawal": withdrawal.to_dic()})
+
+
+@app.route('/api/add_withdrawal', methods=['POST'])
+def add_withdrawal():
+    withdrawal_request = request.get_json()
+
+    if app.config['ADMIN_PASSWORD'] != withdrawal_request.get("password", ""):
+        return jsonify({'message': 'InvalidRequest'}), 500
+
+    withdrawal = Withdrawal.query.filter_by(
+        user_id=withdrawal_request.get("userId", ""),
+        withdrawal_id=withdrawal_request.get("withdrawalId", "")
+    ).first()
+
+    if withdrawal is None or withdrawal.confirmed_date is None:
+        return jsonify({'message': 'WithdrawalRequestNotFound'}), 404
+
+    withdrawal.transactionId = withdrawal_request.get("transactionId", ""),
+    withdrawal.sent_date = datetime.datetime.utcnow()
+    db.session.commit()
+
+    return jsonify({"withdrawal": withdrawal.to_dic()})

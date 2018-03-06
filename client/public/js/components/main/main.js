@@ -13,6 +13,10 @@ import ChangeEmailPage from "../pages/change_email_page/change_email_page.js"
 import ConfirmChangeEmailPage from "../pages/confirm_change_email_page/confirm_change_email_page.js"
 import ChangePasswordPage from "../pages/change_password_page/change_password_page.js"
 import TwoFactorAuthenticationPage from "../pages/two_factor_authentication_page/two_factor_authentication_page.js"
+import DepositPage from "../pages/deposit_page/deposit_page.js"
+import WithdrawPage from "../pages/withdraw_page/withdraw_page.js"
+import ConfirmWithdrawalPage from "../pages/confirm_withdrawal_page/confirm_withdrawal_page.js"
+
 
 export default class Main extends React.Component {
 	render() {
@@ -30,6 +34,10 @@ export default class Main extends React.Component {
 				<Route exact path='/confirm_change_email' component={ConfirmChangeEmailPage}/>
 				<Route exact path='/change_password' component={ChangePasswordPage}/>
 				<Route exact path='/two_factor_authentication' component={TwoFactorAuthenticationPage}/>
+				<Route exact path='/deposit' component={DepositPage}/>
+				<Route exact path='/withdraw' component={WithdrawPage}/>
+				<Route exact path='/confirm_withdrawal' component={(props) => (<ConfirmWithdrawalPage isCancellation={false} location={props.location}/>)}/>
+				<Route exact path='/cancel_withdrawal' component={(props) => (<ConfirmWithdrawalPage isCancellation={true} location={props.location}/>)}/>				
 		    </Switch>
 		  </main>
 		);

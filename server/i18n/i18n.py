@@ -8,7 +8,7 @@ languages = None
 def __load_languages():
     global languages, translations
     languages = ['en, fr']
-    translations = json.load(open('translations/translations.json'))
+    translations = json.load(open('json/translations.json'))
 
 
 def get_text(control, item, language=''):

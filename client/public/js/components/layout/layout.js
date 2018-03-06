@@ -10,6 +10,7 @@ import I18nStore from '../../stores/i18nstore.js'
 import LoginStore from '../../stores/i18nstore.js'
 
 import ConfirmDialog from '../dialogs/confirmdialog.js';
+import QRDialog from '../dialogs/qrdialog.js';
 import TwoFactorAuthenticationDialog from '../pages/two_factor_authentication_page/two_factor_authentication_dialog/two_factor_authentication_dialog.js'
 
 export default class Layout extends React.Component {
@@ -41,6 +42,7 @@ export default class Layout extends React.Component {
 						<Header />
 						<Main />
 						<ConfirmDialog />
+						<QRDialog />
 						<TwoFactorAuthenticationDialog />
 					</div>
 					<Footer/>

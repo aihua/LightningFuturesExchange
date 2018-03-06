@@ -57,6 +57,9 @@ export default class ConfirmDialog extends React.Component {
 						<div class="modal-content">
 							<div class="modal-header">
 								<h5 class="modal-title">{t.Generic[ConfirmDialogStore.title]}</h5>
+								<button type="button" class="close" onClick={this.no}>
+									<span aria-hidden="true">&times;</span>
+								</button>
 							</div>
 							<div class="modal-body">
 								{t.Generic[ConfirmDialogStore.body]}

@@ -25,15 +25,18 @@ class UserRegister(db.Model):
             return False
         if not validate_email(self.email):
             return False
-        if not len(self.password) < 8:
+        if len(self.password) < 8:
             return False
         return True
+
+    def set_password(self, password):
+        self.password = hashlib.sha512((password + app.config['SALT']).encode('utf-8')).hexdigest()
 
     def from_dic(self, dic):
         self.registration_token = uuid.uuid4()
         self.username = dic.get("username", "")
         self.email = dic.get("email", "")
-        self.password = hashlib.sha512(dic.get("password", "") + app.config['SALT']).hexdigest()
+        self.password = dic.get("password", "")
         self.registration_date = datetime.datetime.utcnow()
 
     def to_dic(self):

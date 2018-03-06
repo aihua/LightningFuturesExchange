@@ -99,7 +99,9 @@ table.table-xs th {
   margin-right: 0px;
   width: 100%;
 }
-#twofactordialogform canvas {
+#twofactordialogform canvas,
+#deposit-page canvas,
+#bitcoin-address-dialog canvas {
   max-width: 256px;
   width: 100% !important;
 }

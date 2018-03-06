@@ -3,6 +3,7 @@ import datetime
 import hashlib
 import pyotp
 
+
 class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
@@ -10,7 +11,7 @@ class User(db.Model):
     two_f_a_token = db.Column(db.String(100), nullable=False)
     two_f_a_enabled = db.Column(db.Boolean, nullable=False)
     password = db.Column(db.String(200), nullable=False)
-    balance = db.Column(db.DECIMAL(18, 10), nullable=False)
+    balance = db.Column(db.BigInteger, nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False)
     registration_date = db.Column(db.DateTime(), nullable=False)
 
@@ -36,12 +37,13 @@ class User(db.Model):
             "username": self.username,
             "email": self.email,
             "twoFactorEnabled": self.two_f_a_enabled,
+            "balance": int(self.balance),
             "isAdmin": self.is_admin,
             "registrationDate": self.registration_date
         }
 
     def check_password(self, password):
-        return hashlib.sha512(password + app.config['SALT']).hexdigest() == self.password
+        return hashlib.sha512((password + app.config['SALT']).encode('utf-8')).hexdigest() == self.password
 
     def check_token(self, token):
         if not self.two_f_a_enabled:
@@ -52,4 +54,4 @@ class User(db.Model):
 
 
     def set_password(self, password):
-        self.password = hashlib.sha512(password + app.config['SALT']).hexdigest()
+        self.password = hashlib.sha512((password + app.config['SALT']).encode('utf-8')).hexdigest()

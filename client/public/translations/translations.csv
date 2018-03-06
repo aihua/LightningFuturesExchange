@@ -17,8 +17,10 @@ Error,2FAAlreadyDisabled,Two-factor authentication is already disabled.,L'authen
 ,EmailTaken,The email <b><em>{0}</em></b> has been taken.  Please create an account with a different email address.,L'email <b><em>{0}</em></b> a été pris. Veuillez créer un compte avec une adresse e-mail différente.
 ,IncorrectPassword,The password entered is incorrect.,Le mot de passe entré est incorrect.
 ,IncorrectToken,The token entered is incorrect.,Le jeton entré est incorrect.
-,InvalidWalletPublicKeyEntered,Invalid wallet public key entered. {0},"Clé publique de portefeuille invalide entrée., {0}"
+,InvalidAmountEntered,Invalid amount entered.,Montant invalide entré.
+,InvalidBitcoinAddress,Invalid bitcoin address entered.,L'adresse bitcoin n'est pas valide.
 ,InvalidConfirmUserToken,The token for create the user account does not exist.  This can be because you have already confirmed the registratoin of the user.  If so please simply attempt to login to confirm.,"Le jeton de création du compte d'utilisateur n'existe pas. Cela peut être dû au fait que vous avez déjà confirmé l'enregistrement de l'utilisateur. Si oui, essayez simplement de vous connecter pour confirmer."
+,InvalidWalletPublicKeyEntered,Invalid wallet public key entered. {0},"Clé publique de portefeuille invalide entrée., {0}"
 ,InvalidUrl,The website url is malformed.  This could be because you miscopied the url link improperly.  People double check.,L'URL du site est mal formée. Cela peut être dû au fait que vous avez incorrectement modifié le lien d'URL. Les gens revérifient.
 ,InvalidUser,The user submitted is invalid.  Please refresh the page and try again.,L'utilisateur soumis est invalide. Veuillez actualiser la page et réessayer.
 ,NoGetTwoFactorTokenRequestMade,No request has been made to generate a two factor authentication token.,Aucune demande n'a été faite pour générer un jeton d'authentification à deux facteurs.
@@ -29,8 +31,11 @@ Error,2FAAlreadyDisabled,Two-factor authentication is already disabled.,L'authen
 ,UserNotFoundLogin,The username/email does not exist.,Le nom d'utilisateur / email n'existe pas.
 ,UserNotFoundChangeEmail,The user for this request has since been deleted.,L'utilisateur pour cette demande a depuis été supprimé.
 ,UserNotFoundForgotPassword,The username/email <b><em>{0}</em></b> does not exist within our system.  Please create an account with this username/email if you wish by clicking on register.,Le nom d'utilisateur/email <b><em>{0}</em></b> n'existe pas dans notre système. S'il vous plaît créer un compte avec ce nom d'utilisateur/email si vous souhaitez en cliquant sur le registre.
+,WithdrawalAmountTooHigh,The withdrawal amount entered is too high.  Pleas make sure you have sufficient funds.,Le montant du retrait entré est trop élevé. Moyens s'assurer que vous avez suffisamment de fonds.
+,WithdrawalRequestNotFound,The withdrawal request is not found.  This could be because the withdrawal has already been processed or you copied the url for the request incorrectly.,La demande de retrait est introuvable. Cela peut être dû au fait que le retrait a déjà été traité ou que vous avez incorrectement copié l'URL de la demande.
 ForgotPassword,ConfirmForgotPasswordSuccess,You have successfully changed the password for the user <b><em>{0}</em></b>.  You may now proceed to login with the new password.,Vous avez changé le mot de passe pour l'utilisateur <b><em>{0}</em></b>. Vous pouvez maintenant vous connecter avec le nouveau mot de passe.
 Generic,2FAEnabled,2FA Enabled,A2F activé
+,2FASecret,2FA Secret,A2F Secret
 ,2FAToken,2FA Token,A2F jeton
 ,Account,Accout,Compte
 ,ActivateAt,Activate At,Activer à
@@ -39,11 +44,14 @@ Generic,2FAEnabled,2FA Enabled,A2F activé
 ,Amount,Amount,Montant
 ,AreYouSure,Are You Sure?,Êtes-vous sûr?
 ,Asset,Asset,Atout
+,BitcoinAddress,Bitcoin Address,Bitcoin Adresse
 ,Broker,Broker,Courtier
 ,BusinesQuote,"Lightning Futures Exchange enables to you to anonymously long or short futures for a vast number of equities with low trading fees all at high leverage with the power of bitcoin.  Register today, make a deposit and gain access to trade the world’s markets anonymously.","Lightning Futures Exchange vous permet de réaliser des contrats à terme de manière anonyme ou à court terme pour un grand nombre d'actions avec des frais de négociation bas, le tout avec un fort effet de levier grâce à la puissance de Bitcoin. Inscrivez-vous aujourd'hui, effectuez un dépôt et accédez au commerce des marchés mondiaux de manière anonyme."
 ,Buy,Buy,Acheter
 ,CallToActionCard,Register today and trade futures of global equities anonymously with bitcoin and with high leverage.,Inscrivez-vous aujourd'hui et négociez anonymement des futures sur des actions mondiales avec bitcoin et avec un effet de levier élevé.
 ,Cancel,Cancel,Annuler
+,Cancelled,Cancelled,Annulé
+,CancelWithdrawal,Cancel Withdrawal,Annuler le retrait
 ,ChangeEmail,Change Email,Changer l'e-mail
 ,ChangeEmailSuccess,You have successfully submitted a request to change the email for the user <b><em>{0}</em></b> to <b><em>{1}</em></b>.  Please check your email address to confirm this email belongs to you.,Vous avez envoyé une demande de modification du courrier électronique de l'utilisateur <b><em>{0}</em></b> à <b><em>{1}</em></b>. Veuillez vérifier votre adresse e-mail pour confirmer que cet e-mail vous appartient.
 ,ChangePassword,Change Password,Changer le mot de passe
@@ -54,10 +62,18 @@ Generic,2FAEnabled,2FA Enabled,A2F activé
 ,CloseWithoutSaving,Close Without Saving?,Fermer sans enregistrer?
 ,CloseWithoutSavingConfigBody,There are some unsaved changes to the config.  Do you wish to close without saving? Hit “No” to continue editing.,"Il y a quelques modifications non enregistrées dans la configuration. Voulez-vous fermer sans enregistrer? Appuyez sur ""Non"" pour continuer l'édition."
 ,Confirm,Confirm,Confirmer
+,Confirmed,Confirmed,Confirmé
 ,ConfirmNewPassword,Confirm New Password,Confirmer le nouveau mot de passe
 ,ConfirmPassword,Confirm Password,Confirmez le mot de passe
+,ConfirmWithdrawal,Confirm Withdrawal,Confirmer le retrait
 ,Copyright,Copyright © Lightning Futures Exchange 2017,Droit d'auteur © Lightning Futures Exchange 2017
+,Created,Created,Créé
 ,CreateConfig,Create Config,Créer une config
+,CreateNewAddress,Create New Address,Créer une nouvelle adresse
+,Deposit,Deposit,Dépôt
+,Deposits,Deposits,Dépôts
+,DepositAddress,Deposit Address,Adresse de dépôt
+,DepositAddresses,Deposit Addresses,Adresse des dépôts
 ,Disable,Disable,Désactiver
 ,Disable2FA,Disable 2FA,Désactiver 2FA
 ,DisableTwoFactorAuthentication,Disable Two-Factor Authentication,Désactiver l'authentification à deux facteurs
@@ -69,6 +85,7 @@ Generic,2FAEnabled,2FA Enabled,A2F activé
 ,Exchange,Exchange,Échange
 ,Exchanges,Exchanges,Échanges
 ,ExchangesAndWallets,Exchanges And Wallets,Échanges et portefeuilles
+,FetchingDeposits,Fetching deposits.....,Récupérer des dépôts .....
 ,ForgotPassword,Forgot password,mot de passe oublié
 ,ForgotPassword?,Forgot password?,mot de passe oublié?
 ,ForgotPasswordSuccess,Successfully submitted request to change your password.  Please check your email for link to change your password.,Demande soumise avec succès pour changer votre mot de passe. S'il vous plaît vérifier votre email pour le lien pour changer votre mot de passe.
@@ -92,32 +109,46 @@ Generic,2FAEnabled,2FA Enabled,A2F activé
 ,NewPassword,New Password,Nouveau mot de passe
 ,NewUsername,New Username,Nouveau nom d'utilisateur
 ,No,No,Non
+,NoDepositAddresses,There currently aren’t any deposit addresses.,Il n'y a actuellement aucune adresse de dépôt.
+,NoDeposits,There currently aren’t any deposits.,Il n'y a actuellement aucun dépôt.
 ,None,None,Aucun
+,NoWithdrawals,No withdrawals have currently been made.,Aucun retrait n'a été effectué pour le moment.
 ,Offset,Offset,Décalage
+,Ok,Ok,Ok
 ,OrderBook,Order Book,Carnet de commande
 ,Password,Password,Mot de passe
 ,PublicKey,Public Key,Clé publique
 ,Price,Price,Prix
+,QR,QR,QR
 ,QRCode,QR Code,Code QR
+,Quantity,Quantity,Quantité
 ,RecentTrades,Recent Trades,Métiers récents
 ,Register,Register,Inscriver
 ,RegisterSuccess,You have successfully registered the username <b><em>{0}</em></b>.  Please check your email <b><em>{1}</em></b> to confirm.  It may take several minutes for you to receive this email.,Vous avez enregistré le nom d'utilisateur <b><em>{0}</em></b>. Veuillez vérifier votre email <b><em>{1}</em></b> pour confirmer. Cela peut prendre plusieurs minutes pour que vous receviez cet e-mail.
 ,RegisterToday,Register Today!,Inscriver aujourd'hui!
 ,Remove,Remove,Retirer
+,Resend,Resend,Renvoyer
 ,Save,Save,Sauver
 ,Select,Select,Sélectionner
 ,Sell,Sell,Vendre
+,Sent,Sent,Envoyé
 ,Size,Size,Étendue
+,Status,Status,Statut
 ,StopLoss,Stop Loss,Stop Loss
 ,Submit,Submit,Soumettre
 ,Total,Total,Total
 ,Username,Username,Nom d'utilisateur
 ,Tradable,Tradable,Tradable
 ,TransactionHistory,Transaction History,Historique des transactions
+,TransactionId,Transaction Id,Id de transaction
 ,TwoFactorAuthentication,Two-Factor Authentication,Authentification à deux facteurs
 ,TwoFactorToken,Two-Factor Token,Jeton à deux facteurs
+,WaitingConfirmation,Waiting confirmation,Confirmation d'attente
 ,Wallet,Wallet,Portefeuille
 ,Wallets,Wallets,Portefeuilles
+,Withdraw,Withdraw,Retirer
+,Withdrawal,Withdrawal,Retrait
+,Withdrawals,Withdrawals,Retraits
 ,Yes,Yes,Oui
 Languages,en,English,English
 ,fr,français,français
@@ -125,6 +156,13 @@ Languages,en,English,English
 LanguagesFlags,en,gb,gb
 ,fr,fr,fr
 ,es,es,es
+RequestWithdrawal,CancelWithdrawalSuccessBody,You have successfully cancelled the withdrawal for <b><em>{0} BTC</em></b> to the address <b><em>{1}</em></b>.,Vous avez annulé le retrait de <b><em>{0} BTC</em></b> à l'adresse <b><em>{1}</em></b>.
+,ConfirmWithdrawalSuccessBody,You have successfully confirmed the withdrawal for <b><em>{0} BTC</em></b> to the address <b><em>{1}</em></b>.,Vous avez confirmé le retrait de <b><em>{0} BTC</em></b> à l'adresse <b><em>{1}</em></b>.
+,ExplanationCancel,Please provide your password and your two factor token (if you have 2FA enabled) to cancel the withdrawal.,Veuillez fournir votre mot de passe et votre jeton à deux facteurs (si 2FA est activé) pour annuler le retrait.
+,ExplanationConfirm,Please provide your password and your two factor token (if you have 2FA enabled) to confirm the withdrawal.,Veuillez fournir votre mot de passe et votre jeton à deux facteurs (si 2FA est activé) pour confirmer le retrait.
+,RequestSuccess,An email has been successfully sent to you asking to confirm the withdrawal for the amount of <b><em>{0} BTC</em></b> to the address <b><em>{1}</em></b>.  Please check your email to confirm or cancel the withdrawal request.,Un e-mail vous a été envoyé avec succès pour vous demander de confirmer le retrait de <b><em>{0} BTC</em></b> à l'adresse <b><em>{1}</em></b>. Veuillez vérifier votre email pour confirmer ou annuler la demande de retrait.
+,ResendRequestSuccess,You have successfully resent the withdrawal request.  Please check your email.,Vous avez renvoyé avec succès la demande de retrait. Merci de consulter vos emails.
+,ResendRequestError,There was an error resending the withdrawal request.  Perhaps the withdrawal has already been confirmed or cancelled.,Une erreur s'est produite lors du renvoi de la demande de retrait. Peut-être que le retrait a déjà été confirmé ou annulé.
 Validation,AddressRequired,Address is required.,L'adresse est requise
 ,DuplicateExchangeName,Duplicate exchange name found.,Nom d'échange en double trouvé.
 ,DuplicateExchangePublicKey,Duplicate exchange publickey found.,Clé d'échange en double trouvée.
@@ -139,6 +177,8 @@ Validation,AddressRequired,Address is required.,L'adresse est requise
 ,PleaseEnterEmail,Please enter your email.,S'il vous plaît entrez votre email.
 ,PleaseReEnterNewPassword,Please re-enter your new password.,Merci de ré-entrer votre nouveau mot de passe.
 ,PleaseReEnterPassword,Please re-enter your password.,Veuillez re-taper votre mot de passe.
+,PleaseEnterBitcoinAddress,Please enter a valid bitcoin address.,Veuillez entrer une adresse bitcoin valide.
+,PleaseEnterBitcoinAmount,Please enter an amount of bitcoin to withdraw.,Veuillez entrer une quantité de bitcoin à retirer.
 ,PleaseEnterNewEmail,Please a valid new email.,S'il vous plaît un nouveau courriel valide.
 ,PleaseEnterNewPassword,Please enter your new password of minimum length 8.,Veuillez entrer votre nouveau mot de passe de longueur minimum 8.
 ,PleaseEnterNewUsername,Please enter a valid new alphanumeric username of length 6.,Veuillez entrer un nouveau nom d'utilisateur alphanumérique valide de longueur 6.
