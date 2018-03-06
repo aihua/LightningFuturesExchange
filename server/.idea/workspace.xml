@@ -113,7 +113,7 @@
             <entry file="file://$PROJECT_DIR$/json/config.json">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="144">
-                  <caret line="8" column="1" lean-forward="true" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
+                  <caret line="8" column="3" lean-forward="true" selection-start-line="8" selection-start-column="3" selection-end-line="8" selection-end-column="3" />
                   <folding />
                 </state>
               </provider>
@@ -311,8 +311,8 @@
         <option value="$PROJECT_DIR$/translations/translations.json" />
         <option value="$PROJECT_DIR$/routes/routes.py" />
         <option value="$PROJECT_DIR$/i18n/i18n.py" />
-        <option value="$PROJECT_DIR$/json/config.json" />
         <option value="$PROJECT_DIR$/shared/shared.py" />
+        <option value="$PROJECT_DIR$/json/config.json" />
       </list>
     </option>
   </component>
@@ -1083,7 +1083,7 @@
     <entry file="file://$PROJECT_DIR$/json/config.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="144">
-          <caret line="8" column="1" lean-forward="true" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
+          <caret line="8" column="3" lean-forward="true" selection-start-line="8" selection-start-column="3" selection-end-line="8" selection-end-column="3" />
           <folding />
         </state>
       </provider>
