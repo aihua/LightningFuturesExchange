@@ -50,8 +50,6 @@ export default class ConfirmWithdrawalPage extends React.Component {
 	componentDidMount() {
 		this.refs.form.addEventListener('submit', (event) => {
 			if (this.refs.form.checkValidity() === false) {
-				event.preventDefault();
-				event.stopPropagation();
 			} else {
 				if (this.props.isCancellation) {
 					LoginActions.cancelWithdrawal(this.query.userid, this.query.withdrawalid, this.query.withdrawaltoken, this.refs.password.value, this.refs.twofaToken.value);
@@ -60,6 +58,8 @@ export default class ConfirmWithdrawalPage extends React.Component {
 				}
 			}
 
+			event.preventDefault();
+			event.stopPropagation();
 			this.refs.form.classList.add('was-validated');
 		})
 	}

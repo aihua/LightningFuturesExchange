@@ -3,6 +3,7 @@ from validate_email import validate_email
 import uuid
 import datetime
 
+
 class ChangeEmail(db.Model):
     user_id = db.Column(db.Integer, primary_key=True, nullable=False)
     change_email_token = db.Column(db.String(100), primary_key=True, nullable=False)
@@ -30,5 +31,5 @@ class ChangeEmail(db.Model):
             self.user_id = int(dic.get("userId", ""))
         except:
             self.user_id = -1
-        self.new_email = dic.get("newEmail", "")
+        self.new_email = dic.get("newEmail", "").strip().lower()
         self.created_date = datetime.datetime.utcnow()

@@ -29,13 +29,12 @@ export default class ForgotPasswordPage extends React.Component {
 
 	componentDidMount() {
 		this.refs.form.addEventListener('submit', (event) => {
-			if (this.refs.form.checkValidity() === false) {
-				event.preventDefault();
-				event.stopPropagation();
-			} else {
+			if (this.refs.form.checkValidity() !== false) {
 				ForgotPasswordActions.forgotPassword(this.refs.username.value)
 			}
 
+			event.preventDefault();
+			event.stopPropagation();
 			this.refs.form.classList.add('was-validated');
 		})
 	}

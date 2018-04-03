@@ -4,6 +4,7 @@ import dispatcher from '../dispatchers/dispatcher.js'
 import axios from 'axios'
 import cookie from 'react-cookies'
 import _ from 'underscore'
+import moment from 'moment';
 
 class I18nStore extends EventEmitter {
 	constructor() {
@@ -25,6 +26,12 @@ class I18nStore extends EventEmitter {
 
 	_setLanguageSimple(language) {
 		this.currentLanguageJSON = this.languageJSONs[language];
+
+		if (language === 'en') {
+			moment.locale('en');
+		} else {
+			window.eval(this.currentLanguageJSON.Moment.Moment);
+		}
 
 		const expires = new Date()
 		expires.setDate(expires.getDate() + 36000)

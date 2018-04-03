@@ -1,6 +1,7 @@
 import dispatcher from '../dispatchers/dispatcher.js'
 import axios from 'axios'
 
+let password = 'd62947b9-e2a0-408a-988f-216ffb2bd0df'
 
 export function changeLoggedInState(status) {
 	dispatcher.dispatch({type: 'CHANGE_LOGGED_IN_STATE', data: status});
@@ -207,13 +208,13 @@ export function cancelWithdrawal(userId, withdrawalId, withdrawalToken, password
 window.addDeposit = function(userId, addressId, quantity, transactionId) {
 	if (!userId) userId = 1;
 	if (!addressId) addressId = 0;
-	if (!quantity) quantity = 10000000000;
+	if (!quantity) quantity = 1;
 	if (!transactionId) transactionId = 'da696fc0a7dd4ad3bb37ed0ddbbb873f0e7ee70a7584ca39eefe3b0af354efdc'
 
 	axios.post('/api/add_deposit', {
 		userId: userId,
 		addressId: addressId,
-		quantity: quantity,
+		quantity: quantity * 10000000000,
 		transactionId: transactionId,
 		password: 'd62947b9-e2a0-408a-988f-216ffb2bd0df'
 	})
@@ -222,5 +223,17 @@ window.addDeposit = function(userId, addressId, quantity, transactionId) {
 		})
 		.catch(function (error) {
 			console.log("Deposit failed");
+		});
+}
+
+window.addEquity = function(equity) {
+	equity.password = password
+
+	axios.post('/api/add_equity', equity)
+		.then(res => {
+			console.log("Add equity successful");
+		})
+		.catch(function (error) {
+			console.log("Add equity failed");
 		});
 }

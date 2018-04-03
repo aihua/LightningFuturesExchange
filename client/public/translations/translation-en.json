@@ -170,6 +170,9 @@
       "fr": "fr",
       "es": "es"
    },
+   "Moment": {
+      "Moment": "{}"
+   },
    "RequestWithdrawal": {
       "CancelWithdrawalSuccessBody": "You have successfully cancelled the withdrawal for <b><em>{0} BTC</em></b> to the address <b><em>{1}</em></b>.",
       "ConfirmWithdrawalSuccessBody": "You have successfully confirmed the withdrawal for <b><em>{0} BTC</em></b> to the address <b><em>{1}</em></b>.",

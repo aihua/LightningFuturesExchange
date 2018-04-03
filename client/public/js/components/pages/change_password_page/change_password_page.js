@@ -33,19 +33,17 @@ export default class ChangePasswordPage extends React.Component {
 	componentDidMount() {
 		this.refs.form.addEventListener('submit', (event) => {
 			if (this.refs.form.checkValidity() === false) {
-				event.preventDefault();
-				event.stopPropagation();
 			} else if (this.refs.new_password.value !== this.refs.confirm_password.value) {
 				this.setState({
 					"validationError": "PasswordsMustMatch",
 					"validation0": ''
 				});
-				event.preventDefault();
-				event.stopPropagation();
 			} else {
 				ChangePasswordActions.changePassword(this.refs.new_password.value, this.refs.password.value, this.refs.twofaToken.value)
 			}
 
+			event.preventDefault();
+			event.stopPropagation();
 			this.refs.form.classList.add('was-validated');
 		})
 	}

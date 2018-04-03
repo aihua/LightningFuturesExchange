@@ -45,13 +45,12 @@ export default class WithdrawPage extends React.Component {
 
 	componentDidMount() {
 		this.refs.form.addEventListener('submit', (event) => {
-			if (this.refs.form.checkValidity() === false) {
-				event.preventDefault();
-				event.stopPropagation();
-			} else {
+			if (this.refs.form.checkValidity() !== false) {
 				LoginActions.requestWithdraw(this.state.address, parseInt(parseFloat(this.state.amount)*10000000000)); 
 			}
 
+			event.preventDefault();
+			event.stopPropagation();
 			this.refs.form.classList.add('was-validated');
 		})
 	}

@@ -1,5 +1,6 @@
+from trade_engine.trade_engine import trade_engine
 from shared.shared import app, db
-from decorators.decorators import user_required
+from decorators.decorators import user_required, admin_password_required
 from flask import jsonify, request
 from models.models.user_register import UserRegister
 from models.models.user import User
@@ -12,6 +13,11 @@ from models.models.deposit_id import DepositId
 from models.models.deposit import Deposit
 from models.models.withdrawal import Withdrawal
 from models.models.withdrawal_id import WithdrawalId
+
+from models.models.order import Order, OrderType
+from models.models.order_id import OrderId
+
+from models.models.equity import Equity
 from emailer.emailer import send_email
 from i18n.i18n import get_text
 from bitcoin.bitcoin import check_bc
@@ -31,10 +37,10 @@ def register_user():
 
     user_register.set_password(user_register.password)
 
-    if User.query.filter_by(username=user_register.username).first() is not None:
+    if trade_engine.usernames.get(user_register.username, None) is not None:
         return jsonify({'message': 'UsernameTaken', '0': user_register.username}), 403
 
-    if User.query.filter_by(email=user_register.email).first() is not None:
+    if trade_engine.usernames.get(user_register.email, None) is not None:
         return jsonify({'message': 'EmailTaken', '0': user_register.email}), 403
 
     db.session.add(user_register)
@@ -42,7 +48,7 @@ def register_user():
 
     url = app.config['FRONT_END_ADDRESS'] + '?#/confirm_register?'
 
-    url_params = urllib.parse.urlencode({
+    url_params = urllib.urlencode({
         "username": user_register.username,
         "token": user_register.registration_token
     })
@@ -75,19 +81,25 @@ def confirm_user():
 
     user = User(actual_user_register)
 
-    if User.query.filter_by(username=user.username).first() is not None:
-        return jsonify({'message': 'UsernameTaken', '0': user.username}), 403
+    with trade_engine.reader_writer_lock_dic.write_enter('un' + user.username):
+        with trade_engine.reader_writer_lock_dic.write_enter('ue' + user.email):
+            if trade_engine.usernames.get(user.username, None):
+                return jsonify({'message': 'UsernameTaken', '0': user.username}), 403
 
-    if User.query.filter_by(email=user.email).first() is not None:
-        return jsonify({'message': 'EmailTaken', '0': user.email}), 403
+            if trade_engine.user_emails.get(user.email, None):
+                return jsonify({'message': 'EmailTaken', '0': user.email}), 403
 
-    db.session.delete(actual_user_register)
-    db.session.add(user)
-    db.session.flush()
+            db.session.delete(actual_user_register)
+            db.session.add(user)
+            db.session.flush()
 
-    create_new_deposit_address(user)
+            create_new_deposit_address(user)
 
-    db.session.commit()
+            db.session.commit()
+
+            trade_engine.users[user.user_id] = user
+            trade_engine.usernames[user.username] = user
+            trade_engine.user_emails[user.email] = user
 
     return jsonify({'user': user.to_dic()})
 
@@ -96,10 +108,12 @@ def confirm_user():
 def forgot_password():
     simple_user = request.get_json()
 
-    user = User.query.filter_by(username=simple_user['username']).first()
+    simple_username = simple_user.get("username", "").strip().lower()
+
+    user = trade_engine.usernames.get(simple_username, None)
 
     if user is None:
-        user = User.query.filter_by(email=simple_user['username']).first()
+        user = trade_engine.user_emails.get(simple_username, None)
 
     if user is None:
         return jsonify({'message': 'UserNotFoundForgotPassword', '0': simple_user['username']}), 403
@@ -115,7 +129,7 @@ def forgot_password():
 
     url = app.config['FRONT_END_ADDRESS'] + '?#/confirm_forgot_password?'
 
-    url_params = urllib.parse.urlencode({
+    url_params = urllib.urlencode({
         "userid": forgot_password.user_id,
         "token": forgot_password.forgot_password_token
     })
@@ -140,8 +154,8 @@ def check_forgot_password():
 
     try:
         forgot_password = ForgotPassword.query.filter_by(
-            user_id=simple_forgot_password['userId'],
-            forgot_password_token=simple_forgot_password['forgotPasswordToken']
+            user_id=simple_forgot_password.get('userId', ""),
+            forgot_password_token=simple_forgot_password.get('forgotPasswordToken', "")
         ).first()
     except:
         return jsonify({'message': 'InvalidRequest'}), 500
@@ -149,7 +163,7 @@ def check_forgot_password():
     if forgot_password is None:
         return jsonify({'message': 'ForgotPasswordTokenNotFound'}), 404
 
-    user = User.query.filter_by(user_id=forgot_password.user_id).first()
+    user = trade_engine.users.get(simple_forgot_password.get('userId', ""), None)
 
     if user is None:
         return jsonify({'message': 'UserDoesNotExist'}), 404
@@ -167,10 +181,12 @@ def confirm_forgot_password():
             or len(simple_forgot_password['password']) < 8:
         return jsonify({'message': 'InvalidRequest'}), 500
 
+    user_id = simple_forgot_password.get('userId', "")
+
     try:
         forgot_password = ForgotPassword.query.filter_by(
-            user_id=int(simple_forgot_password['userId']),
-            forgot_password_token=simple_forgot_password['forgotPasswordToken']
+            user_id=user_id,
+            forgot_password_token=simple_forgot_password.get('forgotPasswordToken', "")
         ).first()
     except:
         return jsonify({'message': 'InvalidRequest'}), 500
@@ -178,18 +194,22 @@ def confirm_forgot_password():
     if forgot_password is None:
         return jsonify({'message': 'ForgotPasswordTokenNotFound'}), 404
 
-    user = User.query.filter_by(user_id=forgot_password.user_id).first()
+    with trade_engine.reader_writer_lock_dic.write_enter("uu" + str(user_id)):
+        try:
+            user = trade_engine.users.get(user_id, None)
 
-    if user is None:
-        return jsonify({'message': 'UserDoesNotExist'}), 404
+            if user is None:
+                return jsonify({'message': 'UserDoesNotExist'}), 404
 
-    user.set_password(simple_forgot_password['password'])
-    user.two_f_a_enabled = False
-    user.two_f_a_token = ''
-    db.session.delete(forgot_password)
-    db.session.commit()
+            user.set_password(simple_forgot_password['password'])
+            user.two_f_a_enabled = False
+            user.two_f_a_token = ''
+            db.session.delete(forgot_password)
+            db.session.commit()
 
-    return jsonify({'user': user.to_dic()})
+            return jsonify({'user': user.to_dic()})
+        except:
+            return jsonify({'message': "UnknownError"})
 
 
 @app.route('/api/login', methods=['POST'])
@@ -200,11 +220,13 @@ def login():
             or "token" not in simple_user:
         return jsonify({'message': 'InvalidRequest'}), 500
 
+    username = simple_user.get('username', "").strip().lower()
+
     try:
-        user = User.query.filter_by(username=simple_user['username']).first()
+        user = trade_engine.usernames.get(username, None)
 
         if user is None:
-            user = User.query.filter_by(email=simple_user['username']).first()
+            user = trade_engine.user_emails.get(username, None)
 
         if user is None:
             return jsonify({'message': 'UserNotFoundLogin'}), 404
@@ -222,35 +244,35 @@ def login():
             issued_date=datetime.datetime.utcnow(),
             expiry_date=datetime.datetime.utcnow() + datetime.timedelta(hours=4)
         )
+
+        db.session.add(session_token)
+        db.session.commit()
+
+        return jsonify({'user': user.to_dic(), 'sessionToken': session_token.session_token})
     except:
-        return jsonify({'message': 'InvalidRequest'}), 500
-
-    db.session.add(session_token)
-    db.session.commit()
-
-    return jsonify({'user': user.to_dic(), 'sessionToken': session_token.session_token})
+        return jsonify({'message': 'UnknownError'}), 500
 
 
 @app.route('/api/logout', methods=['POST'])
 def logout():
-    # try:
-    user_id = int(request.cookies.get("userid"))
-    session_token = request.cookies.get("sessiontoken")
+    try:
+        user_id = int(request.cookies.get("userid"))
+        session_token = request.cookies.get("sessiontoken")
 
-    session_token_item = SessionToken.query.filter_by(user_id=user_id, session_token=session_token).first()
+        session_token_item = SessionToken.query.filter_by(user_id=user_id, session_token=session_token).first()
 
-    if session_token_item is None:
-        return jsonify({'message': 'TokenNotFound'}), 401
+        if session_token_item is None:
+            return jsonify({'message': 'TokenNotFound'}), 401
 
-    if session_token_item.expiry_date < datetime.datetime.now():
-        return jsonify({'message': 'SessionExpired'}), 401
+        if session_token_item.expiry_date < datetime.datetime.now():
+            return jsonify({'message': 'SessionExpired'}), 401
 
-    db.session.delete(session_token_item)
-    db.session.commit()
+        db.session.delete(session_token_item)
+        db.session.commit()
 
-    return jsonify({'message': 'Success'})
-    # except:
-    #     return jsonify({'message': 'InvalidToken'}), 401
+        return jsonify({'message': 'Success'})
+    except:
+        return jsonify({'message': 'UnknownError'}), 401
 
 
 @app.route('/api/check_session', methods=['POST'])
@@ -284,7 +306,7 @@ def change_email(user):
 
     url = app.config['FRONT_END_ADDRESS'] + '?#/confirm_change_email?'
 
-    url_params = urllib.parse.urlencode({
+    url_params = urllib.urlencode({
         "userid": change_email.user_id,
         "token": change_email.change_email_token
     })
@@ -308,9 +330,11 @@ def check_change_email():
             or "changeEmailToken" not in simple_change_email:
         return jsonify({'message': 'InvalidRequest'}), 500
 
+    user_id = simple_change_email.get('userId', '')
+
     try:
         change_email = ChangeEmail.query.filter_by(
-            user_id=simple_change_email['userId'],
+            user_id=user_id,
             change_email_token=simple_change_email['changeEmailToken']
         ).first()
     except:
@@ -319,7 +343,7 @@ def check_change_email():
     if change_email is None:
         return jsonify({'message': 'ChangeEmailTokenNotFound'}), 404
 
-    user = User.query.filter_by(user_id=change_email.user_id).first()
+    user = trade_engine.users.get(user_id, None)
 
     if user is None:
         return jsonify({'message': 'UserDoesNotExist'}), 404
@@ -336,9 +360,11 @@ def confirm_change_email():
             or "password" not in simple_change_email:
         return jsonify({'message': 'InvalidRequest'}), 500
 
+    user_id = simple_change_email.get('userId', '')
+
     try:
         change_email = ChangeEmail.query.filter_by(
-            user_id=simple_change_email['userId'],
+            user_id=user_id,
             change_email_token=simple_change_email['changeEmailToken']
         ).first()
     except:
@@ -347,7 +373,7 @@ def confirm_change_email():
     if change_email is None:
         return jsonify({'message': 'ChangeEmailTokenNotFound'}), 404
 
-    user = User.query.filter_by(user_id=change_email.user_id).first()
+    user = trade_engine.users.get(user_id, None)
 
     if user is None:
         return jsonify({'message': 'UserDoesNotExist'}), 404
@@ -358,11 +384,25 @@ def confirm_change_email():
     if not user.check_token(simple_change_email.get('token', '')):
         return jsonify({'message': 'IncorrectToken'}), 403
 
-    user.email = change_email.new_email
-    db.session.delete(change_email)
-    db.session.commit()
+    try:
+        with trade_engine.reader_writer_lock_dic.write_enter("uu" + str(user.user_id)):
+            emails = [user.email, change_email.new_email]
+            emails.sort()
 
-    return jsonify({'user': user.to_dic()})
+            with trade_engine.reader_writer_lock_dic.write_enter("ue" + str(emails[0])):
+                with trade_engine.reader_writer_lock_dic.write_enter("ue" + str(emails[1])):
+                    old_email = user.email
+                    user.email = change_email.new_email
+
+                    db.session.delete(change_email)
+                    db.session.commit()
+
+                    del trade_engine.user_emails[old_email]
+                    trade_engine.user_emails[change_email.new_email] = user
+
+        return jsonify({'user': user.to_dic()})
+    except:
+        return jsonify({'message': 'UnknownError'}), 500
 
 
 @app.route('/api/change_username', methods=['POST'])
@@ -373,12 +413,12 @@ def change_username(user):
     try:
         password = simple_user.get('password', '')
         if len(password) < 8:
-            raise 'e'
-        new_username = simple_user.get('newUsername', '')
+            raise Exception('e')
+        new_username = simple_user.get('newUsername', '').strip().lower()
         if len(new_username) < 6:
-            raise 'e'
+            raise Exception('e')
         if not re.match('^[a-zA-Z0-9_\-]{6,}$', new_username):
-            raise 'e'
+            raise Exception('e')
     except:
         return jsonify({'message': 'InvalidRequest'}), 500
 
@@ -391,10 +431,25 @@ def change_username(user):
     if new_username == user.username:
         return jsonify({'message': 'UsernamesAreTheSame', '0': new_username}), 403
 
-    user.username = new_username
-    db.session.commit()
+    try:
+        with trade_engine.reader_writer_lock_dic.write_enter('uu' + str(user.user_id)):
+            usernames = [user.username, new_username]
+            usernames.sort()
 
-    return jsonify({'user': user.to_dic()})
+            with trade_engine.reader_writer_lock_dic.write_enter('un' + usernames[0]):
+                with trade_engine.reader_writer_lock_dic.write_enter('un' + usernames[1]):
+
+                    old_username = user.username
+
+                    user.username = new_username
+                    db.session.commit()
+
+                    del trade_engine.user_emails[old_username]
+                    trade_engine.user_emails[new_username] = user
+
+                    return jsonify({'user': user.to_dic()})
+    except:
+        return jsonify({'message': 'UnknownError'}), 500
 
 
 @app.route('/api/change_password', methods=['POST'])
@@ -405,10 +460,10 @@ def change_password(user):
     try:
         password = simple_user.get('password', '')
         if len(password) < 8:
-            raise 'e'
+            raise Exception('e')
         new_password = simple_user.get('newPassword', '')
         if len(new_password) < 8:
-            raise 'e'
+            raise Exception('e')
     except:
         return jsonify({'message': 'InvalidRequest'}), 500
 
@@ -445,7 +500,7 @@ def enable_two_factor_authentication(user):
 
     try:
         if len(token['token']) < 6:
-            raise 'e'
+            raise Exception('e')
     except:
         return jsonify({'message': 'InvalidRequest'}), 500
 
@@ -473,7 +528,7 @@ def disable_two_factor_authentication(user):
 
     try:
         if len(token['token']) < 6:
-            raise 'e'
+            raise Exception('e')
     except:
         return jsonify({'message': 'InvalidRequest'}), 500
 
@@ -496,7 +551,10 @@ def disable_two_factor_authentication(user):
 
 
 def get_deposits_helper(user):
-    deposit_addresses = DepositAddress.query.filter_by(user_id=user.user_id).order_by(DepositAddress.address_id.desc()).all()
+    deposit_addresses = DepositAddress.query.filter_by(
+        user_id=user.user_id
+    ).order_by(DepositAddress.address_id.desc()).all()
+
     deposits = Deposit.query.filter_by(user_id=user.user_id).all()
 
     deposit_addresses_json = []
@@ -525,49 +583,58 @@ def create_deposit_address(user):
 
 
 @app.route('/api/add_deposit', methods=['POST'])
+@admin_password_required
 def add_deposit():
     deposit_request = request.get_json()
-
-    if app.config['ADMIN_PASSWORD'] != deposit_request.get("password", ""):
-        return jsonify({'message': 'InvalidRequest'}), 500
 
     try:
         quantity = int(deposit_request.get("quantity", ""))
     except:
         return jsonify({'message': 'InvalidQuantity'}), 500
 
-    user = User.query.filter_by(user_id=deposit_request.get("userId", "")).first()
-    if user is None:
-        return jsonify({'message': 'UserNotFound'}), 404
+    user_id = int(deposit_request.get("userId", -1))
 
-    deposit_id = DepositId.query.filter_by(
-        user_id=deposit_request.get("userId", ""),
-        address_id=deposit_request.get("addressId", "")
-    ).first()
+    with trade_engine.reader_writer_lock_dic.write_enter("uu" + str(user_id)):
+        try:
+            user = trade_engine.users.get(user_id, None)
 
-    if deposit_id is None:
-        deposit_id = DepositId(
-            user_id=deposit_request.get("userId", ""),
-            address_id=deposit_request.get("addressId", ""),
-            deposit_id=0
-        )
-        db.session.add(deposit_id)
-    else:
-        deposit_id.deposit_id += 1
+            if user is None:
+                return jsonify({'message': 'UserNotFound'}), 404
 
-    deposit = Deposit(
-        user_id=deposit_request.get("userId", ""),
-        address_id=deposit_request.get("addressId", ""),
-        deposit_id=deposit_id.deposit_id,
-        transaction_id=deposit_request.get("transactionId", ""),
-        quantity=quantity,
-        created_date=datetime.datetime.utcnow()
-    )
+            deposit_id = DepositId.query.filter_by(
+                user_id=deposit_request.get("userId", ""),
+                address_id=deposit_request.get("addressId", "")
+            ).first()
 
-    user.balance += quantity
+            if deposit_id is None:
+                deposit_id = DepositId(
+                    user_id=user_id,
+                    address_id=deposit_request.get("addressId", ""),
+                    deposit_id=0
+                )
+                db.session.add(deposit_id)
+            else:
+                deposit_id.deposit_id += 1
 
-    db.session.add(deposit)
-    db.session.commit()
+            deposit = Deposit(
+                user_id=user_id,
+                address_id=deposit_request.get("addressId", ""),
+                deposit_id=deposit_id.deposit_id,
+                transaction_id=deposit_request.get("transactionId", ""),
+                quantity=quantity,
+                created_date=datetime.datetime.utcnow()
+            )
+
+            try:
+                user.balance += quantity
+
+                db.session.add(deposit)
+                db.session.commit()
+            except:
+                user.balance -= quantity
+                return jsonify({'message', 'UnknownError'}), 500
+        except:
+            return jsonify({'message', 'UnknownError'}), 500
 
     return jsonify({'deposit': deposit.to_dic()})
 
@@ -600,39 +667,49 @@ def request_withdrawal(user):
     if amount < 100:
         return jsonify({'message': 'InvalidAmountEntered'}), 500
 
-    if amount > user.balance:
-        return jsonify({'message': 'WithdrawalAmountTooHigh'}), 500
+    with trade_engine.reader_writer_lock_dic.write_enter("uu" + str(user.user_id)):
+        try:
+            if amount > user.balance:
+                return jsonify({'message': 'WithdrawalAmountTooHigh'}), 500
 
-    withdrawal_id = WithdrawalId.query.filter_by(user_id=user.user_id).first()
+            withdrawal_id = WithdrawalId.query.filter_by(user_id=user.user_id).first()
 
-    if withdrawal_id is None:
-        withdrawal_id = WithdrawalId(
-            user_id=user.user_id,
-            withdrawal_id=0
-        )
-        db.session.add(withdrawal_id)
-    else:
-        withdrawal_id.withdrawal_id += 1
+            if withdrawal_id is None:
+                withdrawal_id = WithdrawalId(
+                    user_id=user.user_id,
+                    withdrawal_id=0
+                )
+                db.session.add(withdrawal_id)
+            else:
+                withdrawal_id.withdrawal_id += 1
 
-    new_withdrawal = Withdrawal(
-        user_id=user.user_id,
-        withdrawal_id=withdrawal_id.withdrawal_id,
-        address=withdrawal_request.get('address', ''),
-        amount=amount,
-        withdrawal_token=uuid.uuid4(),
-        cancelled=False,
-        transaction_id='',
-        created_date=datetime.datetime.utcnow(),
-        confirmed_date=None,
-        sent_date=None
-    )
+            new_withdrawal = Withdrawal(
+                user_id=user.user_id,
+                withdrawal_id=withdrawal_id.withdrawal_id,
+                address=withdrawal_request.get('address', ''),
+                amount=amount,
+                withdrawal_token=uuid.uuid4(),
+                cancelled=False,
+                transaction_id='',
+                created_date=datetime.datetime.utcnow(),
+                confirmed_date=None,
+                sent_date=None
+            )
 
-    user.balance -= amount
+            try:
+                user.balance -= amount
 
-    db.session.add(new_withdrawal)
-    db.session.commit()
+                db.session.add(new_withdrawal)
+                db.session.commit()
 
-    url_params = urllib.parse.urlencode({
+                trade_engine.users[user.user_id] = user
+            except:
+                user.balance += amount
+                return jsonify({'message', 'UnknownError'}), 500
+        except:
+            return jsonify({'message', 'UnknownError'}), 500
+
+    url_params = urllib.urlencode({
         "userid": user.user_id,
         "withdrawalid": new_withdrawal.withdrawal_id,
         "withdrawaltoken": new_withdrawal.withdrawal_token
@@ -677,7 +754,7 @@ def resend_withdrawal_request(user):
     if withdrawal is None or withdrawal.confirmed_date is not None:
         return jsonify({'message': 'WithdrawalRequestNotFound'}), 404
 
-    url_params = urllib.parse.urlencode({
+    url_params = urllib.urlencode({
         "userid": user.user_id,
         "withdrawalid": withdrawal.withdrawal_id,
         "withdrawaltoken": withdrawal.withdrawal_token
@@ -705,8 +782,10 @@ def resend_withdrawal_request(user):
 
 @app.route('/api/get_withdrawal_request', methods=['GET'])
 def get_withdrawal():
+    user_id = int(request.args.get("userId", -1))
+
     withdrawal = Withdrawal.query.filter_by(
-        user_id=request.args.get("userId", ""),
+        user_id=user_id,
         withdrawal_id=request.args.get("withdrawalId", ""),
         withdrawal_token=request.args.get("withdrawalToken", "")
     ).first()
@@ -714,7 +793,7 @@ def get_withdrawal():
     if withdrawal is None or withdrawal.confirmed_date is not None:
         return jsonify({'message': 'WithdrawalRequestNotFound'}), 404
 
-    user = User.query.filter_by(user_id=request.args.get("userId", "")).first()
+    user = trade_engine.users.get(user_id, None)
 
     if user is None:
         return jsonify({'message': 'UserDoesNotExist'}), 404
@@ -726,8 +805,10 @@ def get_withdrawal():
 def confirm_withdrawal():
     confirm_request = request.get_json()
 
+    user_id = int(confirm_request.get("userId", -1))
+
     withdrawal = Withdrawal.query.filter_by(
-        user_id=confirm_request.get("userId", ""),
+        user_id=user_id,
         withdrawal_id=confirm_request.get("withdrawalId", ""),
         withdrawal_token=confirm_request.get("withdrawalToken", "")
     ).first()
@@ -735,7 +816,7 @@ def confirm_withdrawal():
     if withdrawal is None or withdrawal.confirmed_date is not None:
         return jsonify({'message': 'WithdrawalRequestNotFound'}), 404
 
-    user = User.query.filter_by(user_id=confirm_request.get("userId", "")).first()
+    user = trade_engine.users.get(user_id, None)
 
     if user is None:
         return jsonify({'message': 'UserDoesNotExist'}), 404
@@ -756,8 +837,10 @@ def confirm_withdrawal():
 def cancel_withdrawal():
     confirm_request = request.get_json()
 
+    user_id = int(confirm_request.get("userId", -1))
+
     withdrawal = Withdrawal.query.filter_by(
-        user_id=confirm_request.get("userId", ""),
+        user_id=user_id,
         withdrawal_id=confirm_request.get("withdrawalId", ""),
         withdrawal_token=confirm_request.get("withdrawalToken", "")
     ).first()
@@ -765,32 +848,42 @@ def cancel_withdrawal():
     if withdrawal is None or withdrawal.confirmed_date is not None:
         return jsonify({'message': 'WithdrawalRequestNotFound'}), 404
 
-    user = User.query.filter_by(user_id=confirm_request.get("userId", "")).first()
-
-    if user is None:
+    if user_id == -1:
         return jsonify({'message': 'UserDoesNotExist'}), 404
 
-    if not user.check_password(confirm_request.get("password", "")):
-        return jsonify({'message': 'IncorrectPassword'}), 403
+    with trade_engine.reader_writer_lock_dic.write_enter("uu" + str(user_id)):
+        try:
+            user = trade_engine.users.get(user_id, None)
 
-    if not user.check_token(confirm_request.get("twoFactorToken", "")):
-        return jsonify({'message': 'IncorrectToken'}), 403
+            if user is None:
+                return jsonify({'message': 'UserDoesNotExist'}), 404
 
-    user.balance += withdrawal.amount
+            if not user.check_password(confirm_request.get("password", "")):
+                return jsonify({'message': 'IncorrectPassword'}), 403
 
-    withdrawal.confirmed_date = datetime.datetime.utcnow()
-    withdrawal.cancelled = True
-    db.session.commit()
+            if not user.check_token(confirm_request.get("twoFactorToken", "")):
+                return jsonify({'message': 'IncorrectToken'}), 403
+
+            user.balance += withdrawal.amount
+
+            try:
+                withdrawal.confirmed_date = datetime.datetime.utcnow()
+                withdrawal.cancelled = True
+                db.session.commit()
+            except:
+                user.balance -= withdrawal.amount
+                return jsonify({'message', 'UnknownError'}), 500
+        except:
+            return jsonify({'message', 'UnknownError'}), 500
+
 
     return jsonify({"user": user.to_dic(), "withdrawal": withdrawal.to_dic()})
 
 
 @app.route('/api/add_withdrawal', methods=['POST'])
+@admin_password_required
 def add_withdrawal():
     withdrawal_request = request.get_json()
-
-    if app.config['ADMIN_PASSWORD'] != withdrawal_request.get("password", ""):
-        return jsonify({'message': 'InvalidRequest'}), 500
 
     withdrawal = Withdrawal.query.filter_by(
         user_id=withdrawal_request.get("userId", ""),
@@ -805,3 +898,65 @@ def add_withdrawal():
     db.session.commit()
 
     return jsonify({"withdrawal": withdrawal.to_dic()})
+
+
+@app.route('/api/add_equity', methods=['POST'])
+@admin_password_required
+def add_equity():
+    _request = request.get_json()
+
+    if app.config['ADMIN_PASSWORD'] != _request.get("password", ""):
+        return jsonify({'message': 'InvalidRequest'}), 500
+
+    equity = Equity(_request)
+    db.session.add(equity)
+    db.session.commit()
+
+    return jsonify({"equity": equity.to_dic()})
+
+
+@app.route('/api/get_equities', methods=['GET'])
+def get_equities():
+    equities = Equity.query.order_by(Equity.equity_id).all()
+
+    equities_json = []
+    for equity in equities:
+        equities_json.append(equity.to_dic())
+
+    return jsonify({"equities": equities_json})
+
+
+@app.route('/api/place_order', methods=['POST'])
+@user_required
+def place_order(user):
+    _request = request.get_json()
+
+    try:
+        order = Order(_request)
+        if not order.is_valid():
+            return jsonify({'message': 'InvalidRequest'}), 500
+    except:
+        return jsonify({'message': 'InvalidRequest'}), 500
+
+    with trade_engine.reader_writer_lock_dic.write_enter('e' + str(order.equity_id)):
+        try:
+
+            equity = trade_engine.equities.get(order.equity_id, None)
+
+            if equity is None:
+                return jsonify({"message": "EquityNotFound"}), 404
+
+            if order.order_type == OrderType.MARKET:
+                return
+            elif order.order_type == OrderType.LIMIT:
+                return
+            elif order.order_type == OrderType.TRIGGER:
+                return
+            elif order.order_type == OrderType.RANGE:
+                return
+        except:
+            return
+
+    return jsonify({"equity": equity.to_dic()})
+
+

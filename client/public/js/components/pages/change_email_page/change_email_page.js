@@ -35,12 +35,12 @@ export default class ChangeEmailPage extends React.Component {
 	componentDidMount() {
 		this.refs.form.addEventListener('submit', (event) => {
 			if (this.refs.form.checkValidity() === false) {
-				event.preventDefault();
-				event.stopPropagation();
 			} else {
 				ChangeEmailActions.changeEmail(this.refs.newEmail.value, this.refs.password.value, this.refs.twofaToken.value)
 			}
 
+			event.preventDefault();
+			event.stopPropagation();
 			this.refs.form.classList.add('was-validated');
 		})
 	}

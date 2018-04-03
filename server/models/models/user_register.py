@@ -34,8 +34,8 @@ class UserRegister(db.Model):
 
     def from_dic(self, dic):
         self.registration_token = uuid.uuid4()
-        self.username = dic.get("username", "")
-        self.email = dic.get("email", "")
+        self.username = dic.get("username", "").strip().lower()
+        self.email = dic.get("email", "").strip().lower()
         self.password = dic.get("password", "")
         self.registration_date = datetime.datetime.utcnow()
 

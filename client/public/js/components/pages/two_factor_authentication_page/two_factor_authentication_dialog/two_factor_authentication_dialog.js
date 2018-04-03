@@ -40,8 +40,6 @@ export default class TwoFactorAuthenticationDialog extends React.Component {
 	componentDidMount() {
 		this.refs.form.addEventListener('submit', (event) => {
 			if (this.refs.form.checkValidity() === false) {
-				event.preventDefault();
-				event.stopPropagation();
 			} else {
 				if (!LoginStore.user.twoFactorEnabled) {
 					LoginActions.enableTwoFactorAuthentication(this.refs.twofaToken.value);
@@ -50,6 +48,8 @@ export default class TwoFactorAuthenticationDialog extends React.Component {
 				}
 			}
 
+			event.preventDefault();
+			event.stopPropagation();
 			this.refs.form.classList.add('was-validated');
 		})
 

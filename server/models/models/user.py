@@ -16,10 +16,16 @@ class User(db.Model):
     registration_date = db.Column(db.DateTime(), nullable=False)
 
     def __init__(self):
-        return
+        self.init_calculated_field()
 
     def __init__(self, user_register):
-        self.from_user_register(user_register)
+        self.init_calculated_field()
+
+    def init_calculated_field(self):
+        self.margin_used = 0
+        self.margin_used_percent = 0.0
+        self.margin_used_orders = 0
+        self.margin_used_orders_percent = 0.0
 
     def from_user_register(self, user_register):
         self.username = user_register.username
@@ -52,6 +58,11 @@ class User(db.Model):
         totp = pyotp.TOTP(self.two_f_a_token)
         return totp.verify(token)
 
-
     def set_password(self, password):
         self.password = hashlib.sha512((password + app.config['SALT']).encode('utf-8')).hexdigest()
+
+    def can_place_order(self, order):
+        return False
+
+    def can_execute_order(self, order, next_price):
+        return False
