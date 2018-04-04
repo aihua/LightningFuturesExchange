@@ -295,6 +295,7 @@ class DictionaryVersion(Transactional):
         self.new_items = {}
         self.tomb_stones = {}
         self.update_items = {}
+        self.model_name = model_name
         if model_name is not None:
             if events is not None:
                 events.subscribe(model_name + '_insert_item', self.insert_item)
@@ -325,26 +326,64 @@ class DictionaryVersion(Transactional):
     def insert_item(self, item):
         key = getattr(item, self.key_name)
 
-        return
+        if key in self.tomb_stones:
+            del self.tomb_stones[key]
+
+            if key in self.dic:
+                self.update_items[key] = item
+            else:
+                self.new_items[key] = item
+        else:
+            self.new_items[key] = item
 
     def update_item(self, new_item, old_item):
-        key = getattr(item, self.key_name)
-
-        return
+        self.delete_item(old_item)
+        self.insert_item(new_item)
 
     def delete_item(self, item):
         key = getattr(item, self.key_name)
 
-        return
+        if key in self.dic:
+            if key in self.update_items:
+                del self.update_items[key]
 
-    def clone(self):
-        return
+            if key not in self.tomb_stones:
+                self.tomb_stones[key] = item
+        else:
+            if key in self.new_items:
+                del self.new_items[key]
 
-    def commit(self):
-        return
+    def clone(self, root_name="", root=None):
+        result = DictionaryVersion(
+            self.dic,
+            self.key_name,
+            self.tomb_stones,
+            model_name=self.model_name,
+            events=None if root is None else root.events
+        )
+        return result
+
+    def commit(self, db):
+        for new_item in self.new_items:
+            key = getattr(new_item, self.key_name)
+            db.session.add(new_item)
+            self.dic[key] = new_item
+
+        for tomb_stone in self.tomb_stones:
+            key = getattr(tomb_stone, self.key_name)
+            db.session.delete(self.dic[key])
+            del self.dic[key]
+
+        for update_item in self.update_items:
+            key = getattr(update_item, self.key_name)
+            self.dic[key].copy_values(update_item)
+
+        self.roll_back()
 
     def roll_back(self):
-        return
+        self.new_items = {}
+        self.tomb_stones = {}
+        self.update_items = {}
 
 
 class DictionaryDictionaryArrayVersion(Transactional):
@@ -386,12 +425,9 @@ class DictionaryDictionaryArrayVersion(Transactional):
         self.__create_if_not_created(key1, key2)
         self.new_dic[key1][key2].remove_item(item)
 
-    def update_item(self, item):
-        key1 = getattr(item, self.key_name_1)
-        key2 = getattr(item, self.key_name_2)
-
-        self.__create_if_not_created(key1, key2)
-        self.new_dic[key1][key2].update_item(item)
+    def update_item(self, new_item, old_item):
+        self.remove_item(old_item)
+        self.insert_item(new_item)
 
     def get_item(self, item):
         key1 = getattr(item, self.key_name_1)
@@ -400,7 +436,10 @@ class DictionaryDictionaryArrayVersion(Transactional):
         if key1 in self.new_dic and key2 in self.new_dic[key1]:
             return self.new_dic[key1][key2][item]
         else:
-            return self.dic[key1][key2][item]
+            if key1 in self.dic and key2 in self.dic[key1]:
+                return self.dic[key1][key2][item]
+            else:
+                return None
 
     def clone(self, root_name="root", root=None):
         result = DictionaryDictionaryArrayVersion(
@@ -412,15 +451,19 @@ class DictionaryDictionaryArrayVersion(Transactional):
             model_name=self.model_name,
             events=None if root is None else root.events
         )
-
         return result
 
-
-    def commit(self):
-        return
+    def commit(self, db):
+        for key1 in self.new_dic.keys():
+            for key2 in self.new_dic[key1].keys():
+                self.dic[key1][key2].commit(db)
 
     def roll_back(self):
-        return
+        for key1 in self.new_dic.keys():
+            for key2 in self.new_dic[key1].keys():
+                self.dic[key1][key2].roll_back()
+
+        self.new_dic = {}
 
 
 class DictionaryAutoIncrementerVersion(Transactional):
