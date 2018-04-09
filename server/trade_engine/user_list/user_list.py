@@ -6,7 +6,6 @@ from indices.user_orders import UserOrders
 from indices.user_contracts import UserContracts
 from indices.user_transactions import UserTransactions
 
-
 class UserList(Transactional):
     def __init__(self):
         pass
@@ -26,6 +25,8 @@ class UserList(Transactional):
         events.subscribe("match_order", self.check_user_can_execute_order, EventPriority.VALIDATION)
         events.subscribe("contracts_insert_item", self.create_contract)
         events.subscribe("contracts_update_item", self.update_contract)
+        events.subscribe("user_update_contract_fee", self.user_update_contract_fee)
+        events.subscribe("user_create_contract_margin", self.user_create_contract_margin)
 
     def check_user_can_place_order(self, order):
         user = self.users.get_item(order)
@@ -64,10 +65,27 @@ class UserList(Transactional):
 
         self.trade_engine.events.trigger("users_update_item", new_user, old_user)
 
+    def update_user_margin(self, user, amount):
+        old_user = self.users.get_item(user)
+        new_user = old_user.clone()
+
+        btc_price = self.trade_engine.get_bitcoin_price()
+        btc_decimal = self.trade_engine.BITCOIN_DECIMAL
+
+        btc_multiplier = btc_decimal / btc_price
+
+        new_user.add_to_margin(amount["margin"] * btc_multiplier, amount["margin_orders"] * btc_multiplier)
+
+        self.trade_engine.events.trigger("users_update_item", new_user, old_user)
+
     def create_contract_helper(self, contract, quantity, is_maker):
         amount = {"amount": 0}
         self.trade_engine.events.trigger("user_create_contract_fee", contract, quantity, is_maker, amount)
         self.update_user_balance(contract, -amount["amount"])
+
+        amount = {"margin": 0, "margin_orders": 0}
+        self.trade_engine.events.trigger("user_create_contract_margin", contract, quantity, is_maker, amount)
+        self.update_user_margin(contract, amount)
 
     def create_contract(self, contract, is_maker):
         self.create_contract_helper(contract, contract.quantity, is_maker)
@@ -79,8 +97,15 @@ class UserList(Transactional):
             self.create_contract_helper(new_contract, quantity, is_maker)
         else:
             amount = {"amount": 0}
-            self.trade_engine.events.trigger("user_create_contract_fee", new_contract, -quantity, is_maker, amount)
             self.trade_engine.events.trigger("user_update_contract_fee", new_contract, old_contract, is_maker, amount)
-
             self.update_user_balance(new_contract, -amount["amount"])
 
+            amount = {"margin": 0, "margin_orders": 0}
+            self.trade_engine.events.trigger("user_create_contract_margin", new_contract, quantity, is_maker, amount)
+            self.update_user_margin(new_contract, amount)
+
+    def user_update_contract_fee(self, new_contract, old_contract, is_maker, amount):
+        amount["amount"] -= (old_contract.quantity - new_contract.quantity) * ((new_contract.price - old_contract.price) / new_contract.PRICE_MULTIPLIER)
+
+    def user_create_contract_margin(self, contract, quantity, is_maker, amount):
+        pass

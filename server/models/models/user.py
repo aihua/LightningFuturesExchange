@@ -2,7 +2,7 @@ from shared.shared import db, app
 import datetime
 import hashlib
 import pyotp
-
+import math
 
 class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -16,10 +16,17 @@ class User(db.Model):
     registration_date = db.Column(db.DateTime(), nullable=False)
 
     def __init__(self):
-        self.init_calculated_field()
+        self.margin_used = 0
+        self.margin_used_percent = 0.0
+        self.margin_used_orders = 0
+        self.margin_used_orders_percent = 0.0
 
     def __init__(self, user_register):
-        self.init_calculated_field()
+        self.margin_used = 0
+        self.margin_used_percent = 0.0
+        self.margin_used_orders = 0
+        self.margin_used_orders_percent = 0.0
+        self.from_user_register(user_register)
 
     def init_calculated_field(self):
         self.margin_used = 0
@@ -62,12 +69,19 @@ class User(db.Model):
         self.password = hashlib.sha512((password + app.config['SALT']).encode('utf-8')).hexdigest()
 
     def can_place_order(self, order):
-        return False
+        pass
 
     def can_execute_order(self, order, next_price):
-        return False
+        pass
 
     def add_to_balance(self, balance):
-        self.balance += balance
+        self.balance += math.floor(balance)
         self.margin_used_percent = self.margin_used / (self.balance + 0.0)
-        self.margin_used_orders_percent = self.margin_used_orders_percent / (self.balance + 0.0)
+        self.margin_used_orders_percent = self.margin_used_orders / (self.balance + 0.0)
+
+    def add_to_margin(self, margin, margin_orders):
+        self.margin_used += math.ceil(margin)
+        self.margin_used_orders += math.ceil(margin_orders)
+        self.margin_used_percent = self.margin_used / (self.balance + 0.0)
+        self.margin_used_orders_percent = self.margin_used_orders / (self.balance + 0.0)
+
