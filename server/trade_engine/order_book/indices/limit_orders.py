@@ -1,6 +1,8 @@
-from trade_engine.dictionary_array_version import DictionaryArrayVersion, Transactional
+from transactional_data_structures.transactional import Transactional
+from transactional_data_structures.dictionary_array_version import DictionaryArrayVersion
 from models.models.order import Order
-from trade_engine.events.events import EventReturnType
+from transactional_data_structures.events import EventReturnType, Events
+
 
 class LimitOrders(Transactional):
     def __init__(self):
@@ -28,11 +30,10 @@ class LimitOrders(Transactional):
 
         if order.intersects(matched_order):
             # Should not continue on margined orderbook and margin calls
-            if not self.trade_engine.trigger("match_orders", order, matched_order):
-                return EventReturnType.RESTART
-
-            if order.remaining_quantity() == 0:
-                return EventReturnType.STOP
-
-            return EventReturnType.RESTART
-        return EventReturnType.CONTINUE
+            if Events.executed(self.trade_engine.trigger("match_orders", order, matched_order)):
+                if order.remaining_quantity() == 0:
+                    return EventReturnType.STOP
+                else:
+                    return EventReturnType.RESTART
+        else:
+            return EventReturnType.CONTINUE

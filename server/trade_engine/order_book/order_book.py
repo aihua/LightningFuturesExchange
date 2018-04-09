@@ -1,5 +1,9 @@
-from trade_engine.dictionary_array_version import DictionaryArrayVersion, Transactional, DictionaryAutoIncrementerVersion
+from transactional_data_structures.transactional import Transactional
+from transactional_data_structures.dictionary_array_version import DictionaryArrayVersion
+from transactional_data_structures.auto_incrementer_version import AutoIncrementerVersion
+
 from models.models.order import OrderType, OrderStatus, Order
+from transactional_data_structures.events import Events
 from indices.limit_orders import LimitOrders
 from indices.trigger_orders import  TriggerOrders
 from indices.trailing_orders import TrailingOrders
@@ -8,14 +12,14 @@ import datetime
 
 
 class OrderBook(Transactional):
-    def __init__(self, trade_engine):
+    def __init__(self):
         pass
 
     def __init__(self, trade_engine):
         self.trade_engine = trade_engine
 
         self.orders = DictionaryArrayVersion({}, Order.id_comparer, "equity_id", model_name="orders", events=self.trade_engine.events)
-        self.orders_id = DictionaryAutoIncrementerVersion({})
+        self.orders_id = AutoIncrementerVersion({})
 
         self.limit_order_longs = LimitOrders(self.trade_engine, True)
         self.limit_order_shorts = LimitOrders(self.trade_engine, False)
@@ -25,6 +29,8 @@ class OrderBook(Transactional):
 
         self.trailing_order_longs = TrailingOrders(self.trade_engine, True)
         self.trailing_order_shorts = TrailingOrders(self.trade_engine, False)
+
+        self.subscribe_to_events(trade_engine.events)
 
     def subscribe_to_events(self, events):
         events.subscribe("place_order", self.place_order_simple, 3)
@@ -40,7 +46,7 @@ class OrderBook(Transactional):
         order.order_id = self.get_next_id()
         order.modification_id = order.order_id
 
-        if not self.trade_engine.events.trigger("execute_order", order):
+        if not Events.executed(self.trade_engine.events.trigger("execute_order", order)):
             self.trade_engine.events.trigger("place_order", order)
 
     def cancel_order(self, order):

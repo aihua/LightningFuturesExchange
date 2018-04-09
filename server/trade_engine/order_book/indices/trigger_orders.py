@@ -1,6 +1,7 @@
-from trade_engine.dictionary_array_version import DictionaryArrayVersion, Transactional
+from transactional_data_structures.transactional import Transactional
+from transactional_data_structures.dictionary_array_version import DictionaryArrayVersion
 from models.models.order import Order
-from trade_engine.events.events import EventReturnType
+from transactional_data_structures.events import EventReturnType
 
 class TriggerOrders(Transactional):
     def __init__(self):

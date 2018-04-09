@@ -1,6 +1,7 @@
-from trade_engine.dictionary_array_version import DictionaryArrayVersion, Transactional, DictionaryAutoIncrementerVersion
+from transactional_data_structures.transactional import Transactional
+from transactional_data_structures.dictionary_array_version import DictionaryArrayVersion
+from transactional_data_structures.auto_incrementer_version import AutoIncrementerVersion
 from models.models.transaction import Transaction
-from trade_engine.events.events import EventReturnType
 
 
 class TransactionList(Transactional):
@@ -11,7 +12,7 @@ class TransactionList(Transactional):
         self.trade_engine = trade_engine
 
         self.transactions = DictionaryArrayVersion({}, Transaction.id_comparer, "equity_id", model_name="transactions", events=self.trade_engine.events)
-        self.transactions_id = DictionaryAutoIncrementerVersion({})
+        self.transactions_id = AutoIncrementerVersion({})
 
     def subscribe_to_events(self, events):
         pass

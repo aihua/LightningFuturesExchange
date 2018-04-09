@@ -14,6 +14,7 @@ class EventPriority(Enum):
     EVENT = 0
     POST_EVENT = 1
 
+
 class EventSubscription:
     def __init__(self, sub_name, priority, func):
         self.sub_name = sub_name
@@ -32,6 +33,10 @@ class Events:
     def __init__(self):
         self.sub_counter = 0
         self.events = {}
+
+    @staticmethod
+    def executed(trigger):
+        return trigger
 
     def subscribe(self, event_name, func, priority=EventPriority.EVENT, sub_name=""):
         if event_name not in self.events:
@@ -66,7 +71,7 @@ class Events:
 
     def trigger(self, event_name, *args):
         if event_name not in self.events:
-            return
+            return False
 
         restart = False
         while not restart:
@@ -75,9 +80,9 @@ class Events:
                 if event_return is None or event_return == EventReturnType.CONTINUE:
                     continue
                 elif event_return == EventReturnType.STOP:
-                    return False
+                    return True
                 elif event_return == EventReturnType.RESTART:
                     restart = True
                     break
 
-        return True
+        return False

@@ -8,11 +8,13 @@ class ContractStatus(Enum):
 
 
 class Contract(db.Model):
+    PRICE_MULTIPLIER = 1000
+
     equity_id = db.Column(db.Integer, primary_key=True, nullable=False)
     contract_id = db.Column(db.Integer, primary_key=True, nullable=False)
     user_id = db.Column(db.Integer, nullable=False)
     modified_id = db.Column(db.Integer, nullable=False)
-    is_buy = db.Column(db.Boolean, nullable=False)
+    is_long = db.Column(db.Boolean, nullable=False)
     quantity = db.Column(db.BigInteger, nullable=False)
     price = db.Column(db.BigInteger, nullable=False)
     status = db.Column(db.Integer, nullable=False)

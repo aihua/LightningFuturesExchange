@@ -1,7 +1,7 @@
 from transactional_data_structures.transactional import Transactional
 
 
-class UserTransactions(Transactional):
+class UserOrders(Transactional):
     def __init__(self):
         pass
 

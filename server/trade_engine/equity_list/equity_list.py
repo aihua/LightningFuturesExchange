@@ -1,7 +1,7 @@
-from trade_engine.dictionary_array_version import DictionaryVersion, Transactional, DictionaryAutoIncrementerVersion
-from models.models.order import OrderStatus
-from trade_engine.events.events import EventPriority
-import datetime
+from transactional_data_structures.transactional import Transactional
+from transactional_data_structures.dictionary_version import DictionaryVersion
+
+from transactional_data_structures.events import EventPriority
 
 
 class EquityList(Transactional):
@@ -11,6 +11,8 @@ class EquityList(Transactional):
     def __init__(self, trade_engine):
         self.trade_engine = trade_engine
         self.equities = DictionaryVersion({}, "equity_id", model_name="equities", events=trade_engine.events)
+
+        self.subscribe_to_events(trade_engine.events)
 
     def subscribe_to_events(self, events):
         events.subscribe("match_orders", self.set_equity_price, EventPriority.PRE_EVENT)

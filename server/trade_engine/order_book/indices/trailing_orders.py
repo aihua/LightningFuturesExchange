@@ -1,6 +1,7 @@
-from trade_engine.dictionary_array_version import DictionaryArrayVersion, Transactional
+from transactional_data_structures.transactional import Transactional
+from transactional_data_structures.dictionary_array_version import DictionaryArrayVersion
 from models.models.order import Order
-from trade_engine.events.events import EventReturnType
+from transactional_data_structures.events import EventReturnType
 
 
 class TrailingOrders(Transactional):
@@ -17,6 +18,7 @@ class TrailingOrders(Transactional):
 
         self.orders = DictionaryArrayVersion({}, comparer, "equity_id", is_in_item=is_in_item, model_name="orders",
                                              events=self.trade_engine.events)
+        self.subscribe_to_events(self.trade_engine.events)
 
     def subscribe_events(self, events):
         events.subscribe("execute_order", self.execute_order)
