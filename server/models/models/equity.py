@@ -2,6 +2,8 @@ from shared.shared import db
 
 
 class Equity(db.Model):
+    PERCENT_MULTIPLIER = 10000
+
     equity_id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
     symbol = db.Column(db.String(100), nullable=False)
     name = db.Column(db.String(100), nullable=False)

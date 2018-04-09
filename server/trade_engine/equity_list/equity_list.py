@@ -14,6 +14,9 @@ class EquityList(Transactional):
 
         self.subscribe_to_events(trade_engine.events)
 
+    def get_equity(self, equity):
+        return self.equities.get_item(equity)
+
     def subscribe_to_events(self, events):
         events.subscribe("match_orders", self.set_equity_price, EventPriority.PRE_EVENT)
 
