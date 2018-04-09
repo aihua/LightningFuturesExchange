@@ -23,14 +23,13 @@ class TradingFees(Transactional):
         fee = self.TAKER_FEE
         amount["amount"] += math.ceil(order_total * fee)
 
-    def user_create_contract_fee(self, contract, quantity, is_maker, amount):
+    def update_amount(self, contract, quantity, is_maker, amount):
         order_total = (contract.price / contract.PRICE_MULTIPLIER) * quantity
-        btc_price = self.trade_engine.get_bitcoin_price()
-        btc_decimal = self.trade_engine.BITCOIN_DECIMAL
-        fee = self.MAKER_FEE if is_maker else self.TAKER_FEE
-        amount["amount"] += math.ceil(order_total * fee * btc_decimal / btc_price)
-
-    def user_update_contract_fee(self, new_contract, old_contract, is_maker, amount):
-        order_total = (new_contract.price / new_contract.PRICE_MULTIPLIER) * (new_contract.quantity - old_contract.quantity)
         fee = self.MAKER_FEE if is_maker else self.TAKER_FEE
         amount["amount"] += math.ceil(order_total * fee)
+
+    def user_create_contract_fee(self, contract, quantity, is_maker, amount):
+        self.update_amount(contract, quantity, is_maker, amount)
+
+    def user_update_contract_fee(self, new_contract, old_contract, is_maker, amount):
+        self.update_amount(new_contract, new_contract.quantity - old_contract.quantity, is_maker, amount)

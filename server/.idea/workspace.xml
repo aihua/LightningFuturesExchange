@@ -18,18 +18,6 @@
         <splitter split-orientation="horizontal" split-proportion="0.4959423">
           <split-first>
             <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-              <file leaf-file-name="order_book.py" pinned="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/trade_engine/order_book/order_book.py">
-                  <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="561">
-                      <caret line="33" column="0" lean-forward="false" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
-                      <folding>
-                        <element signature="e#0#69#0" expanded="true" />
-                      </folding>
-                    </state>
-                  </provider>
-                </entry>
-              </file>
               <file leaf-file-name="events.py" pinned="false" current-in-tab="false">
                 <entry file="file://$PROJECT_DIR$/transactional_data_structures/events.py">
                   <provider selected="true" editor-type-id="text-editor">
@@ -62,7 +50,7 @@
                   </provider>
                 </entry>
               </file>
-              <file leaf-file-name="contract_list.py" pinned="false" current-in-tab="false">
+              <file leaf-file-name="contract_list.py" pinned="false" current-in-tab="true">
                 <entry file="file://$PROJECT_DIR$/trade_engine/contract_list/contract_list.py">
                   <provider selected="true" editor-type-id="text-editor">
                     <state relative-caret-position="306">
@@ -74,11 +62,11 @@
                   </provider>
                 </entry>
               </file>
-              <file leaf-file-name="dictionary_dictionary_version.py" pinned="false" current-in-tab="true">
+              <file leaf-file-name="dictionary_dictionary_version.py" pinned="false" current-in-tab="false">
                 <entry file="file://$PROJECT_DIR$/transactional_data_structures/dictionary_dictionary_version.py">
                   <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="562">
-                      <caret line="96" column="36" lean-forward="true" selection-start-line="96" selection-start-column="36" selection-end-line="96" selection-end-column="36" />
+                    <state relative-caret-position="1021">
+                      <caret line="123" column="65" lean-forward="false" selection-start-line="123" selection-start-column="65" selection-end-line="123" selection-end-column="65" />
                       <folding />
                     </state>
                   </provider>
@@ -89,6 +77,16 @@
                   <provider selected="true" editor-type-id="text-editor">
                     <state relative-caret-position="257">
                       <caret line="17" column="0" lean-forward="false" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+                      <folding />
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+              <file leaf-file-name="user_orders.py" pinned="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/trade_engine/user_list/indices/user_orders.py">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="119">
+                      <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="8" selection-end-column="40" />
                       <folding />
                     </state>
                   </provider>
@@ -107,7 +105,7 @@
               <file leaf-file-name="user_contracts.py" pinned="false" current-in-tab="false">
                 <entry file="file://$PROJECT_DIR$/trade_engine/user_list/indices/user_contracts.py">
                   <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="338">
+                    <state relative-caret-position="50">
                       <caret line="20" column="35" lean-forward="true" selection-start-line="20" selection-start-column="35" selection-end-line="20" selection-end-column="35" />
                       <folding>
                         <element signature="e#0#69#0" expanded="true" />
@@ -176,7 +174,7 @@
                   </provider>
                 </entry>
               </file>
-              <file leaf-file-name="trailing_orders.py" pinned="false" current-in-tab="true">
+              <file leaf-file-name="trailing_orders.py" pinned="false" current-in-tab="false">
                 <entry file="file://$PROJECT_DIR$/trade_engine/order_book/indices/trailing_orders.py">
                   <provider selected="true" editor-type-id="text-editor">
                     <state relative-caret-position="340">
@@ -200,11 +198,11 @@
                   </provider>
                 </entry>
               </file>
-              <file leaf-file-name="trading_fees.py" pinned="false" current-in-tab="false">
+              <file leaf-file-name="trading_fees.py" pinned="false" current-in-tab="true">
                 <entry file="file://$PROJECT_DIR$/trade_engine/trading_fees/trading_fees.py">
                   <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="34">
-                      <caret line="2" column="0" lean-forward="false" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+                    <state relative-caret-position="425">
+                      <caret line="25" column="33" lean-forward="true" selection-start-line="25" selection-start-column="33" selection-end-line="25" selection-end-column="33" />
                       <folding>
                         <element signature="e#0#69#0" expanded="true" />
                       </folding>
@@ -389,7 +387,6 @@
         <option value="$PROJECT_DIR$/transactional_data_structures/dictionary_auto_incrementer_version.py" />
         <option value="$PROJECT_DIR$/trade_engine/order_book/indices/limit_orders.py" />
         <option value="$PROJECT_DIR$/trade_engine/order_book/indices/trigger_orders.py" />
-        <option value="$PROJECT_DIR$/trade_engine/trading_fees/trading_fees.py" />
         <option value="$PROJECT_DIR$/trade_engine/transaction_list/transaction_list.py" />
         <option value="$PROJECT_DIR$/trade_engine/trade_engine2.py" />
         <option value="$PROJECT_DIR$/routes/routes.py" />
@@ -411,6 +408,7 @@
         <option value="$PROJECT_DIR$/trade_engine/user_list/indices/user_contracts.py" />
         <option value="$PROJECT_DIR$/transactional_data_structures/dictionary_version.py" />
         <option value="$PROJECT_DIR$/transactional_data_structures/dictionary_dictionary_version.py" />
+        <option value="$PROJECT_DIR$/trade_engine/trading_fees/trading_fees.py" />
       </list>
     </option>
   </component>
@@ -1051,16 +1049,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/trade_engine/trading_fees/trading_fees.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="0" lean-forward="false" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#69#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/transactional_data_structures/auto_incrementer_version.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="340">
@@ -1155,32 +1143,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/trade_engine/user_list/indices/user_orders.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="8" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trade_engine/user_list/user_list.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="18" column="8" lean-forward="false" selection-start-line="18" selection-start-column="8" selection-end-line="18" selection-end-column="8" />
-          <folding>
-            <element signature="e#0#69#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trade_engine/user_list/indices/user_transactions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="34" lean-forward="false" selection-start-line="8" selection-start-column="34" selection-end-line="8" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/trade_engine/transaction_list/transaction_list.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1227,16 +1189,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/trade_engine/order_book/indices/trailing_orders.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="20" column="58" lean-forward="false" selection-start-line="20" selection-start-column="58" selection-end-line="20" selection-end-column="58" />
-          <folding>
-            <element signature="e#0#69#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/trade_engine/equity_list/equity_list.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="238">
@@ -1271,26 +1223,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/trade_engine/contract_list/contract_list.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#69#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trade_engine/user_list/indices/user_contracts.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="338">
-          <caret line="20" column="35" lean-forward="true" selection-start-line="20" selection-start-column="35" selection-end-line="20" selection-end-column="35" />
-          <folding>
-            <element signature="e#0#69#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/transactional_data_structures/dictionary_version.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="257">
@@ -1301,9 +1233,75 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/transactional_data_structures/dictionary_dictionary_version.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="562">
-          <caret line="96" column="36" lean-forward="true" selection-start-line="96" selection-start-column="36" selection-end-line="96" selection-end-column="36" />
+        <state relative-caret-position="1021">
+          <caret line="123" column="65" lean-forward="false" selection-start-line="123" selection-start-column="65" selection-end-line="123" selection-end-column="65" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trade_engine/user_list/indices/user_contracts.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="50">
+          <caret line="20" column="35" lean-forward="true" selection-start-line="20" selection-start-column="35" selection-end-line="20" selection-end-column="35" />
+          <folding>
+            <element signature="e#0#69#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trade_engine/user_list/indices/user_transactions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="34" lean-forward="false" selection-start-line="8" selection-start-column="34" selection-end-line="8" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trade_engine/user_list/indices/user_orders.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="8" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trade_engine/contract_list/contract_list.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#69#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trade_engine/user_list/user_list.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="18" column="8" lean-forward="false" selection-start-line="18" selection-start-column="8" selection-end-line="18" selection-end-column="8" />
+          <folding>
+            <element signature="e#0#69#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trade_engine/order_book/indices/trailing_orders.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="20" column="58" lean-forward="false" selection-start-line="20" selection-start-column="58" selection-end-line="20" selection-end-column="58" />
+          <folding>
+            <element signature="e#0#69#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trade_engine/trading_fees/trading_fees.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="25" column="33" lean-forward="true" selection-start-line="25" selection-start-column="33" selection-end-line="25" selection-end-column="33" />
+          <folding>
+            <element signature="e#0#69#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
