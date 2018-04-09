@@ -2,8 +2,8 @@ node_modules/
 bower_components/
 config/config.json
 server/json/config.json
-server/venv/
-server/venv1/
-server/venv2/
-server/__pycache__/
+server/venv
+server/venv1
+server/venv2
+server/__pycache__
 server/**/*.pyc
