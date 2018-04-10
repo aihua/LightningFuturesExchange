@@ -15,6 +15,9 @@ class VersionedOrderedArray(Transactional):
     def __iter__(self):
         yield 5
 
+    def get_length(self):
+        return len(self.array) - len(self.tombstones) + len(self.new_items)
+
     def binary_search(self, array, item):
         return binary_search(array, item, self.comparer)
 

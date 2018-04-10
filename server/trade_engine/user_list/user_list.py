@@ -31,6 +31,9 @@ class UserList(Transactional):
         events.subscribe("user_update_contract_fee", self.user_update_contract_fee)
         events.subscribe("user_create_contract_margin", self.user_create_contract_margin)
 
+    def get_contract(self, contract):
+        return self.user_contracts.contracts.get_item(contract)
+
     def check_user_can_place_order(self, order):
         user = self.users.get_item(order)
 
@@ -39,13 +42,14 @@ class UserList(Transactional):
         self.trade_engine.events.trigger("get_place_order_amount", order, order_amount)
 
         usd_margin_orders = user.margin_used_orders + order_amount["amount"]
+
         btc_price = self.trade_engine.get_bitcoin_price()
+        btc_decimal = self.trade_engine.BITCOIN_DECIMAL
 
-        if (usd_margin_orders / btc_price) >= user.balance:
+        btc_multiplier = btc_decimal / btc_price
+
+        if (usd_margin_orders * btc_multiplier) >= user.balance:
             raise Exception("InsufficientFunds")
-
-    def get_place_order_amount(self, order, amount):
-        pass
 
     def check_user_can_execute_order(self, order, matched_order):
         user = self.users.get_item(order)
@@ -89,7 +93,7 @@ class UserList(Transactional):
 
     def update_margin_helper(self, contract, quantity, is_closing):
         amount = {"margin": 0, "margin_orders": 0}
-        self.trade_engine.events.trigger("user_create_contract_margin", contract, quantity, is_maker, amount)
+        self.trade_engine.events.trigger("user_create_contract_margin", contract, quantity, amount)
         if is_closing:
             amount["margin"] = -amount["margin"]
             amount["margin_orders"] = -amount["margin_orders"]
