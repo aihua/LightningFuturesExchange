@@ -113,6 +113,15 @@ class DictionaryDictionaryArrayVersion(Transactional):
         else:
             return None
 
+    def get_list(self, item):
+        key1 = getattr(item, self.key_name_1)
+        key2 = getattr(item, self.key_name_2)
+
+        if key1 in self.dic and key2 in self.dic[key1]:
+            return self.dic[key1][key2]
+        else:
+            return []
+
     def get_length(self, item):
         key1 = getattr(item, self.key_name_1)
         key2 = getattr(item, self.key_name_2)

@@ -12,24 +12,15 @@ class TradingFees(Transactional):
     def subscribe_to_events(self, events):
         events.subscribe("get_place_order_amount", self.get_place_order_amount)
         events.subscribe("get_execute_order_amount", self.get_place_order_amount)
-        events.subscribe("user_create_contract_fee", self.user_create_contract_fee)
-        events.subscribe("user_update_contract_fee", self.user_update_contract_fee)
 
     def get_place_order_amount(self, order, amount):
-        amount["amount"] += 0
+        equity = self.trade_engine.equity_list.get_equity(order)
+        order_total = (order.price / equity.decimal_points_price) * order.quantity
+        fee = self.MAKER_FEE
+        amount["delta_balance"] += math.ceil(order_total * fee)
 
-    def get_execute_order_amount(self, order, amount):
-        order_total = order.price * order.quantity
-        fee = self.TAKER_FEE
-        amount["amount"] += math.ceil(order_total * fee)
-
-    def update_amount(self, contract, quantity, is_maker, amount):
-        order_total = (contract.price / contract.PRICE_MULTIPLIER) * quantity
+    def get_execute_order_amount(self, order, amount, is_maker=False):
+        equity = self.trade_engine.equity_list.get_equity(order)
+        order_total = (order.price / equity.decimal_points_price) * order.quantity
         fee = self.MAKER_FEE if is_maker else self.TAKER_FEE
-        amount["amount"] += math.ceil(order_total * fee)
-
-    def user_create_contract_fee(self, contract, quantity, is_maker, amount):
-        self.update_amount(contract, quantity, is_maker, amount)
-
-    def user_update_contract_fee(self, new_contract, old_contract, is_maker, amount):
-        self.update_amount(new_contract, new_contract.quantity - old_contract.quantity, is_maker, amount)
+        amount["delta_balance"] += math.ceil(order_total * fee)

@@ -28,10 +28,10 @@ class UserContracts(Transactional):
     def get_next_id(self):
         return self.trade_engine.contract_list.get_next_id()
 
-    def make_contract(self, order, price, quantity, is_maker):
+    def make_contract(self, order, is_maker):
         contract = self.contracts.get_item(order)
 
-        new_contract_quantity = quantity
+        new_contract_quantity = order.quantity
 
         if contract is not None:
             old_contract = contract
@@ -55,31 +55,25 @@ class UserContracts(Transactional):
                 new_contract.status = ContractStatus.CLOSED
                 new_contract.closed_date = datetime.datetime.utcnow()
 
-            self.trade_engine.events.trigger(
-                "contracts_update_item",
-                new_contract,
-                old_contract,
-                is_maker
-            )
+            self.trade_engine.events.trigger("contracts_update_item", new_contract, old_contract, is_maker)
 
         if new_contract_quantity != 0:
             contract_id = self.get_next_id()
-            self.trade_engine.events.trigger(
-                "contracts_insert_item",
-                Contract(
-                    equity_id=order.equity_id,
-                    contract_id=contract_id,
-                    user_id=order.user_id,
-                    modified_id=contract_id,
-                    is_long=order.is_long,
-                    quantity=new_contract_quantity,
-                    price=price * Contract.PRICE_MULTIPLIER,
-                    status=ContractStatus.OPENED,
-                    created_date=datetime.datetime.utcnow(),
-                    closed_date=None
-                ),
-                is_maker
+
+            new_contract = Contract(
+                equity_id=order.equity_id,
+                contract_id=contract_id,
+                user_id=order.user_id,
+                modified_id=contract_id,
+                is_long=order.is_long,
+                quantity=new_contract_quantity,
+                price=order.price * Contract.PRICE_MULTIPLIER,
+                status=ContractStatus.OPENED,
+                created_date=datetime.datetime.utcnow(),
+                closed_date=None
             )
+
+            self.trade_engine.events.trigger("contracts_insert_item", new_contract, is_maker)
 
 
 

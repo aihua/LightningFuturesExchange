@@ -21,6 +21,9 @@ class Contract(db.Model):
     created_date = db.Column(db.DateTime(), nullable=False)
     closed_date = db.Column(db.DateTime())
 
+    def get_price(self):
+        return self.price / (self.PRICE_MULTIPLIER + 0.0)
+
     @staticmethod
     def id_comparer(item1, item2):
         return 1 if item1.contract_id < item2.contract_id else -1 if item1.contract_id > item2.contract_id else 0

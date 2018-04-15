@@ -7,6 +7,7 @@ from indices.user_contracts import UserContracts
 from indices.user_transactions import UserTransactions
 from models.models.equity import Equity
 
+
 class UserList(Transactional):
     def __init__(self):
         pass
@@ -17,116 +18,73 @@ class UserList(Transactional):
 
         self.user_orders = UserOrders(trade_engine)
         self.user_contracts = UserContracts(trade_engine)
-        self.user_transactions = UserTransactions(trade_engine)
+        self.user_transactions = UserTransactions(trade_engine, True)
+        self.user_transactions = UserTransactions(trade_engine, False)
 
         self.subscribe_to_events(trade_engine.events)
 
     def subscribe_to_events(self, events):
         events.subscribe("place_order", self.user_can_place_order, EventPriority.VALIDATION)
-        events.subscribe("get_place_order_amount", self.get_place_order_amount)
         events.subscribe("match_order", self.check_user_can_execute_order, EventPriority.VALIDATION)
-        events.subscribe("get_execute_order_amount", self.get_execute_order_amount)
-        events.subscribe("contracts_insert_item", self.create_contract)
-        events.subscribe("contracts_update_item", self.update_contract)
-        events.subscribe("user_update_contract_fee", self.user_update_contract_fee)
-        events.subscribe("user_create_contract_margin", self.user_create_contract_margin)
+
+        events.subscribe("place_order", self.place_order)
+        events.subscribe("make_contract", self.make_contract, EventPriority.PRE_EVENT)
 
     def get_contract(self, contract):
         return self.user_contracts.contracts.get_item(contract)
 
+    def get_user(self, user):
+        return self.users.get_item(user)
+
+    def get_user_orders(self, order):
+        return self.user_orders.orders.get_list(order)
+
+    def check_has_sufficient_funds(self, user, amount):
+        btc_price = self.trade_engine.get_bitcoin_price()
+
+        balance_btc = user.balance - (amount["delta_balance"] / btc_price)
+        margin_btc = (user.margin_used + amount["margin"]) / btc_price
+        margin_used_orders_btc = (user.margin_used_orders + amount["margin_orders"]) / btc_price
+
+        if margin_btc >= balance_btc or margin_used_orders_btc >= balance_btc:
+            raise Exception("InsufficientFunds")
+
+    def update_user_balance_and_margin(self, user, amount):
+        old_user = self.users.get_item(user)
+        new_user = old_user.clone()
+
+        btc_price = self.trade_engine.get_bitcoin_price()
+        btc_decimal = self.trade_engine.BITCOIN_DECIMAL
+
+        new_user.add_to_balance_and_margin(
+            -amount["delta_balance"] * btc_decimal / btc_price,
+            amount["margin"],
+            amount["margin_orders"]
+        )
+
+        self.trade_engine.events.trigger("users_update_item", new_user, old_user)
+
     def check_user_can_place_order(self, order):
         user = self.users.get_item(order)
+        amount = {"margin": user.margin_used, "margin_orders": 0.0, "delta_balance": 0.0}
+        self.trade_engine.events.trigger("get_place_order_amount", order, amount)
+        self.check_has_sufficient_funds(user, amount)
 
-        order_amount = {"amount": 0}
-
-        self.trade_engine.events.trigger("get_place_order_amount", order, order_amount)
-
-        usd_margin_orders = user.margin_used_orders + order_amount["amount"]
-
-        btc_price = self.trade_engine.get_bitcoin_price()
-        btc_decimal = self.trade_engine.BITCOIN_DECIMAL
-
-        btc_multiplier = btc_decimal / btc_price
-
-        if (usd_margin_orders * btc_multiplier) >= user.balance:
-            raise Exception("InsufficientFunds")
-
-    def check_user_can_execute_order(self, order, matched_order):
+    def check_user_can_execute_order(self, order):
         user = self.users.get_item(order)
+        amount = {"margin": 0, "margin_orders": 0, "delta_balance": 0.0}
 
-        order_amount = {"amount": 0}
+        self.trade_engine.events.trigger("get_execute_order_amount", order, amount)
+        self.check_has_sufficient_funds(user, amount)
 
-        self.trade_engine.events.trigger("get_execute_order_amount", order, order_amount)
+    def place_order(self, order):
+        user = self.users.get_item(order)
+        amount = {"margin": user.margin_used, "margin_orders": 0.0, "delta_balance": 0.0}
+        self.trade_engine.events.trigger("get_place_order_amount", order, amount)
+        self.update_user_margin(user, amount)
 
-        usd_margin = user.margin_used + order_amount["amount"]
-        btc_price = self.trade_engine.get_bitcoin_price()
-
-        if (usd_margin / btc_price) >= user.balance:
-            raise Exception("InsufficientFunds")
-
-    def get_execute_order_amount(self, order, amount):
-        pass
-
-    def update_user_balance(self, user, delta_balance):
-        old_user = self.users.get_item(user)
-        new_user = old_user.clone()
-
-        btc_price = self.trade_engine.get_bitcoin_price()
-        btc_decimal = self.trade_engine.BITCOIN_DECIMAL
-
-        new_user.add_to_balance(-delta_balance * btc_decimal / btc_price)
-
-        self.trade_engine.events.trigger("users_update_item", new_user, old_user)
-
-    def update_user_margin(self, user, amount):
-        old_user = self.users.get_item(user)
-        new_user = old_user.clone()
-
-        btc_price = self.trade_engine.get_bitcoin_price()
-        btc_decimal = self.trade_engine.BITCOIN_DECIMAL
-
-        btc_multiplier = btc_decimal / btc_price
-
-        new_user.add_to_margin(amount["margin"] * btc_multiplier, amount["margin_orders"] * btc_multiplier)
-
-        self.trade_engine.events.trigger("users_update_item", new_user, old_user)
-
-    def update_margin_helper(self, contract, quantity, is_closing):
-        amount = {"margin": 0, "margin_orders": 0}
-        self.trade_engine.events.trigger("user_create_contract_margin", contract, quantity, amount)
-        if is_closing:
-            amount["margin"] = -amount["margin"]
-            amount["margin_orders"] = -amount["margin_orders"]
-        self.update_user_margin(contract, amount)
-
-    def create_contract_helper(self, contract, quantity, is_maker):
-        amount = {"amount": 0}
-        self.trade_engine.events.trigger("user_create_contract_fee", contract, quantity, is_maker, amount)
-        self.update_user_balance(contract, -amount["amount"])
-        self.update_margin_helper(contract, quantity, False)
-
-    def create_contract(self, contract, is_maker):
-        self.create_contract_helper(contract, contract.quantity, is_maker)
-
-    def update_contract(self, new_contract, old_contract, is_maker):
-        quantity = new_contract.quantity - old_contract.quantity
-
-        if quantity > 0:
-            self.create_contract_helper(new_contract, quantity, is_maker, False)
-        else:
-            amount = {"amount": 0}
-            self.trade_engine.events.trigger("user_update_contract_fee", new_contract, old_contract, is_maker, amount)
-            self.update_user_balance(new_contract, -amount["amount"])
-
-            self.update_margin_helper(new_contract, -quantity, True)
-
-    def user_update_contract_fee(self, new_contract, old_contract, is_maker, amount):
-        amount["amount"] -= (old_contract.quantity - new_contract.quantity) * ((new_contract.price - old_contract.price) / new_contract.PRICE_MULTIPLIER)
-
-    def user_create_contract_margin(self, contract, quantity, amount):
-        equity = self.trade_engine.equity_list.get_equity(contract)
-
-        total_price = contract.price * quantity / (Equity.PERCENT_MULTIPLIER + 0.0)
-
-        amount["margin"] = total_price * equity.margin_requirement
-        amount["margin_order"] = total_price * equity.tradable_requirement
+    def make_contract(self, order, is_maker):
+        user = self.users.get_item(order)
+        amount = {"margin": 0, "margin_orders": 0, "delta_balance": 0.0}
+        self.trade_engine.events.trigger("get_execute_order_amount", order, amount, is_maker)
+        self.update_user_balance_and_margin(user, amount)

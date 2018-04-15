@@ -59,6 +59,9 @@ class Order(db.Model):
     def is_filled(self):
         return self.filled_quantity == self.quantity
 
+    def get_price(self):
+        return self.effective_price
+
     def get_long_short_string(self):
         return "long" if self.is_long else "short"
 

@@ -7,3 +7,4 @@ server/venv1
 server/venv2
 server/__pycache__
 server/**/*.pyc
+server/**/.idea

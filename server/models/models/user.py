@@ -74,14 +74,9 @@ class User(db.Model):
     def can_execute_order(self, order, next_price):
         pass
 
-    def add_to_balance(self, balance):
+    def add_to_balance_and_margin(self, balance, margin, margin_orders):
         self.balance += math.floor(balance)
-        self.margin_used_percent = self.margin_used / (self.balance + 0.0)
-        self.margin_used_orders_percent = self.margin_used_orders / (self.balance + 0.0)
-
-    def add_to_margin(self, margin, margin_orders):
         self.margin_used += math.ceil(margin)
         self.margin_used_orders += math.ceil(margin_orders)
         self.margin_used_percent = self.margin_used / (self.balance + 0.0)
         self.margin_used_orders_percent = self.margin_used_orders / (self.balance + 0.0)
-

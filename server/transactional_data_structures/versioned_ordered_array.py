@@ -13,7 +13,8 @@ class VersionedOrderedArray(Transactional):
         self.update_db = update_db
 
     def __iter__(self):
-        yield 5
+        for i in range(0, self.get_length()):
+            yield self.__get_item_from_index(i)
 
     def get_length(self):
         return len(self.array) - len(self.tombstones) + len(self.new_items)

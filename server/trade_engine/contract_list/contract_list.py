@@ -18,7 +18,7 @@ class ContractList(Transactional):
         self.subscribe_to_events(trade_engine.events)
 
     def subscribe_to_events(self, events):
-        events.subscribe("make_order", self.make_order)
+        events.subscribe("match_orders", self.match_orders)
 
     def initialize(self):
         return
@@ -26,7 +26,18 @@ class ContractList(Transactional):
     def get_next_id(self):
         self.transactions_id.get_next_id()
 
-    def make_order(self, order, matched_order):
+    def match_orders(self, order, matched_order):
         quantity = min(order.quantity, matched_order.quantity)
-        self.trade_engine.trigger("make_contract", order, matched_order.price, quantity, False)
-        self.trade_engine.trigger("make_contract", matched_order, matched_order.price, quantity, True)
+        price = matched_order.price
+
+        new_order = order.clone()
+        new_matched_order = matched_order.clone()
+
+        new_order.quantity = quantity
+        new_order.price = price
+
+        new_matched_order.quantity = quantity
+        new_matched_order.price = price
+
+        self.trade_engine.trigger("make_contract", new_order, False)
+        self.trade_engine.trigger("make_contract", new_matched_order, True)
