@@ -1,5 +1,6 @@
 from shared.shared import db
 from enum import Enum
+import copy
 
 
 class ContractStatus(Enum):
@@ -23,6 +24,12 @@ class Contract(db.Model):
 
     def get_price(self):
         return self.price / (self.PRICE_MULTIPLIER + 0.0)
+
+    def clone(self):
+        return copy.copy(self)
+
+    def copy_values(self, item):
+        self.__dict__.update(item.__dict__)
 
     @staticmethod
     def id_comparer(item1, item2):

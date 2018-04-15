@@ -1,4 +1,5 @@
 from shared.shared import db
+import copy
 
 
 class Withdrawal(db.Model):
@@ -25,3 +26,9 @@ class Withdrawal(db.Model):
             "confirmedDate": self.confirmed_date,
             "sentDate": self.sent_date
         }
+
+    def clone(self):
+        return copy.copy(self)
+
+    def copy_values(self, item):
+        self.__dict__.update(item.__dict__)

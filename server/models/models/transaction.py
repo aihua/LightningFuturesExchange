@@ -1,4 +1,5 @@
 from shared.shared import db
+import copy
 
 
 class Transaction(db.Model):
@@ -14,6 +15,12 @@ class Transaction(db.Model):
     @staticmethod
     def id_comparer(item1, item2):
         return 1 if item1.transaction_id < item2.transaction_id else -1 if item1.transaction_id > item2.transaction_id else 0
+
+    def clone(self):
+        return copy.copy(self)
+
+    def copy_values(self, item):
+        self.__dict__.update(item.__dict__)
 
 
 db.Index(

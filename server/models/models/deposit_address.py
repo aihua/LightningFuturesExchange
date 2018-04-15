@@ -1,4 +1,5 @@
 from shared.shared import db
+import copy
 
 
 class DepositAddress(db.Model):
@@ -14,3 +15,9 @@ class DepositAddress(db.Model):
             "address": self.address,
             "createdDate": self.created_date
         }
+
+    def clone(self):
+        return copy.copy(self)
+
+    def copy_values(self, item):
+        self.__dict__.update(item.__dict__)

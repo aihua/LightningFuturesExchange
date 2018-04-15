@@ -1,6 +1,7 @@
 from shared.shared import db
 from enum import Enum
 import datetime
+import copy
 
 class OrderType(Enum):
     MARKET = 0
@@ -51,6 +52,12 @@ class Order(db.Model):
         self.trailing_price_max = -1
         self.trailing_price = -1
         self.from_dic(dic)
+
+    def clone(self):
+        return copy.copy(self)
+
+    def copy_values(self, item):
+        self.__dict__.update(item.__dict__)
 
     def close(self):
         self.status = OrderStatus.CLOSED

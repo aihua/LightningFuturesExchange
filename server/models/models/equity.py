@@ -1,4 +1,5 @@
 from shared.shared import db
+import copy
 
 
 class Equity(db.Model):
@@ -24,6 +25,12 @@ class Equity(db.Model):
     def __init__(self, dic):
         self.current_price = -1
         self.from_dic(dic)
+
+    def clone(self):
+        return copy.copy(self)
+
+    def copy_values(self, item):
+        self.__dict__.update(item.__dict__)
 
     def from_dic(self, dic):
         self.equity_id = dic.get("equityId", None)

@@ -3,6 +3,8 @@ import datetime
 import hashlib
 import pyotp
 import math
+import copy
+
 
 class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -27,6 +29,12 @@ class User(db.Model):
         self.margin_used_orders = 0
         self.margin_used_orders_percent = 0.0
         self.from_user_register(user_register)
+
+    def clone(self):
+        return copy.copy(self)
+
+    def copy_values(self, item):
+        self.__dict__.update(item.__dict__)
 
     def init_calculated_field(self):
         self.margin_used = 0
