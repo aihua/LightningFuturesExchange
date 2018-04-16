@@ -2,6 +2,7 @@ from transactional_data_structures.transactional import Transactional
 from transactional_data_structures.dictionary_dictionary_version import DictionaryDictionaryVersion
 
 from models.models.contract import Contract, ContractStatus
+from models.models.order import Order, OrderType, OrderStatus
 import datetime
 import math
 
@@ -16,14 +17,15 @@ class UserContracts(Transactional):
         self.contracts = DictionaryDictionaryVersion(
             {},
             Contract.id_comparer,
-            "equity_id",
             "user_id",
+            "equity_id",
             model_name="contracts",
             events=self.trade_engine.events
         )
 
     def subscribe_to_events(self, events):
         events.subscribe("make_contract", self.make_contract)
+        events.subscribe("user_margin_call", self.user_margin_call)
 
     def get_next_id(self):
         return self.trade_engine.contract_list.get_next_id()
@@ -74,6 +76,33 @@ class UserContracts(Transactional):
             )
 
             self.trade_engine.events.trigger("contracts_insert_item", new_contract, is_maker)
+
+    def user_margin_call(self, user):
+        user_contracts = self.contract.dic[user.user_id]
+
+        for key in user_contracts.keys():
+            order = Order()
+            order.equity_id = key
+            order.user_id = user.user_id
+
+            contract = self.contracts.get_item(order)
+
+            if contract is None:
+                continue
+
+            market_order = Order.new_market_order(
+                order.equity_id,
+                self.trade_engine.order_book.get_next_id(),
+                user.user_id,
+                not contract.is_long,
+                contract.quantity,
+            )
+
+            #Set user is margin call mode.
+
+            self.trade_engine.order_book.place_order(market_order, is_margin_call=True)
+            return
+
 
 
 

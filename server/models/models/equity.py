@@ -32,6 +32,9 @@ class Equity(db.Model):
     def copy_values(self, item):
         self.__dict__.update(item.__dict__)
 
+    def get_price(self):
+        return self.current_price / (self.decimal_points_price + 0.0)
+
     def from_dic(self, dic):
         self.equity_id = dic.get("equityId", None)
         self.symbol = dic.get("symbol", "")

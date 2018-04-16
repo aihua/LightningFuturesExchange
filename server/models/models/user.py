@@ -63,6 +63,22 @@ class User(db.Model):
             "registrationDate": self.registration_date
         }
 
+    @staticmethod
+    def margin_used_percent_comparer_dec(item1, item2):
+        comp = 1 if item1.margin_used_percent > item2.margin_used_percent else -1 if item1.margin_used_percent < item2.margin_used_percent else 0
+        if comp != 0:
+            return comp
+
+        return -1 if item1.user_id > item2.user_id else 1 if item1.user_id < item2.user_id else 0
+
+    @staticmethod
+    def margin_used_orders_percent_comparer_dec(item1, item2):
+        comp = 1 if item1.margin_used_orders_percent > item2.margin_used_orders_percent else -1 if item1.margin_used_orders_percent < item2.margin_used_orders_percent else 0
+        if comp != 0:
+            return comp
+
+        return -1 if item1.user_id > item2.user_id else 1 if item1.user_id < item2.user_id else 0
+
     def check_password(self, password):
         return hashlib.sha512((password + app.config['SALT']).encode('utf-8')).hexdigest() == self.password
 

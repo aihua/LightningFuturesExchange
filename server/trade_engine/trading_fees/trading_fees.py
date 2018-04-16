@@ -6,6 +6,9 @@ class TradingFees(Transactional):
     MAKER_FEE = 0.0005
     TAKER_FEE = 0.001
 
+    def __init__(self):
+        pass
+
     def __init__(self, trade_engine):
         self.trade_engine = trade_engine
 

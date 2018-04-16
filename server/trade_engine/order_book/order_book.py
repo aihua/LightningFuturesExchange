@@ -18,7 +18,14 @@ class OrderBook(Transactional):
     def __init__(self, trade_engine):
         self.trade_engine = trade_engine
 
-        self.orders = DictionaryArrayVersion({}, Order.id_comparer, "equity_id", model_name="orders", events=self.trade_engine.events)
+        self.orders = DictionaryArrayVersion(
+            {},
+            Order.id_comparer,
+            "equity_id",
+            model_name="orders",
+            events=self.trade_engine.events
+        )
+
         self.orders_id = AutoIncrementerVersion({})
 
         self.limit_order_longs = LimitOrders(self.trade_engine, True)
@@ -36,18 +43,48 @@ class OrderBook(Transactional):
         events.subscribe("place_order", self.place_order_simple, 3)
         events.subscribe("match_orders", self.match_orders)
 
+    def get_limit_orders_long(self, order):
+        return self.limit_order_longs.orders.get_list(order)
+
+    def get_limit_orders_short(self, order):
+        return self.limit_order_shorts.orders.get_list(order)
+
+    def get_trigger_orders_long(self, order):
+        return self.trigger_order_longs.orders.get_list(order)
+
+    def get_trigger_orders_short(self, order):
+        return self.trigger_order_shorts.orders.get_list(order)
+
+    def get_trailing_orders_short(self, order):
+        return self.trailing_order_shorts.orders.get_list(order)
+
+    def get_trailing_orders_short(self, order):
+        return self.trailing_order_shorts.orders.get_list(order)
+
+    def get_list_of_all_orders(self, order):
+        return [
+            self.get_limit_orders_long(order),
+            self.get_limit_orders_short(order),
+            self.get_trigger_orders_long(order),
+            self.get_trigger_orders_short(order),
+            self.get_trailing_orders_long(order),
+            self.get_trailing_orders_short(order)
+        ]
+
     def initialize(self):
         return
 
     def get_next_id(self):
         return self.orders_id.get_next_id()
 
-    def place_order(self, order):
+    def place_order(self, order, loop=True):
         order.order_id = self.get_next_id()
         order.modification_id = order.order_id
 
-        if not Events.executed(self.trade_engine.events.trigger("execute_order", order)):
+        if not Events.executed(self.trade_engine.events.trigger("execute_order", order, loop)):
             self.trade_engine.events.trigger("place_order", order)
+            return False
+        return True
 
     def cancel_order(self, order):
         old_order = order.clone()

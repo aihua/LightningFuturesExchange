@@ -76,6 +76,14 @@ class DictionaryArrayVersion(Transactional):
         self.remove_item(old_item)
         self.insert_item(new_item)
 
+    def get_list(self, item):
+        key = getattr(item, self.key_name)
+
+        if key in self.dic:
+            return self.dic[key]
+        else:
+            return []
+
     def get_item(self, item):
         key = getattr(item, self.key_name)
 

@@ -32,6 +32,13 @@ class Contract(db.Model):
         self.__dict__.update(item.__dict__)
 
     @staticmethod
+    def is_opened(item):
+        return item.is_opened()
+
+    def is_opened(self):
+        return self.status == ContractStatus.OPENED
+
+    @staticmethod
     def id_comparer(item1, item2):
         return 1 if item1.contract_id < item2.contract_id else -1 if item1.contract_id > item2.contract_id else 0
 

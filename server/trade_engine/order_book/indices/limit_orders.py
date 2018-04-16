@@ -16,13 +16,20 @@ class LimitOrders(Transactional):
         comparer = Order.price_comparer_dec if is_long else Order.price_comparer
         is_in_item = Order.is_opened_long_limit if is_long else Order.is_opened_short_limit
 
-        self.orders = DictionaryArrayVersion({}, comparer, "equity_id", is_in_item=is_in_item, model_name="orders", events=self.trade_engine.events)
+        self.orders = DictionaryArrayVersion(
+            {},
+            comparer,
+            "equity_id",
+            is_in_item=is_in_item,
+            model_name="orders",
+            events=self.trade_engine.events
+        )
         self.subscribe_events(self.trade_engine.events)
 
     def subscribe_events(self, events):
         events.subscribe("execute_order", self.execute_order)
 
-    def execute_order(self, order):
+    def execute_order(self, order, is_margin_call=False):
         if not order.is_limit_or_market() or self.orders.get_count(order) == 0:
             return EventReturnType.CONTINUE
 
@@ -30,10 +37,10 @@ class LimitOrders(Transactional):
 
         if order.intersects(matched_order):
             # Should not continue on margined orderbook and margin calls
-            if Events.executed(self.trade_engine.trigger("match_orders", order, matched_order)):
+            if Events.executed(self.trade_engine.trigger("match_orders", order, matched_order, is_margin_call)):
                 if order.remaining_quantity() == 0:
                     return EventReturnType.STOP
                 else:
-                    return EventReturnType.RESTART
+                    return EventReturnType.RESTART if not is_margin_call else EventReturnType.STOP
         else:
             return EventReturnType.CONTINUE

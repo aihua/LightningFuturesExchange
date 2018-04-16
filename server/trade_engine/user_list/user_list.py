@@ -1,6 +1,6 @@
 from transactional_data_structures.transactional import Transactional
 from transactional_data_structures.dictionary_version import DictionaryVersion
-from transactional_data_structures.events import EventPriority
+from transactional_data_structures.events import EventPriority, Events, EventReturnType
 
 from indices.user_orders import UserOrders
 from indices.user_contracts import UserContracts
@@ -29,6 +29,9 @@ class UserList(Transactional):
 
         events.subscribe("place_order", self.place_order)
         events.subscribe("make_contract", self.make_contract, EventPriority.PRE_EVENT)
+
+        events.subscribe("set_equities_price", self.set_equities_price)
+        events.subscribe("check_margins", self.check_margins)
 
     def get_contract(self, contract):
         return self.user_contracts.contracts.get_item(contract)
@@ -70,11 +73,19 @@ class UserList(Transactional):
         self.trade_engine.events.trigger("get_place_order_amount", order, amount)
         self.check_has_sufficient_funds(user, amount)
 
-    def check_user_can_execute_order(self, order):
+    def check_user_can_execute_order(self, order, matched_order, loop):
+        # Don't check margin calls on margin call execution.
+        if not loop:
+            return
+
         user = self.users.get_item(order)
         amount = {"margin": 0, "margin_orders": 0, "delta_balance": 0.0}
 
-        self.trade_engine.events.trigger("get_execute_order_amount", order, amount)
+        new_order = order.clone()
+        new_order.quantity = min(order.quantity, matched_order.quantity)
+        new_order.price = matched_order.price
+
+        self.trade_engine.events.trigger("get_execute_order_amount", new_order, amount)
         self.check_has_sufficient_funds(user, amount)
 
     def place_order(self, order):
@@ -88,3 +99,26 @@ class UserList(Transactional):
         amount = {"margin": 0, "margin_orders": 0, "delta_balance": 0.0}
         self.trade_engine.events.trigger("get_execute_order_amount", order, amount, is_maker)
         self.update_user_balance_and_margin(user, amount)
+
+    def set_equities_price(self, new_equity, old_equity):
+        unique_users = {}
+
+        equity_user_lists = self.trade_engine.order_book.get_list_of_all_orders(new_equity)\
+            .append(self.trade_engine.contract_list.get_contracts(new_equity))
+
+        for equity_user_list in equity_user_lists:
+            for equity_user in equity_user_list:
+                if equity_user.user_id not in unique_users:
+                    unique_users[equity_user.user_id] = equity_user
+
+        for unique_user in unique_users:
+            user = self.users.get_item(unique_user)
+            amount = {"margin": 0, "margin_orders": 0, "delta_balance": 0.0}
+            self.trade_engine.events.trigger("user_update_equity_price", user, new_equity, old_equity, amount)
+            self.update_user_balance_and_margin(user, amount)
+
+    def check_margins(self):
+        if not Events.executed(self.trade_engine.events.trigger("check_margin_orders")):
+            if not Events.executed(self.trade_engine.events.trigger("check_margin")):
+                return EventReturnType.CONTINUE
+        return EventReturnType.STOP

@@ -3,6 +3,7 @@ from enum import Enum
 import datetime
 import copy
 
+
 class OrderType(Enum):
     MARKET = 0
     LIMIT = 1
@@ -35,12 +36,13 @@ class Order(db.Model):
     trigger_price = db.Column(db.BigInteger, nullable=False)
     trigger_limit_price = db.Column(db.BigInteger, nullable=False)
     has_trailing_limit = db.Column(db.Boolean, nullable=False)
+    trailing_start_transaction_id = db.Column(db.BigInteger, nullable=False)
     trailing_stop_percent = db.Column(db.Integer, nullable=False)
     trailing_stop_limit_percent = db.Column(db.Integer, nullable=False)
     filled_quantity = db.Column(db.BigInteger, nullable=False)
     status = db.Column(db.Integer, nullable=False)
     created_date = db.Column(db.DateTime(), nullable=False)
-    closed_date = db.Column(db.DateTime(), nullable=False)
+    closed_date = db.Column(db.DateTime())
 
     def __init__(self):
         self.effective_price = 0
@@ -52,6 +54,31 @@ class Order(db.Model):
         self.trailing_price_max = -1
         self.trailing_price = -1
         self.from_dic(dic)
+
+    @staticmethod
+    def new_market_order(equity_id, order_id, user_id, is_long, quantity):
+        order = Order()
+        order.equity_id = equity_id
+        order.order_id = order_id
+        order.user_id = user_id
+        order.prev_order_id = -1
+        order.next_order_id = -1
+        order.modification_id = order_id
+        order.is_long = is_long
+        order.order_type = OrderType.MARKET
+        order.price = -1
+        order.has_trigger_limit = False
+        order.trigger_price = 0
+        order.trigger_limit_price = 0
+        order.has_trailing_limit = False
+        order.trailing_start_transaction_id = 0
+        order.trailing_stop_percent = 0
+        order.trailing_stop_limit_percent = 0
+        order.filled_quantity = 0
+        order.status = OrderStatus.OPENED
+        order.created_date = datetime.datetime.utcnow()
+        order.closed_date = None
+        return order
 
     def clone(self):
         return copy.copy(self)
