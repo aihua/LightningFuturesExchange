@@ -73,12 +73,15 @@ class UserList(Transactional):
         self.trade_engine.events.trigger("get_place_order_amount", order, amount)
         self.check_has_sufficient_funds(user, amount)
 
-    def check_user_can_execute_order(self, order, matched_order, loop):
+    def check_user_can_execute_order(self, order, matched_order, is_margin_call):
         # Don't check margin calls on margin call execution.
-        if not loop:
+        if is_margin_call:
             return
 
         user = self.users.get_item(order)
+        if user.is_margin_called:
+            raise Exception("UserIsExecutingMarginCall")
+
         amount = {"margin": 0, "margin_orders": 0, "delta_balance": 0.0}
 
         new_order = order.clone()

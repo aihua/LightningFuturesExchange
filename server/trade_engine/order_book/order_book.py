@@ -78,11 +78,14 @@ class OrderBook(Transactional):
     def get_next_id(self):
         return self.orders_id.get_next_id()
 
-    def place_order(self, order, loop=True):
+    def place_order(self, order, is_margin_call=False):
         order.order_id = self.get_next_id()
         order.modification_id = order.order_id
 
-        if not Events.executed(self.trade_engine.events.trigger("execute_order", order, loop)):
+        if self.orders.get_item(order) is None:
+            self.trade_engine.events.trigger("orders_insert_item", order)
+
+        if not Events.executed(self.trade_engine.events.trigger("execute_order", order, is_margin_call)):
             self.trade_engine.events.trigger("place_order", order)
             return False
         return True
@@ -98,10 +101,11 @@ class OrderBook(Transactional):
 
     def place_order_simple(self, order):
         if order.order_type == OrderType.MARKET:
-            order.order_type = OrderType.LIMIT
-            order.price = self.trade_engine.equity_list.get_equity(order.equity_id).current_price
+            new_order = order.clone()
+            new_order.order_type = OrderType.LIMIT
+            new_order.price = self.trade_engine.equity_list.get_equity(order.equity_id).current_price
 
-        self.trade_engine.events.trigger("orders_insert_item", order)
+            self.trade_engine.events.trigger("orders_update_item", new_order, order)
 
     def cancel_order_simple(self, order):
         if order.order_status == OrderStatus.OPENED:

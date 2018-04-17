@@ -25,10 +25,11 @@ class Order(db.Model):
     equity_id = db.Column(db.Integer, primary_key=True, nullable=False)
     order_id = db.Column(db.BigInteger, primary_key=True, nullable=False)
     user_id = db.Column(db.Integer, nullable=False)
+    is_margin_call = db.Column(db.Boolean, nullable=False)
     prev_order_id = db.Column(db.BigInteger, nullable=False)
     next_order_id = db.Column(db.BigInteger, nullable=False)
     modification_id = db.Column(db.BigInteger, primary_key=True, nullable=False)
-    is_long = db.Column(db.Boolean, nullable= False)
+    is_long = db.Column(db.Boolean, nullable=False)
     quantity = db.Column(db.BigInteger, nullable=False)
     order_type = db.Column(db.Integer, nullable=False)
     price = db.Column(db.BigInteger, nullable=False)
@@ -60,6 +61,7 @@ class Order(db.Model):
         order = Order()
         order.equity_id = equity_id
         order.order_id = order_id
+        order.is_margin_call = False
         order.user_id = user_id
         order.prev_order_id = -1
         order.next_order_id = -1
@@ -282,6 +284,7 @@ class Order(db.Model):
             "orderId": self.order_id,
             "prev_order_id": self.prev_order_id,
             "next_order_id": self.prev_order_id,
+            "isMarginCall": self.is_margin_call,
             "isLong": self.is_long,
             "quantity": self.quantity,
             "orderType": self.order_type,
@@ -303,6 +306,7 @@ class Order(db.Model):
             "equityId": self.equity_id,
             "orderId": self.order_id,
             "isLong": self.is_long,
+            "isMarginCall": self.is_margin_call,
             "quantity": self.quantity,
             "orderType": self.order_type,
             "price": self.price,
@@ -326,6 +330,7 @@ class Order(db.Model):
         self.order_id = None
         self.prev_order_id = -1
         self.next_order_id = -1
+        self.is_margin_call = dic.get("isMarginCall", False)
         self.is_long = dic.get("isLong", True)
         self.quantity = int(dic.get("quantity", -1))
         self.order_type = int(dic.get("orderType", -1))

@@ -77,6 +77,22 @@ class UserContracts(Transactional):
 
             self.trade_engine.events.trigger("contracts_insert_item", new_contract, is_maker)
 
+    def user_has_contracts(self, user):
+        user_contracts = self.contract.dic[user.user_id]
+
+        for key in user_contracts.keys():
+            order = Order()
+            order.equity_id = key
+            order.user_id = user.user_id
+
+            contract = self.contracts.get_item(order)
+
+            if contract is None:
+                continue
+
+            return True
+        return False
+
     def user_margin_call(self, user):
         user_contracts = self.contract.dic[user.user_id]
 
@@ -97,13 +113,25 @@ class UserContracts(Transactional):
                 not contract.is_long,
                 contract.quantity,
             )
+            market_order.is_margin_call = True
 
             if not user.is_margin_called:
                 new_user = user.clone()
                 new_user.is_margin_called = True
                 self.trade_engine.events.trigger("users_update_item", new_user, user)
 
-            self.trade_engine.order_book.place_order(market_order, is_margin_call=True)
+            if self.trade_engine.order_book.place_order(market_order, is_margin_call=True):
+                self.trade_engine.events.trigger("cancel_order", market_order)
+
+                user = self.trade_engine.user_list.get_user(user)
+
+                if user.is_margin_called and not self.user_has_contracts(user):
+                    new_user = user.clone()
+                    new_user.margin_used = 0.0
+                    new_user.margin_used_percent = 0.0
+                    new_user.is_margin_called = False
+                    self.trade_engine.events.trigger("users_update_item", new_user, user)
+
             return
 
 
