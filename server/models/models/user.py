@@ -14,6 +14,7 @@ class User(db.Model):
     two_f_a_enabled = db.Column(db.Boolean, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     balance = db.Column(db.BigInteger, nullable=False)
+    is_margin_called = db.Column(db.Boolean, nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False)
     registration_date = db.Column(db.DateTime(), nullable=False)
 
@@ -49,6 +50,7 @@ class User(db.Model):
         self.two_f_a_enabled = False
         self.password = user_register.password
         self.balance = 0.0
+        self.is_margin_called = False
         self.is_admin = False
         self.registration_date = datetime.datetime.utcnow()
 
@@ -59,6 +61,7 @@ class User(db.Model):
             "email": self.email,
             "twoFactorEnabled": self.two_f_a_enabled,
             "balance": int(self.balance),
+            "isMarginCalled": self.is_margin_called,
             "isAdmin": self.is_admin,
             "registrationDate": self.registration_date
         }
@@ -98,9 +101,12 @@ class User(db.Model):
     def can_execute_order(self, order, next_price):
         pass
 
-    def add_to_balance_and_margin(self, balance, margin, margin_orders):
+    def add_to_balance_and_margin(self, balance, margin, margin_orders, bitcoin_price):
         self.balance += math.floor(balance)
         self.margin_used += math.ceil(margin)
         self.margin_used_orders += math.ceil(margin_orders)
         self.margin_used_percent = self.margin_used / (self.balance + 0.0)
         self.margin_used_orders_percent = self.margin_used_orders / (self.balance + 0.0)
+
+        if self.is_margin_called and self.margin_used_percent / bitcoin_price < 1.0:
+            self.is_margin_called = False

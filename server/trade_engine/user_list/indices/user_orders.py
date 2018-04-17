@@ -131,4 +131,21 @@ class UserOrders(Transactional):
         amount["margin_orders"] += amount_with_new_equity - amount_with_old_equity
 
     def user_order_margin_call(self, user):
-        pass
+        user_orders = self.orders.dic[user.user_id]
+
+        orders_to_cancel = []
+
+        for key in user_orders.keys():
+            order = Order()
+            order.equity_id = key
+            order.user_id = user.user_id
+
+            order = self.orders.get_item(order)
+
+            if order is None:
+                continue
+
+            orders_to_cancel.append(order)
+
+        for order_to_cancel in orders_to_cancel:
+            self.trade_engine.events.trigger("cancel_order", order_to_cancel)

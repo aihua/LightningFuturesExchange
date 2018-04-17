@@ -48,8 +48,8 @@ class UserContracts(Transactional):
                 new_contract.price = math.floor(price_float) if new_contract.is_long else math.ceil(price_float)
                 new_contract_quantity = 0
             else:
-                new_contract.quantity = max(0, old_contract.quantity - quantity)
-                new_contract_quantity = max(0, quantity - old_contract.quantity)
+                new_contract.quantity = max(0, old_contract.quantity - order.quantity)
+                new_contract_quantity = max(0, order.quantity - old_contract.quantity)
 
             new_contract.modified_id = self.get_next_id()
 
@@ -98,7 +98,10 @@ class UserContracts(Transactional):
                 contract.quantity,
             )
 
-            #Set user is margin call mode.
+            if not user.is_margin_called:
+                new_user = user.clone()
+                new_user.is_margin_called = True
+                self.trade_engine.events.trigger("users_update_item", new_user, user)
 
             self.trade_engine.order_book.place_order(market_order, is_margin_call=True)
             return

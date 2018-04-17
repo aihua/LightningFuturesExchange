@@ -40,7 +40,8 @@ class OrderBook(Transactional):
         self.subscribe_to_events(trade_engine.events)
 
     def subscribe_to_events(self, events):
-        events.subscribe("place_order", self.place_order_simple, 3)
+        events.subscribe("place_order", self.place_order_simple)
+        events.subscribe("cancel_order", self.cancel_order_simple)
         events.subscribe("match_orders", self.match_orders)
 
     def get_limit_orders_long(self, order):
@@ -101,6 +102,12 @@ class OrderBook(Transactional):
             order.price = self.trade_engine.equity_list.get_equity(order.equity_id).current_price
 
         self.trade_engine.events.trigger("orders_insert_item", order)
+
+    def cancel_order_simple(self, order):
+        if order.order_status == OrderStatus.OPENED:
+            new_order = order.clone()
+            new_order.close()
+            self.trade_engine.events.trigger("orders_update_item", new_order, order)
 
     def match_orders(self, order, matched_order):
         quantity = min(order.remaining_quantity(), matched_order.remaining_quantity())

@@ -18,8 +18,7 @@ class UserList(Transactional):
 
         self.user_orders = UserOrders(trade_engine)
         self.user_contracts = UserContracts(trade_engine)
-        self.user_transactions = UserTransactions(trade_engine, True)
-        self.user_transactions = UserTransactions(trade_engine, False)
+        self.user_transactions = UserTransactions(trade_engine)
 
         self.subscribe_to_events(trade_engine.events)
 
@@ -62,7 +61,8 @@ class UserList(Transactional):
         new_user.add_to_balance_and_margin(
             -amount["delta_balance"] * btc_decimal / btc_price,
             amount["margin"],
-            amount["margin_orders"]
+            amount["margin_orders"],
+            btc_price
         )
 
         self.trade_engine.events.trigger("users_update_item", new_user, old_user)

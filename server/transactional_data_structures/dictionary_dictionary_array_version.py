@@ -3,11 +3,13 @@ from versioned_ordered_array import VersionedOrderedArray
 
 
 class DictionaryDictionaryArrayVersion(Transactional):
-    def __init__(self, dic, comparer, key_name_1, key_name_2, is_in_list=None, model_name=None, events=None, update_db=False):
+    def __init__(self, dic, comparer, key_name_1, key_name_2, key_1_resolver=None, key_2_resolver=None, is_in_list=None, model_name=None, events=None, update_db=False):
         self.dic = dic
         self.comparer = comparer
         self.key_name_1 = key_name_1
         self.key_name_2 = key_name_2
+        self.key_1_resolver = key_1_resolver
+        self.key_2_resolver = key_2_resolver
         self.model_name = model_name
         self.events = events
         self.is_in_list = is_in_list
@@ -23,10 +25,21 @@ class DictionaryDictionaryArrayVersion(Transactional):
                 events.subscribe(model_name + '_update_item', self.update_item)
                 events.subscribe(model_name + '_delete_item', self.delete_item)
 
-    def insert_item(self, item):
-        key1 = getattr(item, self.key_name_1)
-        key2 = getattr(item, self.key_name_2)
+    def __key_array_helper(self, item, method, item_2=None):
+        key1s = [getattr(item, self.key_name_1)] if self.key_1_resolver is None else self.key_1_resolver(item)
+        key2s = [getattr(item, self.key_name_2)] if self.key_2_resolver is None else self.key_2_resolver(item)
 
+        for key1 in key1s:
+            for key2 in key2s:
+                if item_2 is None:
+                    method(key1, key2, item)
+                else:
+                    method(key1, key2, item, item_2)
+
+    def insert_item(self, item):
+        self.__key_array_helper(item, self.insert_item_helper)
+
+    def insert_item_helper(self, key1, key2, item):
         if key1 in self.dic and key2 in self.dic[key2]:
             if not (key1 in self.new_items and key2 in self.new_items[key1]):
                 if key1 in self.tomb_stone_items and key2 in self.tomb_stone_items[key1]:
@@ -53,9 +66,9 @@ class DictionaryDictionaryArrayVersion(Transactional):
         self.dic[key1][key2].insert_item(item)
 
     def remove_item(self, item):
-        key1 = getattr(item, self.key_name_1)
-        key2 = getattr(item, self.key_name_2)
+        self.__key_array_helper(item, self.remove_item_helper)
 
+    def remove_item_helper(self, key1, key2, item):
         if key1 not in self.dic:
             return
 
@@ -101,8 +114,11 @@ class DictionaryDictionaryArrayVersion(Transactional):
         self.dic[key1][key2].remove_item(item)
 
     def update_item(self, new_item, old_item):
-        self.remove_item(old_item)
-        self.insert_item(new_item)
+        self.__key_array_helper(new_item, self.update_item_helper, item_2=old_item)
+
+    def update_item_helper(self, key1, key2, new_item, old_item):
+        self.remove_item_helper(key1, key2, old_item)
+        self.insert_item_helper(key1, key2, new_item)
 
     def get_item(self, item):
         key1 = getattr(item, self.key_name_1)

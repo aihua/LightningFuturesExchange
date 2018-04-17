@@ -22,6 +22,13 @@ class Transaction(db.Model):
     def copy_values(self, item):
         self.__dict__.update(item.__dict__)
 
+    @staticmethod
+    def get_user_ids(item):
+        result = [item.user_id_long]
+        if item.user_id_long != item.user_id_short:
+            result.append(item.user_id_short)
+        return result
+
 
 db.Index(
     'ix_transaction_user_id_long_equity_id_user_id_short',
