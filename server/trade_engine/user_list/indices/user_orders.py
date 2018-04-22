@@ -147,5 +147,9 @@ class UserOrders(Transactional):
 
             orders_to_cancel.append(order)
 
+        if len(orders_to_cancel) > 0:
+            if user.user_id == self.trade_engine.order_book.executing_user_id:
+                raise Exception("InsufficientFunds")
+
         for order_to_cancel in orders_to_cancel:
-            self.trade_engine.events.trigger("cancel_order", order_to_cancel)
+            self.trade_engine.events.trigger("cancel_order", order_to_cancel, True)

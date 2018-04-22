@@ -1,9 +1,10 @@
 from transactional_data_structures.transactional import Transactional
 from transactional_data_structures.dictionary_array_version import DictionaryArrayVersion
-from transactional_data_structures.auto_incrementer_version import AutoIncrementerVersion
+from transactional_data_structures.dictionary_auto_incrementer_version import DictionaryAutoIncrementerVersion
 from indices.open_contracts import OpenContracts
 from indices.contracts_modified import ContractsModified
 from models.models.contract import Contract
+from models.models.contract_id import ContractId
 
 
 class ContractList(Transactional):
@@ -20,7 +21,13 @@ class ContractList(Transactional):
             model_name="contracts",
             events=self.trade_engine.events
         )
-        self.contracts_id = AutoIncrementerVersion({})
+
+        self.contracts_id = DictionaryAutoIncrementerVersion(
+            {},
+            "equity_id",
+            "contract_id",
+            ContractId
+        )
 
         self.open_contracts = OpenContracts(self.trade_engine)
         self.contracts_modified = ContractsModified(self.trade_engine)
@@ -39,11 +46,11 @@ class ContractList(Transactional):
     def initialize(self):
         return
 
-    def get_next_id(self):
-        self.transactions_id.get_next_id()
+    def get_next_id(self, contract):
+        self.transactions_id.get_next_id(contract)
 
     def match_orders(self, order, matched_order):
-        quantity = min(order.quantity, matched_order.quantity)
+        quantity = min(order.remaining_quantity(), matched_order.remaining_quantity())
         price = matched_order.price
 
         new_order = order.clone()

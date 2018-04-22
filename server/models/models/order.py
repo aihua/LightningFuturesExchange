@@ -2,7 +2,8 @@ from shared.shared import db
 from enum import Enum
 import datetime
 import copy
-
+from equity import Equity
+import math
 
 class OrderType(Enum):
     MARKET = 0
@@ -49,11 +50,13 @@ class Order(db.Model):
         self.effective_price = 0
         self.trailing_price_max = -1
         self.trailing_price = -1
+        self.trailing_price_limit = -1
 
     def __init(self, dic):
         self.effective_price = 0
         self.trailing_price_max = -1
         self.trailing_price = -1
+        self.trailing_price_limit = -1
         self.from_dic(dic)
 
     @staticmethod
@@ -141,6 +144,38 @@ class Order(db.Model):
         return -1 if item1.order_id > item2.order_id else 1 if item1.order_id < item2.order_id else 0
 
     @staticmethod
+    def trailing_price_comparer(item1, item2):
+        comp = -1 if item1.trailing_price > item2.trailing_price else 1 if item1.trailing_price < item2.trailing_price else 0
+        if comp != 0:
+            return comp
+
+        return -1 if item1.order_id > item2.order_id else 1 if item1.order_id < item2.order_id else 0
+
+    @staticmethod
+    def trailing_price_comparer_dec(item1, item2):
+        comp = 1 if item1.trailing_price > item2.trailing_price else -1 if item1.trailing_price < item2.trailing_price else 0
+        if comp != 0:
+            return comp
+
+        return -1 if item1.order_id > item2.order_id else 1 if item1.order_id < item2.order_id else 0
+
+    @staticmethod
+    def trailing_price_max_comparer(item1, item2):
+        comp = -1 if item1.trailing_price_max > item2.trailing_price_max else 1 if item1.trailing_price_max < item2.trailing_price_max else 0
+        if comp != 0:
+            return comp
+
+        return -1 if item1.order_id > item2.order_id else 1 if item1.order_id < item2.order_id else 0
+
+    @staticmethod
+    def trailing_price_max_comparer_dec(item1, item2):
+        comp = 1 if item1.trailing_price_max > item2.trailing_price_max else -1 if item1.trailing_price_max < item2.trailing_price_max else 0
+        if comp != 0:
+            return comp
+
+        return -1 if item1.order_id > item2.order_id else 1 if item1.order_id < item2.order_id else 0
+
+    @staticmethod
     def effective_price_comparer(item1, item2):
         comp = -1 if item1.effective_price > item2.effective_price else 1 if item1.effective_price < item2.effective_price else 0
         if comp != 0:
@@ -201,12 +236,115 @@ class Order(db.Model):
     def set_trailing_price(self, equity):
         self.trailing_price_max = equity.current_price
 
-        if self.is_long:
-            self.trailing_price = ((10000.0 + self.trailing_stop_percent) / 10000.0) * equity.current_price
-        else:
-            self.trailing_price = ((10000.0 - self.trailing_stop_percent) / 10000.0) * equity.current_price
+        tsp = self.trailing_stop_percent if self.is_long else -self.trailing_stop_percent
+        pm = Equity.PERCENT_MULTIPLIER
 
-        self.effective_price = self.trailing_price
+        float_price = ((pm + tsp) / (pm + 0.0)) * equity.current_price
+
+        if self.is_long:
+            self.trailing_price = math.floor(float_price)
+        else:
+            self.trailing_price = math.ceil(float_price)
+
+        self.trailing_price = ((pm + tsp) / (pm + 0.0)) * equity.current_price
+
+        if self.has_trailing_limit:
+            tslp = self.trailing_stop_limit_percent if self.is_long else -self.trailing_stop_limit_percent
+
+            pm = Equity.PERCENT_MULTIPLIER
+
+            float_price = ((pm + tslp) / (pm + 0.0)) * equity.current_price
+
+            if self.is_long:
+                self.trailing_price_limit = math.ceil(float_price)
+            else:
+                self.trailing_price_limit = math.floor(float_price)
+
+        self.calculate_effective_price()
+
+    def close_and_create_triggered_order(self, next_id, current_price):
+        self.close()
+        self.next_order_id = next_id
+
+        order_type = OrderType.LIMIT
+        price = -1
+
+        has_trigger_limit = False
+        trigger_price = 0
+        trigger_limit_price = 0
+        activation_price = 0
+
+        if self.order_type == OrderType.TRIGGER or (self.order_type == OrderType.RANGE and self.price < 0):
+            if self.has_trigger_limit:
+                price = self.trigger_limit_price
+            else:
+                price = -1
+                order_type = OrderType.MARKET
+
+            activation_price = self.trigger_price
+
+        elif self.order_type == OrderType.TRAILING_STOP:
+            if self.has_trailing_limit:
+                price = self.trailing_price_limit
+            else:
+                price = -1
+                order_type = OrderType.MARKET
+
+            activation_price = self.trailing_price
+
+        elif self.order_type == OrderType.RANGE:
+            if self.is_long and self.trigger_price >= current_price or not self.is_long and self.trigger_price <= current_price:
+                if self.has_trigger_limit:
+                    price = self.trigger_limit_price
+                else:
+                    price = -1
+                    order_type = OrderType.MARKET
+
+                activation_price = self.trigger_price
+            else:
+                if self.has_trailing_limit:
+                    price = self.trailing_price_limit
+                    order_type = OrderType.Range
+
+                    has_trigger_limit = self.has_trigger_limit
+                    trigger_price = self.trigger_price
+                    trigger_limit_price = self.trigger_limit_price
+                else:
+                    price = -1
+                    order_type = OrderType.MARKET
+
+                activation_price = self.trailing_price
+
+        order = Order(
+            equity_id=self.equity_id,
+            order_id=next_id,
+            user_id=self.user_id,
+            is_margin_call=False,
+            prev_order_id=self.order_id,
+            next_order_id=-1,
+            modification_id=next_id,
+            is_long=self.is_long,
+            quantity=self.quantity,
+            order_type=order_type,
+            price=price,
+            has_trigger_limit=has_trigger_limit,
+            trigger_price=trigger_price,
+            trigger_limit_price=trigger_limit_price,
+            has_trailing_limit=False,
+            trailing_start_transaction_id=-1,
+            trailing_stop_percent=0,
+            trailing_stop_limit_percent=0,
+            filled_quantity=0,
+            status=OrderStatus.OPENED,
+            created_date=datetime.datetime.utcnow(),
+            closed_date=None
+        )
+
+        order.trailing_price = activation_price
+
+        order.calculate_effective_price()
+
+        return order
 
     def is_opened(self):
         return self.order_status == OrderStatus.OPENED

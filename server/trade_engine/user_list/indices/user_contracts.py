@@ -27,8 +27,8 @@ class UserContracts(Transactional):
         events.subscribe("make_contract", self.make_contract)
         events.subscribe("user_margin_call", self.user_margin_call)
 
-    def get_next_id(self):
-        return self.trade_engine.contract_list.get_next_id()
+    def get_next_id(self, contract):
+        return self.trade_engine.contract_list.get_next_id(contract)
 
     def make_contract(self, order, is_maker):
         contract = self.contracts.get_item(order)
@@ -51,7 +51,7 @@ class UserContracts(Transactional):
                 new_contract.quantity = max(0, old_contract.quantity - order.quantity)
                 new_contract_quantity = max(0, order.quantity - old_contract.quantity)
 
-            new_contract.modified_id = self.get_next_id()
+            new_contract.modified_id = self.get_next_id(order)
 
             if new_contract.quantity == 0:
                 new_contract.status = ContractStatus.CLOSED
@@ -60,7 +60,7 @@ class UserContracts(Transactional):
             self.trade_engine.events.trigger("contracts_update_item", new_contract, old_contract, is_maker)
 
         if new_contract_quantity != 0:
-            contract_id = self.get_next_id()
+            contract_id = self.get_next_id(order)
 
             new_contract = Contract(
                 equity_id=order.equity_id,
@@ -106,9 +106,12 @@ class UserContracts(Transactional):
             if contract is None:
                 continue
 
+            if user.user_id == self.trade_engine.order_book.executing_user_id:
+                raise Exception("InsufficientFunds")
+
             market_order = Order.new_market_order(
                 order.equity_id,
-                self.trade_engine.order_book.get_next_id(),
+                self.trade_engine.order_book.get_next_id(order),
                 user.user_id,
                 not contract.is_long,
                 contract.quantity,

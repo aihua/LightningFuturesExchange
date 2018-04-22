@@ -6,6 +6,7 @@ import copy
 class ContractStatus(Enum):
     OPENED = 0
     CLOSED = 1
+    CLOSED_MARGIN = 2
 
 
 class Contract(db.Model):

@@ -1,15 +1,16 @@
 from transactional_data_structures.transactional import Transactional
 from transactional_data_structures.dictionary_array_version import DictionaryArrayVersion
-from transactional_data_structures.auto_incrementer_version import AutoIncrementerVersion
+from transactional_data_structures.dictionary_auto_incrementer_version import DictionaryAutoIncrementerVersion
 
 from models.models.order import OrderType, OrderStatus, Order
-from transactional_data_structures.events import Events
+from models.models.order_id import OrderId
+from transactional_data_structures.events import Events, EventPriority
 from indices.limit_orders import LimitOrders
 from indices.trigger_orders import  TriggerOrders
 from indices.trailing_orders import TrailingOrders
+from helpers.helper import quick_sort
 
 import datetime
-
 
 class OrderBook(Transactional):
     def __init__(self):
@@ -26,7 +27,12 @@ class OrderBook(Transactional):
             events=self.trade_engine.events
         )
 
-        self.orders_id = AutoIncrementerVersion({})
+        self.orders_id = DictionaryAutoIncrementerVersion(
+            {},
+            "equity_id",
+            "order_id",
+            OrderId
+        )
 
         self.limit_order_longs = LimitOrders(self.trade_engine, True)
         self.limit_order_shorts = LimitOrders(self.trade_engine, False)
@@ -39,10 +45,33 @@ class OrderBook(Transactional):
 
         self.subscribe_to_events(trade_engine.events)
 
+        self.triggered_orders = None
+        self.temp_triggered_orders = None
+
+        self.executing_user = None
+
+    def add_triggered_order(self, order):
+        if self.temp_triggered_orders is None:
+            self.temp_triggered_orders = []
+
+        self.temp_triggered_orders.append(order)
+
     def subscribe_to_events(self, events):
         events.subscribe("place_order", self.place_order_simple)
         events.subscribe("cancel_order", self.cancel_order_simple)
         events.subscribe("match_orders", self.match_orders)
+        events.subscribe("set_equities_price", self.merge_triggered_orders, EventPriority.POST_EVENT)
+        events.subscribe("execute_trigger_orders", self.execute_trigger_orders)
+
+    def merge_triggered_orders(self, new_equity, old_equity):
+        if len(self.temp_triggered_orders) == 0:
+            return
+        if new_equity.current_price > old_equity.current_price:
+            quick_sort(self.temp_triggered_orders, Order.trailing_price_comparer())
+        else:
+            quick_sort(self.temp_triggered_orders, Order.trailing_price_comparer_dec)
+
+        self.triggered_orders.extend(self.temp_triggered_orders)
 
     def get_limit_orders_long(self, order):
         return self.limit_order_longs.orders.get_list(order)
@@ -75,11 +104,14 @@ class OrderBook(Transactional):
     def initialize(self):
         return
 
-    def get_next_id(self):
-        return self.orders_id.get_next_id()
+    def get_next_id(self, order):
+        return self.orders_id.get_next_id(order)
 
     def place_order(self, order, is_margin_call=False):
-        order.order_id = self.get_next_id()
+        if self.executing_user_id is None:
+            self.executing_user_id = order.user_id
+
+        order.order_id = self.get_next_id(order)
         order.modification_id = order.order_id
 
         if self.orders.get_item(order) is None:
@@ -91,13 +123,13 @@ class OrderBook(Transactional):
         return True
 
     def cancel_order(self, order):
-        old_order = order.clone()
+        new_order = order.clone()
 
-        order.modification_id = self.get_next_id()
-        order.closed_date = datetime.datetime.utcnow()
-        order.status = OrderStatus.CLOSED
+        new_order.modification_id = self.get_next_id(order)
+        new_order.closed_date = datetime.datetime.utcnow()
+        new_order.status = OrderStatus.CLOSED
 
-        self.trade_engine.events.trigger("cancel_order", order, old_order)
+        self.trade_engine.events.trigger("cancel_order", new_order, order)
 
     def place_order_simple(self, order):
         if order.order_type == OrderType.MARKET:
@@ -122,10 +154,17 @@ class OrderBook(Transactional):
 
         old_matched_order = matched_order.clone()
 
-        matched_order.modified_id = self.get_next_id()
+        matched_order.modified_id = self.get_next_id(order)
         matched_order.filled_quantity += quantity
 
         if matched_order.is_filled():
             matched_order.close()
 
         self.trade_engine.events.trigger("orders_update_item", matched_order, old_matched_order)
+
+    def execute_trigger_orders(self):
+        temp_trigger_orders = self.trigger_orders
+        self.trigger_orders = None
+
+        for trigger_order in temp_trigger_orders:
+            self.place_order(trigger_order)

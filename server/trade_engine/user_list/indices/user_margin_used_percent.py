@@ -29,7 +29,7 @@ class UserMarginUsedPercent(Transactional):
 
         while True:
             if did_margin_call:
-                self.trade_engine.events.trigger("check_margin_orders", user)
+                self.trade_engine.events.trigger("check_margin_orders")
 
             for user in self.users:
                 if user.margin_used_percent / bitcoin_price >= 1.0:

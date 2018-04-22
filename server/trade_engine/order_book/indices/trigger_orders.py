@@ -50,5 +50,25 @@ class TriggerOrders(Transactional):
 
         return EventReturnType.CONTINUE
 
-    def set_equities_price(self, new_equity):
-        pass
+    def set_equities_price(self, new_equity, old_equity):
+        order_book = self.trade_engine.order_book
+
+        is_increasing = new_equity.current_price > old_equity.current_price
+
+        orders = self.orders.get_list(new_equity)
+
+        if is_increasing == self.is_long:
+            while orders.get_length() > 0:
+                order = orders.get_index(0)
+                if (self.is_long and new_equity.current_price >= order.trigger_price) or \
+                   (not self.is_long and new_equity.current_price <= order.trigger_price):
+                        new_order = order.clone()
+                        order_book.add_triggered_order(
+                            new_order.close_and_create_triggered_order(
+                                order_book.get_next_id(new_order),
+                                new_equity.current_price
+                            )
+                        )
+                        self.trade_engine.events.trigger("orders_update_item", new_order, order)
+                else:
+                    break

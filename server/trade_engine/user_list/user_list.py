@@ -24,13 +24,15 @@ class UserList(Transactional):
 
     def subscribe_to_events(self, events):
         events.subscribe("place_order", self.user_can_place_order, EventPriority.VALIDATION)
-        events.subscribe("match_order", self.check_user_can_execute_order, EventPriority.VALIDATION)
+        events.subscribe("match_orders", self.check_user_can_execute_order, EventPriority.VALIDATION)
 
         events.subscribe("place_order", self.place_order)
         events.subscribe("make_contract", self.make_contract, EventPriority.PRE_EVENT)
 
         events.subscribe("set_equities_price", self.set_equities_price)
         events.subscribe("check_margins", self.check_margins)
+
+        events.subscribe("cancel_order", self.cancel_order_validate, EventPriority.VALIDATION)
 
     def get_contract(self, contract):
         return self.user_contracts.contracts.get_item(contract)
@@ -125,3 +127,12 @@ class UserList(Transactional):
             if not Events.executed(self.trade_engine.events.trigger("check_margin")):
                 return EventReturnType.CONTINUE
         return EventReturnType.STOP
+
+    def check_user_in_margin_call(self, user, is_margin_call=False):
+        if is_margin_call:
+            return
+
+        user = self.users.get_item(user)
+
+        if user.is_margin_called:
+            raise Exception("UserIsExecutingMarginCall")

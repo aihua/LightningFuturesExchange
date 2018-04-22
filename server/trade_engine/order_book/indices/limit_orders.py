@@ -37,8 +37,9 @@ class LimitOrders(Transactional):
 
         if order.intersects(matched_order):
             # Should not continue on margined orderbook and margin calls
-            if Events.executed(self.trade_engine.trigger("match_orders", order, matched_order, is_margin_call)):
+            if Events.executed(self.trade_engine.events.trigger("match_orders", order, matched_order, is_margin_call)):
                 if order.remaining_quantity() == 0:
+                    self.trade_engine.events.trigger("execute_trigger_orders")
                     return EventReturnType.STOP
                 else:
                     return EventReturnType.RESTART if not is_margin_call else EventReturnType.STOP
