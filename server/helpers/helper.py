@@ -12,11 +12,22 @@ def binary_search(array, target, comparer):
             return x
     return -lower - 1
 
+
 def insert_sorted(array, target, comparer):
     array.insert(target, binary_search(array, target, comparer))
 
+
+def comparer(item1, item2):
+    return -1 if item1 > item2 else 1 if item1 < item2 else 0
+
+
+def comparer_dec(item1, item2):
+    return comparer(item2, item1)
+
+
 def quick_sort(array, comparer):
     __quick_sort_helper(array, 0, len(array) - 1, comparer)
+    return array
 
 
 def __quick_sort_helper(array, first, last, comparer):

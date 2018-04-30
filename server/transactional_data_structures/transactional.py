@@ -1,5 +1,6 @@
 import inspect
 
+
 class Transactional:
     def __init__(self):
         pass

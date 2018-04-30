@@ -4,7 +4,9 @@ from transactional_data_structures.dictionary_auto_incrementer_version import Di
 from indices.open_contracts import OpenContracts
 from indices.contracts_modified import ContractsModified
 from models.models.contract import Contract
+from models.models.user import User
 from models.models.contract_id import ContractId
+import random
 
 
 class ContractList(Transactional):
@@ -42,6 +44,7 @@ class ContractList(Transactional):
 
     def subscribe_to_events(self, events):
         events.subscribe("match_orders", self.match_orders)
+        events.subscribe("insolvent_margin_call", self.insolvent_margin_call)
 
     def initialize(self):
         return
@@ -64,3 +67,28 @@ class ContractList(Transactional):
 
         self.trade_engine.trigger("make_contract", new_order, False)
         self.trade_engine.trigger("make_contract", new_matched_order, True)
+
+    def insolvent_margin_call(self, equity, insolvent_contract, balance, user_balance_updates):
+        contracts = self.get_contracts(equity)
+
+        total_quantity = 0
+        for contract in contracts:
+            if contract.is_long != insolvent_contract.is_long:
+                total_quantity += contract.quantity
+
+        balance_num = balance // total_quantity
+        balance_rem = balance % total_quantity
+
+        for contract in contracts:
+            if contract.user_id not in user_balance_updates:
+                user_balance_updates[contract.user_id] = User(user_id=contract.user_id, balance=0)
+
+            user_balance_updates[contract.user_id].balance += balance_num * contract.quantity
+
+        for i in range(0, balance_rem):
+            pick_random = random.randint(0, total_quantity - 1)
+            temp_quantity = 0
+
+            for contract in contracts:
+                if temp_quantity <= pick_random < temp_quantity + contract.quantity:
+                    user_balance_updates[contract.user_id].balance += 1

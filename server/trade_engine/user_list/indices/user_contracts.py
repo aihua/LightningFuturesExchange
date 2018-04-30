@@ -35,6 +35,8 @@ class UserContracts(Transactional):
 
         new_contract_quantity = order.quantity
 
+        equity = self.trade_engine.equity_list.get_equity(order)
+
         if contract is not None:
             old_contract = contract
             new_contract = old_contract.clone()
@@ -42,8 +44,10 @@ class UserContracts(Transactional):
             if new_contract.is_long == order.is_long:
                 new_contract.quantity = order.quantity + old_contract.quantity
 
-                price_num = ((old_contract.price * old_contract.quantity) + (order.quantity * order.price * Contract.PRICE_MULTIPLIER))
-                price_float = price_num / (new_contract.quantity + 0.0)
+                old_total = old_contract.price * old_contract.get_quantity(equity)
+                new_total = order.get_quantity(equity) * order.price * Contract.PRICE_MULTIPLIER
+
+                price_float = (old_total + new_total) / new_contract.get_quantity(equity)
 
                 new_contract.price = math.floor(price_float) if new_contract.is_long else math.ceil(price_float)
                 new_contract_quantity = 0
@@ -96,6 +100,8 @@ class UserContracts(Transactional):
     def user_margin_call(self, user):
         user_contracts = self.contract.dic[user.user_id]
 
+        price_btc = self.trade_engine.get_bitcoin_price()
+
         for key in user_contracts.keys():
             order = Order()
             order.equity_id = key
@@ -108,6 +114,11 @@ class UserContracts(Transactional):
 
             if user.user_id == self.trade_engine.order_book.executing_user_id:
                 raise Exception("InsufficientFunds")
+
+            old_user_contracts = []
+
+            for contract in self.contracts.dic[user.user_id]:
+                old_user_contracts.push(contract.clone())
 
             market_order = Order.new_market_order(
                 order.equity_id,
@@ -128,16 +139,49 @@ class UserContracts(Transactional):
 
                 user = self.trade_engine.user_list.get_user(user)
 
+                new_user = None
+
+                if user.balance < 0:
+                    if new_user is None:
+                        new_user = user.clone()
+                    new_user.balance = 0
+
+                    total_price = 0.0
+                    insolvent_contracts = []
+                    for contract in self.contracts.dic[user.user_id].array:
+                        equity = self.trade_engine.equity_list.get_equity(contract)
+                        price = contract.get_quantity(equity) * equity.current_price
+                        total_price += price
+                        insolvent_contracts.append(
+                            Contract(
+                                equity_id=equity.equity_id,
+                                user_id=market_order.user_id,
+                                is_long=contract.is_long,
+                                quantity=contract.quantity,
+                                price=price
+                            )
+                        )
+
+                    user_balance_updates = []
+                    for insolvent_contract in insolvent_contracts:
+                        balance = math.ceil((insolvent_contract.price / total_price) * user.balance)
+                        self.trade_engine.events.trigger("insolvent_margin_call", equity, insolvent_contract, balance, user_balance_updates)
+
+                    for user_balance_update in user_balance_updates:
+                        user = self.trade_engine.user_list.get_user(user_balance_update)
+
+                        new_user = user.clone()
+                        new_user.add_to_balance_and_margin(-user_balance_update.balance, 0, 0, price_btc)
+                        self.trade_engine.events.trigger("users_update_item", new_user, user)
+
                 if user.is_margin_called and not self.user_has_contracts(user):
-                    new_user = user.clone()
+                    if new_user is None:
+                        new_user = user.clone()
                     new_user.margin_used = 0.0
                     new_user.margin_used_percent = 0.0
                     new_user.is_margin_called = False
+
+                if new_user is not None:
                     self.trade_engine.events.trigger("users_update_item", new_user, user)
 
             return
-
-
-
-
-

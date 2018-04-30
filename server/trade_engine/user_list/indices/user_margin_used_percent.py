@@ -18,9 +18,9 @@ class UserMarginUsedPercent(Transactional):
         )
 
     def subscribe_to_events(self, events):
-        events.subscribe("check_margin", self.check_margin_orders)
+        events.subscribe("check_margin", self.check_margin)
 
-    def check_margin_orders(self):
+    def check_margin(self):
         bitcoin_price = self.trade_engine.get_bitcoin_price()
 
         did_margin_call = False
@@ -40,7 +40,7 @@ class UserMarginUsedPercent(Transactional):
                     break
 
             if margin_user is not None:
-                self.trade_engine.events.trigger("user_margin_call", user)
+                self.trade_engine.events.trigger("user_margin_call", margin_user)
             else:
                 break
 

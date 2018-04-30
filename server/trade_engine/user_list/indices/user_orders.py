@@ -2,7 +2,8 @@ from transactional_data_structures.transactional import Transactional
 from transactional_data_structures.dictionary_dictionary_array_version import DictionaryDictionaryArrayVersion
 from models.models.order import Order
 from models.models.contract import Contract
-from helpers.helper import insert_sorted
+from helpers.helper import insert_sorted, quick_sort
+import math
 
 class UserOrders(Transactional):
     def __init__(self):
@@ -29,12 +30,12 @@ class UserOrders(Transactional):
 
     @staticmethod
     def get_place_order_amount_helper(equity, contract, orders):
-        temp_quantity = 0 if contract is None else contract.quantity
+        temp_quantity = 0 if contract is None else contract.get_quantity(equity)
         long_amount = 0.0
         short_amount = 0.0
 
         for user_order in orders:
-            temp_order_quantity = user_order.quantity
+            temp_order_quantity = user_order.get_quantity(equity)
 
             if temp_quantity >= 0 and contract.is_long != user_order.is_long:
                 diff = temp_quantity - temp_order_quantity
@@ -52,7 +53,35 @@ class UserOrders(Transactional):
 
     @staticmethod
     def get_gain(equity, contract):
-        return ((equity.current_price - contract.get_price()) / (equity.decimal_points_price + 0.0)) * contract.quantity
+        price_diff = equity.current_price - contract.get_price()
+        return price_diff * math.pow(10, equity.decimal_points_price) * contract.get_quantity(equity)
+
+    @staticmethod
+    def get_equity_order_cost(equity, contract, orders):
+        remaining_quantity = 0 if contract is None else contract.quantity
+        contract_is_long = True if contract is None or contract.is_long else False
+
+        orders_list = []
+        for order in orders:
+            orders_list.append(order)
+
+        if not contract_is_long:
+            quick_sort(orders_list, Order.effective_price_comparer)
+
+        total_price = 0.0
+        for order in orders_list:
+            order_quantity = order.quantity
+
+            if remaining_quantity > 0 and order.is_long != contract_is_long:
+                order_quantity = max(0, order.quantity - remaining_quantity)
+                remaining_quantity = max(0, remaining_quantity - order.quantity)
+
+            actual_order_quantity = order_quantity * math.pow(10, equity.decimal_points_quantity)
+            total_price = actual_order_quantity * equity.current_price
+
+        mf = math.pow(10, equity.decimal_points_quantity + equity.decimal_points_price)
+
+        return total_price * mf * equity.tradable_requirement / equity.PERCENT_MULTIPLIER
 
     def get_place_order_amount(self, order, amount):
         equity = self.trade_engine.equity_list.get_equity(order)
@@ -74,18 +103,18 @@ class UserOrders(Transactional):
         contract = self.trade_engine.user_list.get_contract(order)
         orders = self.orders.get_list(order)
 
-        new_order_quantity = order.quantity
+        new_order_quantity = order.get_quantity(equity)
         new_contract = Contract()
         new_contract.quantity = order.quantity
         new_contract.is_long = order.is_long
 
         if contract is not None:
             if contract.is_long != order.is_long:
-                new_order_quantity = max(0, order.quantity - contract.quantity)
-                new_contract.quantity = abs(order.quantity - contract.quantity)
+                new_order_quantity = max(0, order.get_quantity(equity) - contract.get_quantity(equity))
+                new_contract.quantity = abs(order.get_quantity(equity) - contract.get_quantity(equity))
 
                 contract_closing_quantity = min(contract.quantity, order.quantity)
-                contract_diff_multiplier = (-1.0 if contract.is_long else 1.0) / equity.decimal_points_price
+                contract_diff_multiplier = (-1.0 if contract.is_long else 1.0) * math.pow(10, equity.decimal_points_price)
                 contract_price_difference = (order.get_price() - contract.get_price()) * contract_diff_multiplier
 
                 delta_balance = contract_closing_quantity * contract_price_difference
@@ -99,7 +128,7 @@ class UserOrders(Transactional):
             else:
                 new_contract.quantity += order.quantity
 
-        order_price = (order.get_price() / equity.decimal_points_price)
+        order_price = order.get_price() * math.pow(10, equity.decimal_points_price)
         margin_requirement = (equity.margin_requirement / equity.PERCENT_MULTIPLIER)
         tradable_requirement = (equity.tradable_requirement / equity.PERCENT_MULTIPLIER)
 

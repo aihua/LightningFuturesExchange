@@ -104,8 +104,11 @@ class Order(db.Model):
     def get_long_short_string(self):
         return "long" if self.is_long else "short"
 
-    def remaining_quantity(self):
-        return self.quantity - self.filled_quantity
+    def get_quantity(self, equity):
+        return self.quantity * math.pow(10, equity.decimal_points_quantity)
+
+    def remaining_quantity(self, equity):
+        return (self.quantity - self.filled_quantity) * math.pow(10, equity.decimal_points_quantity)
 
     def update_trailing_price(self):
         self.trailing_price = ((10000.0 + ((1 if self.is_long else -1) * self.trailing_stop_percent)) / 10000.0)

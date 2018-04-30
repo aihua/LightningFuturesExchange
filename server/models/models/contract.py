@@ -1,7 +1,7 @@
 from shared.shared import db
 from enum import Enum
 import copy
-
+import math
 
 class ContractStatus(Enum):
     OPENED = 0
@@ -38,6 +38,9 @@ class Contract(db.Model):
 
     def is_opened(self):
         return self.status == ContractStatus.OPENED
+
+    def get_quantity(self, equity):
+        return self.quantity * math.pow(10, equity.decimal_points_quantity)
 
     @staticmethod
     def id_comparer(item1, item2):

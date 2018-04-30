@@ -1,11 +1,11 @@
-from thread_safe_dic import ThreadSafeDic
+from locks.thread_safe_dic import ThreadSafeDic
 from read_enter import ReadEnter
 from write_enter import WriteEnter
 from reader_writer_lock import ReaderWriterLock
+from transactional_data_structures.transactional import Transactional
 
 
-class ReaderWriterLockDic:
-
+class ReaderWriterLockDic(Transactional):
     def __init__(self):
         self._dic = ThreadSafeDic()
 
@@ -23,22 +23,24 @@ class ReaderWriterLockDic:
         dic[key].acquire_read()
 
     def release_read(self, key):
-        if key not in self._dic:
-            with self._dic as dic:
-                dic[key] = ReaderWriterLock()
-
-        dic[key].release_read()
+        self._dic[key].release_read()
 
     def acquire_write(self, key):
         if key not in self._dic:
             with self._dic as dic:
-                dic[key] = ReaderWriterLock()
+                if key not in dic:
+                    dic[key] = ReaderWriterLock()
 
-        dic[key].acquire_write()
+        self._dic[key].acquire_write()
 
     def release_write(self, key):
-        if key not in self._dic:
-            with self._dic as dic:
-                dic[key] = ReaderWriterLock()
+        self._dic[key].release_write()
 
-        dic[key].release_write()
+    def clone(self):
+        return self
+
+    def commit(self, db):
+        pass
+
+    def roll_back(self):
+        pass
